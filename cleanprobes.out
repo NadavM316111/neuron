@@ -1,0 +1,94 @@
+Retrieval, measured honestly, on a corpus worth retrieving from.
+
+raw corpus   : 20000 sentences
+clean corpus : 9478 sentences (47.4% kept)
+discarded    : 10522 fragments, reference lists and pronoun-only sentences
+
+examples of what was discarded:
+  - Anarchism is a political philosophy and movement that is skeptical of all just...
+  - Anarchism advocates for the replacement of the state with stateless societies ...
+  - As a historically left-wing movement, this reading of anarchism is placed on t...
+  - Humans have lived in societies without formal hierarchies long before the esta...
+
+
+5 of 5 hand-written probes are answerable from the clean corpus
+80 generated probes
+
+the hand-written probes, for reading:
+  Q: Where is a mirage sometimes seen in summer?
+     expecting: Vildmose
+  Q: What was the Atlantic Ocean the centre of from the 16th to 19th centuries, besides a slave trade?
+     expecting: Columbian exchange
+  Q: Who undertook the conquest of Sardinia in 1323 to 1324?
+     expecting: Alfonso
+  Q: Who was Arthur Miller's younger sister?
+     expecting: Joan Copeland
+  Q: Which war repelled the British attempt to subjugate Afghanistan from India?
+     expecting: Anglo-Afghan
+
+five generated probes, for reading:
+  Q: What is said about Cejka?
+     expecting: co-chaired
+     from: USACC is co-chaired by Tim Cejka, President of ExxonMobil and Reza Vaz...
+  Q: What is said about Jupiter?
+     expecting: asteroid
+     from: Of the roughly one million known asteroids the greatest number are loc...
+  Q: What is said about Groom?
+     expecting: closure
+     from: The road formerly led to mines in the Groom basin but has been improve...
+  Q: What is said about March?
+     expecting: success
+     from: The mission concluded on March 13 and was a complete success....
+  Q: What is said about Monumenta?
+     expecting: published
+     from: Waitz and published in the Monumenta Germaniae Historica: Scriptores, ...
+
+--- raw-corpus ---
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 8824.52it/s]
+  hand-written 100.0%   generated  32.5%    4.86ms
+--- clean-corpus ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 5356.25it/s]
+  hand-written 100.0%   generated  38.8%    4.21ms
+  three misses, for reading:
+    Q: What is said about Cejka?
+       wanted 'co-chaired', top result: In Chapter 38 of the book, Countries in the Sea, Zhao Rugua specifies ...
+    Q: What is said about Groom?
+       wanted 'closure', top result: In Curtain, he admits to Hastings that he wears a wig and a false mous...
+    Q: What is said about March?
+       wanted 'success', top result: Heavy rains and warmer conditions in early March created water saturat...
+--- clean+rerank ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 10153.79it/s]
+  hand-written 100.0%   generated  50.0%   11.30ms
+--- clean+bigger ---
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 7711.04it/s]
+  hand-written 100.0%   generated  35.0%    9.35ms
+
+==========================================================================
+             arm    items   hand-written   generated      ms
+--------------------------------------------------------------------------
+      raw-corpus    20000         100.0%       32.5%    4.86
+    clean-corpus     9478         100.0%       38.8%    4.21
+    clean+rerank     9478         100.0%       50.0%   11.30
+    clean+bigger     9478         100.0%       35.0%    9.35
+==========================================================================
+
+DID CLEANING THE CORPUS HELP? +6.2 points
+DOES A BIGGER MODEL NOW HELP? -3.8 points
+
+  STILL NOT SOUND. A bigger model still does not help, so
+  the probes are still not identifying single sentences.
+  The hand-written column is the only number to trust here,
+  and there are only a few of them.
+
+The hand-written column is the trustworthy one. Five probes is too few to
+be precise, but each was checked by a person against the rule that only one
+sentence could answer it — which is exactly what five generated probe sets
+failed to guarantee.
+
+The corpus filtering may matter more than any retriever change. Half of
+what was being stored — fragments, reference lists, sentences whose subject
+is a pronoun — cannot be surfaced by any question, and a real system should
+not store material it can never retrieve.
+
+wrote cleanprobes.json

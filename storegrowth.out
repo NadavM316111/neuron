@@ -1,0 +1,90 @@
+Where does the store break as it grows?
+
+sizes: [1000, 5000, 20000, 50000, 100000, 200000]
+60 probes, held constant across every size
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+  22 sentences...
+  20010 sentences...
+  40022 sentences...
+  60003 sentences...
+  80006 sentences...
+  80019 sentences...
+  100003 sentences...
+  100011 sentences...
+  100017 sentences...
+  100029 sentences...
+  120007 sentences...
+  120012 sentences...
+  120019 sentences...
+  120021 sentences...
+  140011 sentences...
+  140023 sentences...
+  160001 sentences...
+  160010 sentences...
+  160012 sentences...
+  180019 sentences...
+200000 sentences available
+60 probes built from the first 1,000 sentences, so every store size contains them
+
+--- 1000 items ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 8352.12it/s]
+  hit  60.0%   query   31.26ms   build    0.7s   memory     1.7MB
+--- 5000 items ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 10730.32it/s]
+  hit  50.0%   query    5.32ms   build    2.8s   memory     8.3MB
+--- 20000 items ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 10477.37it/s]
+  hit  40.0%   query    5.55ms   build   10.5s   memory    33.4MB
+--- 50000 items ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 11278.84it/s]
+  hit  31.7%   query    5.90ms   build   26.3s   memory    83.4MB
+--- 100000 items ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 6964.25it/s]
+  hit  30.0%   query    7.23ms   build   53.2s   memory   166.4MB
+--- 200000 items ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 7706.68it/s]
+  hit  28.3%   query    7.77ms   build  112.6s   memory   332.1MB
+
+==================================================================================
+    items   hit rate   query ms   build s   text MB   vectors MB
+----------------------------------------------------------------------------------
+     1000      60.0%      31.26       0.7       0.1          1.5
+     5000      50.0%       5.32       2.8       0.7          7.7
+    20000      40.0%       5.55      10.5       2.7         30.7
+    50000      31.7%       5.90      26.3       6.7         76.7
+   100000      30.0%       7.23      53.2      13.1        153.3
+   200000      28.3%       7.77     112.6      25.8        306.3
+==================================================================================
+
+FROM 1000 TO 200000 ITEMS:
+  hit rate  60.0% -> 28.3%  (-31.7)
+  query     31.26ms -> 7.77ms  (0.2x)
+  memory    1.7MB -> 332.1MB
+
+EXTRAPOLATED, from the largest size measured:
+    a month at 5,000 a day:      249MB,      5.8ms per query
+     a year at 5,000 a day:     3030MB,     70.9ms per query
+                 two years:     6061MB,    141.9ms per query
+
+Three numbers and three different failures.
+
+  HIT RATE FALLING -> dilution. More items means more near-misses, and the
+      right sentence stops surfacing. This is what killed word overlap at
+      40,000 items. If embeddings fall too, the store needs structure —
+      per-topic indexes, or summarisation — rather than a better similarity
+      measure.
+
+  QUERY TIME RISING LINEARLY -> every search compares against every item.
+      Fine at thousands, a problem at millions. The fix is an approximate
+      index, which is standard and not yet needed.
+
+  MEMORY -> the hard limit. Everything is held in RAM. The extrapolation
+      above says how long a system can run before that stops being true on
+      an ordinary laptop.
+
+The extrapolation is the point of this. A system meant to live alongside
+someone for years has to survive its own memory growing, and until now
+nobody had measured what that costs.
+
+wrote storegrowth.json

@@ -1,0 +1,139 @@
+Does any REAL stream contradict itself enough for retention?
+
+climates: reykjavik -> phoenix -> singapore, 12000 steps each
+
+  reykjavik: 43818 hourly readings
+  phoenix: 43818 hourly readings
+  singapore: 43818 hourly readings
+
+contradiction check: train on one climate, test on another
+  trained on reykjavik: own 57.92%, phoenix 30.93%, singapore 57.88%
+  largest drop when transferred: 27.00 points
+  good: the climates genuinely disagree
+
+--- frozen ---
+      3000 in  reykjavik: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+      6000 in  reykjavik: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+      9000 in  reykjavik: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+     12000 in  reykjavik: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+     15000 in    phoenix: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+     18000 in    phoenix: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+     21000 in    phoenix: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+     24000 in    phoenix: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+     27000 in  singapore: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+     30000 in  singapore: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+     33000 in  singapore: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+     36000 in  singapore: reyk  57.5  phoe  15.1  sing  46.8   rb 0    0.0m
+      3000 in  reykjavik: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+      6000 in  reykjavik: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+      9000 in  reykjavik: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+     12000 in  reykjavik: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+     15000 in    phoenix: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+     18000 in    phoenix: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+     21000 in    phoenix: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+     24000 in    phoenix: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+     27000 in  singapore: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+     30000 in  singapore: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+     33000 in  singapore: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+     36000 in  singapore: reyk  18.0  phoe  29.2  sing  15.9   rb 0    0.0m
+
+--- online ---
+      3000 in  reykjavik: reyk  52.0  phoe  21.1  sing  54.6   rb 0    0.0m
+      6000 in  reykjavik: reyk  37.8  phoe  43.8  sing  48.0   rb 0    0.0m
+      9000 in  reykjavik: reyk  57.6  phoe  27.4  sing  55.0   rb 0    0.1m
+     12000 in  reykjavik: reyk  43.3  phoe  42.3  sing  61.9   rb 0    0.1m
+     15000 in    phoenix: reyk  21.3  phoe  52.8  sing  43.6   rb 0    0.1m
+     18000 in    phoenix: reyk  24.8  phoe  51.5  sing  32.1   rb 0    0.1m
+     21000 in    phoenix: reyk  19.1  phoe  56.6  sing  38.9   rb 0    0.2m
+     24000 in    phoenix: reyk  21.9  phoe  54.7  sing  45.8   rb 0    0.2m
+     27000 in  singapore: reyk  48.3  phoe  37.8  sing  54.0   rb 0    0.2m
+     30000 in  singapore: reyk  33.4  phoe  44.3  sing  57.6   rb 0    0.2m
+     33000 in  singapore: reyk  40.4  phoe  46.0  sing  70.7   rb 0    0.3m
+     36000 in  singapore: reyk  48.4  phoe  40.8  sing  67.5   rb 0    0.3m
+      3000 in  reykjavik: reyk  52.0  phoe  21.4  sing  55.4   rb 0    0.0m
+      6000 in  reykjavik: reyk  38.0  phoe  44.6  sing  47.8   rb 0    0.0m
+      9000 in  reykjavik: reyk  57.1  phoe  27.2  sing  54.2   rb 0    0.1m
+     12000 in  reykjavik: reyk  41.9  phoe  42.2  sing  63.1   rb 0    0.1m
+     15000 in    phoenix: reyk  21.4  phoe  54.0  sing  45.3   rb 0    0.1m
+     18000 in    phoenix: reyk  24.7  phoe  50.9  sing  31.0   rb 0    0.1m
+     21000 in    phoenix: reyk  18.8  phoe  55.7  sing  37.1   rb 0    0.2m
+     24000 in    phoenix: reyk  22.2  phoe  54.3  sing  45.9   rb 0    0.2m
+     27000 in  singapore: reyk  49.8  phoe  36.6  sing  54.1   rb 0    0.2m
+     30000 in  singapore: reyk  34.1  phoe  44.7  sing  58.3   rb 0    0.2m
+     33000 in  singapore: reyk  39.5  phoe  46.0  sing  70.6   rb 0    0.3m
+     36000 in  singapore: reyk  48.4  phoe  40.9  sing  68.7   rb 0    0.3m
+
+--- guarded ---
+      3000 in  reykjavik: reyk  63.3  phoe  15.2  sing  47.1   rb 0    0.1m
+      6000 in  reykjavik: reyk  64.3  phoe  30.5  sing  57.3   rb 0    0.2m
+      9000 in  reykjavik: reyk  65.4  phoe  29.8  sing  56.6   rb 0    0.3m
+     12000 in  reykjavik: reyk  65.1  phoe  21.0  sing  52.5   rb 0    0.4m
+     15000 in    phoenix: reyk  62.2  phoe  52.9  sing  48.7   rb 0    2.1m
+     18000 in    phoenix: reyk  50.7  phoe  62.5  sing  43.7   rb 0    2.2m
+     21000 in    phoenix: reyk  50.1  phoe  69.8  sing  42.4   rb 0    4.0m
+     24000 in    phoenix: reyk  46.7  phoe  73.8  sing  43.7   rb 0    4.1m
+     27000 in  singapore: reyk  54.1  phoe  69.1  sing  57.1   rb 0    4.1m
+     30000 in  singapore: reyk  60.2  phoe  61.9  sing  68.7   rb 0    4.2m
+     33000 in  singapore: reyk  63.0  phoe  49.7  sing  71.5   rb 0    4.3m
+     36000 in  singapore: reyk  63.7  phoe  45.1  sing  71.3   rb 0    4.4m
+      3000 in  reykjavik: reyk  64.8  phoe  16.7  sing  52.7   rb 0    0.1m
+      6000 in  reykjavik: reyk  63.9  phoe  35.0  sing  56.6   rb 0    0.2m
+      9000 in  reykjavik: reyk  65.5  phoe  29.0  sing  55.1   rb 0    0.3m
+     12000 in  reykjavik: reyk  65.8  phoe  29.0  sing  57.7   rb 0    0.4m
+     15000 in    phoenix: reyk  59.4  phoe  48.2  sing  50.7   rb 0    0.5m
+     18000 in    phoenix: reyk  48.5  phoe  67.0  sing  43.9   rb 0    0.6m
+     21000 in    phoenix: reyk  53.8  phoe  68.8  sing  48.0   rb 0    0.6m
+     24000 in    phoenix: reyk  47.4  phoe  72.6  sing  45.6   rb 0    0.7m
+     27000 in  singapore: reyk  59.6  phoe  58.4  sing  59.5   rb 0    0.8m
+     30000 in  singapore: reyk  60.1  phoe  62.0  sing  58.9   rb 0    0.9m
+     33000 in  singapore: reyk  63.3  phoe  57.0  sing  71.0   rb 0    1.0m
+     36000 in  singapore: reyk  63.5  phoe  46.3  sing  68.2   rb 0    1.1m
+
+================================================================================
+ACCURACY ON 'REYKJAVIK' — learned first, then abandoned
+   step       phase    frozen     online    guarded
+--------------------------------------------------------------------------------
+      0       start    37.71%     37.71%     37.71%
+   3000   reykjavik    37.71%     51.98%     64.04%
+   6000   reykjavik    37.71%     37.89%     64.10%
+   9000   reykjavik    37.71%     57.38%     65.46%
+  12000   reykjavik    37.71%     42.58%     65.45%
+  15000     phoenix    37.71%     21.31%     60.78%
+  18000     phoenix    37.71%     24.76%     49.62%
+  21000     phoenix    37.71%     18.96%     51.94%
+  24000     phoenix    37.71%     22.07%     47.04%
+  27000   singapore    37.71%     49.04%     56.83%
+  30000   singapore    37.71%     33.76%     60.15%
+  33000   singapore    37.71%     39.94%     63.17%
+  36000   singapore    37.71%     48.41%     63.61%
+================================================================================
+
+ALL CLIMATES AT THE END:
+    frozen: reykjavik 37.71%  phoenix 22.15%  singapore 31.35%
+    online: reykjavik 48.41%  phoenix 40.86%  singapore 68.06%
+   guarded: reykjavik 63.61%  phoenix 45.73%  singapore 69.76%
+
+CHANGE FROM START TO END:
+    online: reykjavik +10.70  phoenix +18.71  singapore +36.71
+   guarded: reykjavik +25.90  phoenix +23.58  singapore +38.41
+
+THE EARLY CLIMATE ('reykjavik'), two phases ago:
+  online  +10.70
+  guarded +25.90
+  guarded advantage: +15.20
+
+  NO FORGETTING. Even opposing climates did not make the
+  model lose the first one. Combined with the Wikipedia
+  result, that is a strong case that this mechanism belongs
+  to constructed problems and a real system may not need it.
+
+Watch the other climates too. A protected model that holds the first climate
+by failing to learn the later ones has not retained anything — it has
+stopped learning. The all-climates table catches that.
+
+This is the question the Wikipedia result forced: the mechanism works where
+streams contradict, and real text does not contradict. If real weather
+across opposing climates does not either, the honest conclusion is that a
+deployed system may not need this machinery, and the project should say so.
+
+wrote contradict.json

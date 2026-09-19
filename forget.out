@@ -1,0 +1,120 @@
+Should the rehearsal buffer forget?
+
+240000 steps, 10 rotations through ['keyed', 'open', 'trap']
+At 480,000 steps the protected arm REVERSED: -3.76 while unprotected
+gained +2.60. The buffer had filled with contradictory material.
+
+All policies rehearse at the same rate. Only the CONTENTS differ.
+
+--- online ---
+    cycle  1/10  mean 42.35%  buffer   0  evicted    0    0.2m
+    cycle  2/10  mean 45.59%  buffer   0  evicted    0    0.4m
+    cycle  3/10  mean 44.28%  buffer   0  evicted    0    0.6m
+    cycle  4/10  mean 44.28%  buffer   0  evicted    0    0.7m
+    cycle  5/10  mean 44.28%  buffer   0  evicted    0    0.9m
+    cycle  6/10  mean 47.67%  buffer   0  evicted    0    1.1m
+    cycle  7/10  mean 47.67%  buffer   0  evicted    0    1.3m
+    cycle  8/10  mean 47.67%  buffer   0  evicted    0    1.5m
+    cycle  9/10  mean 47.67%  buffer   0  evicted    0    1.7m
+    cycle 10/10  mean 47.99%  buffer   0  evicted    0    1.8m
+
+--- keep-all ---
+    cycle  1/10  mean 42.83%  buffer 500  evicted    0    0.9m
+    cycle  2/10  mean 41.89%  buffer 500  evicted    0    1.8m
+    cycle  3/10  mean 45.13%  buffer 500  evicted    0    2.6m
+    cycle  4/10  mean 42.72%  buffer 500  evicted    0    3.5m
+    cycle  5/10  mean 33.42%  buffer 500  evicted    0    4.4m
+    cycle  6/10  mean 44.97%  buffer 500  evicted    0    5.3m
+    cycle  7/10  mean 49.67%  buffer 500  evicted    0    6.2m
+    cycle  8/10  mean 45.46%  buffer 500  evicted    0    7.0m
+    cycle  9/10  mean 42.83%  buffer 500  evicted    0    7.9m
+    cycle 10/10  mean 42.83%  buffer 500  evicted    0    8.8m
+
+--- recent ---
+    cycle  1/10  mean 42.65%  buffer 500  evicted    0    0.9m
+    cycle  2/10  mean 45.73%  buffer 500  evicted    0    1.7m
+    cycle  3/10  mean 47.02%  buffer 500  evicted    0    2.6m
+    cycle  4/10  mean 52.33%  buffer 500  evicted    0    3.5m
+    cycle  5/10  mean 52.82%  buffer 500  evicted    0    4.4m
+    cycle  6/10  mean 52.82%  buffer 500  evicted    0    5.3m
+    cycle  7/10  mean 49.81%  buffer 500  evicted    0    6.2m
+    cycle  8/10  mean 50.56%  buffer 500  evicted    0    7.1m
+    cycle  9/10  mean 46.40%  buffer 500  evicted    0    7.9m
+    cycle 10/10  mean 43.50%  buffer 500  evicted    0    8.8m
+
+--- age-decay ---
+    cycle  1/10  mean 42.83%  buffer 500  evicted    0    0.8m
+    cycle  2/10  mean 43.85%  buffer 500  evicted    0    1.7m
+    cycle  3/10  mean 41.56%  buffer 500  evicted    0    2.5m
+    cycle  4/10  mean 41.16%  buffer 500  evicted    0    3.4m
+    cycle  5/10  mean 41.78%  buffer 500  evicted    0    4.3m
+    cycle  6/10  mean 41.06%  buffer 500  evicted    0    5.1m
+    cycle  7/10  mean 43.52%  buffer 500  evicted    0    6.0m
+    cycle  8/10  mean 38.59%  buffer 500  evicted    0    6.9m
+    cycle  9/10  mean 42.71%  buffer 500  evicted    0    7.8m
+    cycle 10/10  mean 43.32%  buffer 500  evicted    0    8.7m
+
+--- conflict ---
+    cycle  1/10  mean 42.83%  buffer 500  evicted  484    0.9m
+    cycle  2/10  mean 45.13%  buffer 500  evicted 1006    1.8m
+    cycle  3/10  mean 46.42%  buffer 500  evicted 1534    2.8m
+    cycle  4/10  mean 46.42%  buffer 500  evicted 2028    3.6m
+    cycle  5/10  mean 46.42%  buffer 500  evicted 2534    4.5m
+    cycle  6/10  mean 43.32%  buffer 500  evicted 3053    5.4m
+    cycle  7/10  mean 36.05%  buffer 500  evicted 3537    6.5m
+    cycle  8/10  mean 38.99%  buffer 500  evicted 4044    7.4m
+    cycle  9/10  mean 43.32%  buffer 500  evicted 4537    8.2m
+    cycle 10/10  mean 38.28%  buffer 500  evicted 5030    9.1m
+
+========================================================================================
+MEAN ACCURACY ACROSS ALL RULE SETS, per cycle
+ cycle    online   keep-all     recent  age-decay   conflict
+----------------------------------------------------------------------------------------
+     1    42.35%     42.83%     42.65%     42.83%     42.83%
+     2    45.59%     41.89%     45.73%     43.85%     45.13%
+     3    44.28%     45.13%     47.02%     41.56%     46.42%
+     4    44.28%     42.72%     52.33%     41.16%     46.42%
+     5    44.28%     33.42%     52.82%     41.78%     46.42%
+     6    47.67%     44.97%     52.82%     41.06%     43.32%
+     7    47.67%     49.67%     49.81%     43.52%     36.05%
+     8    47.67%     45.46%     50.56%     38.59%     38.99%
+     9    47.67%     42.83%     46.40%     42.71%     43.32%
+    10    47.99%     42.83%     43.50%     43.32%     38.28%
+========================================================================================
+
+FIRST HALF against SECOND HALF — the reversal test:
+      online:  44.16% ->  47.73%  ( +3.57)
+    keep-all:  41.20% ->  45.15%  ( +3.95)   BEATS ONLINE'S TREND
+      recent:  48.11% ->  48.62%  ( +0.51)
+   age-decay:  42.24% ->  41.84%  ( -0.40)
+    conflict:  45.45% ->  39.99%  ( -5.46)
+
+  online trend   +3.57
+  keep-all trend +3.95  (the reversal did NOT reproduce at this length)
+
+  best forgetting policy at the end: recent at 48.62%
+  online at the end: 47.73%
+
+The hypothesis is that the reversal comes from WHAT is rehearsed, not from
+rehearsing. The buffer keeps everything, so after many rotations it holds
+every side of every contradiction at once.
+
+  a forgetting policy beats keep-all AND beats online -> the reversal is
+      fixable, rehearsal is still the right mechanism, and the scope
+      condition becomes "rehearse recent material" rather than "rehearsal
+      fails over long lives".
+
+  'conflict' wins specifically -> the problem is WRONGNESS rather than AGE.
+      That is the sharper result: a buffer should forget what has been
+      contradicted, not what is merely old, and everything uncontradicted
+      can be kept forever.
+
+  nothing beats online -> rehearsal genuinely does not help over long
+      cycling lives, whatever the buffer contains, and the horizon is a
+      real limit rather than an implementation detail.
+
+Note this run rehearses directly rather than through StabilityLayer, so the
+gate is absent and every item enters the buffer. That isolates the buffer
+policy, which is the variable under test.
+
+wrote forget.json

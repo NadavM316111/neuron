@@ -1,0 +1,57 @@
+Can a local rule skip layers that do not need updating?
+
+6 layers of 128, 1 phases x 12000 steps, 2 seeds
+backprop must touch every layer every step. A local rule need not.
+
+  learnability check: backprop reaches 97.1% on one phase with full training
+  good: the task is learnable, so the comparison is real
+
+               bp: acc 99.04%     5.4s  layer-updates 100.0% of possible
+       local-full: acc 100.00%     8.4s  layer-updates 100.0% of possible
+    local-skip-50: acc 100.00%     4.6s  layer-updates  42.1% of possible
+    local-skip-70: acc 98.82%     3.3s  layer-updates  24.9% of possible
+    local-skip-90: acc 49.13%     2.0s  layer-updates   6.8% of possible
+
+==============================================================================
+            arm   accuracy   seconds   speedup   updates done
+------------------------------------------------------------------------------
+             bp     99.04%      5.4     1.00x         100.0%
+     local-full    100.00%      8.4     0.64x         100.0%
+  local-skip-50    100.00%      4.6     1.16x          42.1%
+  local-skip-70     98.82%      3.3     1.63x          24.9%
+  local-skip-90     49.13%      2.0     2.74x           6.8%
+==============================================================================
+
+WHAT THE LOCAL RULE COSTS BEFORE ANY SKIPPING:
+  accuracy +0.96 against backprop, time 0.64x
+
+WHAT SKIPPING BUYS, against local-full:
+    local-skip-50:  +0.00 accuracy, 1.81x faster, 42% of updates performed
+    local-skip-70:  -1.18 accuracy, 2.55x faster, 25% of updates performed
+    local-skip-90: -50.87 accuracy, 4.29x faster, 7% of updates performed
+
+  FASTEST ARM WITHIN 2 POINTS OF BACKPROP: local-skip-70, 1.63x faster than backprop, doing 25% of the layer updates.
+
+Three numbers, and the middle one is the point.
+
+  WHAT THE LOCAL RULE COSTS. Layer-local losses are known to underperform
+      backpropagation, and local-full measures that here with no skipping.
+      If the gap is large, skipping cannot rescue it.
+
+  WHAT SKIPPING BUYS. This is the claim. Backpropagation cannot skip a
+      layer, because the gradient to layer 1 passes through every layer
+      above it. A local rule can. If most layers skip most of the time and
+      accuracy holds, that is a wall-clock saving on ONE device, which is
+      not what the field's parallelism results are about.
+
+  THE UPDATE FRACTION. The hypothesis predicts this is low on a real
+      stream, because most inputs are ordinary and a layer that already
+      handles them gains little from another update. If it stays near
+      100%, layers do not converge independently and the premise is wrong.
+
+The local arms carry real overhead: separate optimisers per layer, and a
+per-layer loss computed every step whether or not it is used. So local-full
+may be SLOWER than backprop, and the honest comparison for skipping is
+against local-full rather than against bp.
+
+wrote layerskip.json

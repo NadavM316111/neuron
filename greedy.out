@@ -1,0 +1,55 @@
+Does layer skipping cure greedy information collapse?
+
+CIFAR-10, 20000 images, 6 blocks of 64, 1 epoch, 2 seeds
+
+the collapse signature: greedy local learning makes EARLY layers more
+accurate than backprop while the FINAL layer is worse
+
+             bp: final 49.21%  layer1 10.45%   15.4s  updates 100.0%
+     local-full: final 31.26%  layer1 25.76%   13.1s  updates 100.0%
+     skip-early: final 38.90%  layer1 22.64%    8.7s  updates  62.8%
+    skip-all-50: final 31.34%  layer1 23.04%    7.8s  updates  26.9%
+    skip-all-70: final 30.85%  layer1 22.31%    7.3s  updates  21.7%
+
+====================================================================================
+ACCURACY AT EVERY DEPTH
+          arm L1      L2      L3      L4      L5      L6    
+------------------------------------------------------------------------------------
+           bp  10.4%    6.7%    7.8%    7.8%   10.2%   49.2%
+   local-full  25.8%   31.9%   31.0%   32.0%   31.7%   31.3%
+   skip-early  22.6%   32.2%   33.0%   39.8%   39.0%   38.9%
+  skip-all-50  23.0%   32.9%   34.4%   35.4%   33.5%   31.3%
+  skip-all-70  22.3%   32.0%   34.0%   33.5%   31.0%   30.9%
+====================================================================================
+
+THE COLLAPSE SIGNATURE:
+  backprop    layer1 10.45%  ->  final 49.21%
+  local-full  layer1 25.76%  ->  final 31.26%
+  local is +15.31 at layer 1 and -17.95 at the end
+  -> collapse confirmed: better early, worse final
+
+DOES SKIPPING CLOSE THE GAP? (backprop final 49.21%)
+     skip-early: final 38.90% (+7.64 vs local-full,  +43% of the gap)  layer1 -3.12  1.50x faster
+    skip-all-50: final 31.34% (+0.07 vs local-full,   +0% of the gap)  layer1 -2.72  1.69x faster
+    skip-all-70: final 30.85% (-0.41 vs local-full,   -2% of the gap)  layer1 -3.45  1.81x faster
+
+Two things have to happen together for the hypothesis to hold.
+
+  THE GAP CLOSES. A skipping arm reaches backprop's final accuracy, or
+      meaningfully closer to it than greedy local learning does.
+
+  THE EARLY-LAYER SIGNATURE CHANGES. Layer 1 becomes LESS discriminative
+      under skipping. That is what would show the mechanism is reduced
+      greed rather than something incidental — a skipping arm that closes
+      the gap while layer 1 stays equally discriminative is doing something
+      else, and the explanation would be wrong even if the number is right.
+
+If the gap closes AND early layers become less discriminative, skipping is a
+cure for information collapse that costs less rather than more, which is
+what InfoPro's reconstruction networks cost. That would be worth writing up.
+
+If there is no gap at this scale, the honest conclusion is that this network
+is too small to show the phenomenon, and the test needs more depth or more
+training than a laptop affords.
+
+wrote greedy.json

@@ -1,0 +1,63 @@
+Why does the store miss 40% with only a thousand items?
+
+20000 sentences, 120 probes
+
+diagnostic: where does the source sentence rank?
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 11806.55it/s]
+  in the top 4      :   41 (34.2%)
+  in the top 20     :   64 (53.3%)
+  not in the top 20 :   56 (46.7%)
+
+  reachable by reranking alone: 23 probes (19.2%)
+  -> most misses are NOT in the top 20, so reranking cannot
+     fix them. The embedding or the missing context is the
+     problem.
+
+--- baseline ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 6094.39it/s]
+  hit  34.2%   query   4.39ms   build   13.3s
+--- rerank ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 5888.07it/s]
+  hit  36.7%   query  11.58ms   build   13.2s
+--- with-context ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 10002.86it/s]
+  hit  30.0%   query   4.61ms   build   30.2s
+--- bigger-model ---
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 21977.05it/s]
+  hit  33.3%   query  22.43ms   build  119.0s
+--- context+bigger ---
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 7849.85it/s]
+  hit  26.7%   query  12.29ms   build  527.2s
+
+======================================================================
+             arm   hit rate   vs baseline   query ms
+----------------------------------------------------------------------
+        baseline      34.2%         +0.0       4.39
+          rerank      36.7%         +2.5      11.58
+    with-context      30.0%         -4.2       4.61
+    bigger-model      33.3%         -0.8      22.43
+  context+bigger      26.7%         -7.5      12.29
+======================================================================
+
+  best: rerank at 36.7%, +2.5 over baseline
+
+The diagnostic decides what the fix is, and the arms confirm it.
+
+  CONTEXT HELPS MOST -> the misses were pronouns and references. Wikipedia
+      prose says "It was founded in 1892" and the store held that sentence
+      alone, with nothing saying what "it" is. Storing neighbours fixes
+      that, costs only disk, and would lift every store size at once.
+
+  BIGGER MODEL HELPS MOST -> the small embedding was the limit and the fix
+      is a few milliseconds per query. The cheapest possible outcome.
+
+  RERANK HELPS MOST -> the right sentence was being found and then thrown
+      away by taking only four candidates.
+
+  NOTHING HELPS MUCH -> the probes may be unanswerable rather than the
+      retriever weak. A question built from one capitalised word may
+      genuinely match many sentences, in which case this measures probe
+      quality and the real retrieval is better than it looks.
+
+wrote retrievalquality.json

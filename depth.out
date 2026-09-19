@@ -1,0 +1,62 @@
+Does early-layer skipping help MORE as networks get deeper?
+
+CIFAR-10, 12000 images, 3 epochs, depths [4, 8, 12], width 48
+
+Greedy collapse is documented to WORSEN with depth. If skipping works by
+limiting early over-optimisation, deeper networks should benefit MORE.
+
+--- depth 4 ---
+           bp: 54.93%    19.6s
+        local: 42.90%    17.1s
+   skip-early: 45.70%    11.1s
+  gap 12.03, recovered +2.80 (23% of it)
+
+--- depth 8 ---
+           bp: 58.17%    23.7s
+        local: 35.90%    20.7s
+   skip-early: 40.53%    13.2s
+  gap 22.27, recovered +4.63 (21% of it)
+
+--- depth 12 ---
+           bp: 52.67%    27.5s
+        local: 40.20%    25.2s
+   skip-early: 31.50%    15.4s
+  gap 12.47, recovered -8.70 (-70% of it)
+
+============================================================================
+  depth   backprop     local   skip-early     gap    closed
+----------------------------------------------------------------------------
+      4     54.93%    42.90%       45.70%  12.03       23%
+      8     58.17%    35.90%       40.53%  22.27       21%
+     12     52.67%    40.20%       31.50%  12.47      -70%
+============================================================================
+
+DOES THE GAP GROW WITH DEPTH? 12.0 -> 12.5 points
+DOES SKIPPING CLOSE MORE OF IT? 23% -> -70%
+
+SPEED, skip-early against backprop:
+  depth  4: 1.77x
+  depth  8: 1.80x
+  depth 12: 1.78x
+
+  THE PREDICTION FAILED IN THE OPPOSITE DIRECTION. Skipping
+  helps LESS with depth, so whatever it is doing, it is not
+  preventing a problem that grows with depth.
+
+The share of the gap closed is the number that matters, not the raw points.
+The absolute gap grows with depth on its own, so points recovered are not
+comparable across depths.
+
+  SHARE RISES WITH DEPTH -> the mechanism is preventing something that
+      worsens with depth, which is exactly what greedy information
+      collapse does. That would make yesterday's result a property of the
+      method rather than of six-block networks, and it would be worth
+      writing up.
+
+  SHARE FLAT OR FALLING -> skipping does something real but not what was
+      claimed. The honest write-up would report the effect without the
+      collapse explanation.
+
+Three epochs and one seed. This is a direction test, not a measurement.
+
+wrote depth.json

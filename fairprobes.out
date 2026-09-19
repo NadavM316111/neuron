@@ -1,0 +1,70 @@
+Retrieval, measured with probes that have ONE right answer.
+
+20000 sentences, 100 probes
+uniqueness check: 0 probes with a non-unique answer
+  good: every answer appears in exactly one sentence
+
+example probes:
+  Q: What number is given in connection with Albert?
+     answer 983, from: Albert was a part of the army that besieged Demmin, and at the end of the war, r...
+  Q: What number is given in connection with Cardinal?
+     answer 1402, from: He became Cardinal deacon of Saint Eustachius in 1402 and Papal legate in Romagn...
+  Q: What number is given in connection with Along?
+     answer 35.7, from: Along with pH, the free energy change of ATP hydrolysis is also associated with ...
+
+diagnostic: where does the answer rank?
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 12402.06it/s]
+  in the top 4      :   31 (31.0%)
+  in the top 20     :   54 (54.0%)
+  not in the top 20 :   46 (46.0%)
+
+--- baseline ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 6279.35it/s]
+  hit  31.0%   query   4.05ms   build   17.5s
+--- rerank ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 16492.83it/s]
+  hit  27.0%   query  11.14ms   build   14.9s
+--- with-context ---
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 6991.07it/s]
+  hit  21.0%   query   4.22ms   build   40.7s
+--- bigger-model ---
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 7637.38it/s]
+  hit  19.0%   query  16.77ms   build   92.9s
+--- context+bigger ---
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 7434.79it/s]
+  hit  15.0%   query  12.93ms   build  581.5s
+
+======================================================================
+             arm   hit rate   vs baseline   query ms
+----------------------------------------------------------------------
+        baseline      31.0%         +0.0       4.05
+          rerank      27.0%         -4.0      11.14
+    with-context      21.0%        -10.0       4.22
+    bigger-model      19.0%        -12.0      16.77
+  context+bigger      15.0%        -16.0      12.93
+======================================================================
+
+  best: baseline at 31.0%
+  ambiguous probes gave 34.2% for the same baseline configuration
+  difference: -3.2 points from fixing the MEASUREMENT alone
+
+What this settles.
+
+  MUCH HIGHER THAN 34% -> the store was never as weak as reported. The
+      earlier numbers measured probe ambiguity, and the growth curve from
+      60% to 28% needs re-reading: more items meant more valid alternatives
+      competing with an arbitrary designated answer, not worse retrieval.
+
+  STILL AROUND 34% -> the retriever really is missing two thirds of the
+      time, ambiguity was not the explanation, and the store needs work
+      that none of these arms provide.
+
+  A BIGGER MODEL NOW HELPS -> confirms the diagnosis from the other side.
+      With ambiguous probes it scored WORSE, which no genuine improvement
+      to retrieval should ever do.
+
+That last one is the cleanest check available. A better retriever cannot
+make an honest measurement worse.
+
+wrote fairprobes.json

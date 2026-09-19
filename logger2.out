@@ -1,0 +1,620 @@
+logging to /Users/nadavminkowitz/neuron/neuron/results/activity2.tsv
+one sample every 15s
+recorded: app name, dwell, idle, notification COUNT, battery, audio, wifi
+NOT recorded: window titles, URLs, keystrokes, clipboard, file names,
+              screen contents, notification text
+
+stop with Ctrl+C. Leave it running for a month.
+
+  40 samples, 08:09, Safari, idle 0s, notif 0
+  80 samples, 08:19, Safari, idle 0s, notif 0
+  120 samples, 08:29, Safari, idle 3s, notif 0
+  160 samples, 08:39, Safari, idle 0s, notif 0
+  200 samples, 08:49, Safari, idle 10s, notif 0
+  240 samples, 09:48, Safari, idle 1s, notif 0
+  280 samples, 09:58, Safari, idle 0s, notif 0
+  320 samples, 10:08, Safari, idle 0s, notif 0
+  360 samples, 10:18, Safari, idle 35s, notif 0
+  400 samples, 10:31, Microsoft OneNote, idle 51s, notif 0
+  440 samples, 10:41, Microsoft OneNote, idle 30s, notif 0
+  480 samples, 10:51, Microsoft OneNote, idle 62s, notif 0
+  520 samples, 11:01, Microsoft OneNote, idle 63s, notif 0
+  560 samples, 11:11, Microsoft OneNote, idle 90s, notif 0
+  600 samples, 11:44, Google Chrome, idle 44s, notif 0
+  640 samples, 13:06, Code, idle 0s, notif 0
+  680 samples, 13:16, Google Chrome, idle 0s, notif 0
+  720 samples, 13:26, Code, idle 65s, notif 0
+  760 samples, 13:36, Code, idle 53s, notif 0
+  800 samples, 14:35, Safari, idle 33s, notif 0
+  840 samples, 17:47, Safari, idle 633s, notif 0
+  880 samples, 22:10, Safari, idle 1233s, notif 0
+  920 samples, 00:39, Safari, idle 1834s, notif 0
+  960 samples, 05:19, Safari, idle 2420s, notif 0
+  1000 samples, 08:21, Safari, idle 3012s, notif 0
+  1040 samples, 09:04, Safari, idle 6s, notif 0
+  1080 samples, 09:14, Safari, idle 21s, notif 0
+  1120 samples, 09:24, Code, idle 0s, notif 0
+  1160 samples, 09:34, Preview, idle 1s, notif 0
+  1200 samples, 09:44, Safari, idle 0s, notif 0
+  1240 samples, 09:54, Safari, idle 26s, notif 0
+  1280 samples, 10:22, Safari, idle 45s, notif 0
+  1320 samples, 13:54, Safari, idle 629s, notif 0
+  1360 samples, 18:46, Safari, idle 1229s, notif 0
+  1400 samples, 00:33, Safari, idle 1831s, notif 0
+  1440 samples, 02:00, Journal, idle 77s, notif 0
+  1480 samples, 06:31, Journal, idle 678s, notif 0
+  1520 samples, 11:07, Journal, idle 1279s, notif 0
+  1560 samples, 15:31, Journal, idle 1865s, notif 0
+  1600 samples, 18:04, Journal, idle 2452s, notif 0
+  1640 samples, 21:56, Journal, idle 3038s, notif 0
+  1680 samples, 01:33, Journal, idle 3639s, notif 0
+  1720 samples, 06:10, Journal, idle 4225s, notif 0
+  1760 samples, 08:43, Journal, idle 4825s, notif 0
+  1800 samples, 11:29, Journal, idle 5408s, notif 0
+  1840 samples, 13:29, Journal, idle 5975s, notif 0
+  1880 samples, 15:19, Safari, idle 391s, notif 0
+  1920 samples, 18:48, Journal, idle 0s, notif 0
+  1960 samples, 18:58, Safari, idle 263s, notif 0
+  2000 samples, 19:08, Music, idle 99s, notif 0
+  2040 samples, 19:18, Safari, idle 0s, notif 0
+  2080 samples, 19:28, Safari, idle 1s, notif 0
+  2120 samples, 19:41, Safari, idle 0s, notif 0
+  2160 samples, 22:33, Music, idle 345s, notif 0
+  2200 samples, 02:06, Music, idle 946s, notif 0
+  2240 samples, 07:57, Music, idle 1532s, notif 0
+  2280 samples, 10:04, Safari, idle 2s, notif 0
+  2320 samples, 10:14, Safari, idle 0s, notif 0
+  2360 samples, 10:24, Safari, idle 0s, notif 0
+  2400 samples, 10:34, Safari, idle 461s, notif 0
+  2440 samples, 11:00, Safari, idle 1062s, notif 0
+  2480 samples, 11:10, Safari, idle 1662s, notif 0
+  2520 samples, 11:20, Safari, idle 2263s, notif 0
+  2560 samples, 11:30, Safari, idle 2863s, notif 0
+  2600 samples, 11:40, Safari, idle 3463s, notif 0
+  2640 samples, 11:50, Safari, idle 4064s, notif 0
+  2680 samples, 12:00, Safari, idle 4664s, notif 0
+  2720 samples, 12:10, Safari, idle 5265s, notif 0
+  2760 samples, 12:20, Safari, idle 5865s, notif 0
+  2800 samples, 12:30, Safari, idle 6465s, notif 0
+  2840 samples, 12:58, Safari, idle 7066s, notif 0
+  2880 samples, 14:06, Safari, idle 7666s, notif 0
+  2920 samples, 14:31, Safari, idle 0s, notif 0
+  2960 samples, 14:41, Safari, idle 98s, notif 0
+  3000 samples, 14:51, Messages, idle 6s, notif 0
+  3040 samples, 15:01, Messages, idle 113s, notif 0
+  3080 samples, 15:11, Safari, idle 0s, notif 0
+  3120 samples, 15:21, Safari, idle 0s, notif 0
+  3160 samples, 15:46, Safari, idle 23s, notif 0
+  3200 samples, 17:04, Code, idle 0s, notif 0
+  3240 samples, 17:22, Safari, idle 1s, notif 0
+  3280 samples, 17:32, Safari, idle 0s, notif 0
+  3320 samples, 17:42, Safari, idle 0s, notif 0
+  3360 samples, 17:58, Safari, idle 26s, notif 0
+  3400 samples, 18:08, Safari, idle 6s, notif 0
+  3440 samples, 18:18, Safari, idle 33s, notif 0
+  3480 samples, 19:16, Safari, idle 4s, notif 0
+  3520 samples, 21:54, Safari, idle 334s, notif 0
+  3560 samples, 01:42, Safari, idle 935s, notif 0
+  3600 samples, 06:22, Safari, idle 1535s, notif 0
+  3640 samples, 08:20, Safari, idle 0s, notif 0
+  3680 samples, 08:30, Safari, idle 0s, notif 0
+  3720 samples, 12:05, Safari, idle 531s, notif 0
+  3760 samples, 14:38, Phone, idle 272s, notif 0
+  3800 samples, 17:03, Safari, idle 31s, notif 0
+  3840 samples, 19:40, Safari, idle 334s, notif 0
+  3880 samples, 00:29, Safari, idle 934s, notif 0
+  3920 samples, 05:10, Safari, idle 1535s, notif 0
+  3960 samples, 08:49, Safari, idle 2135s, notif 0
+  4000 samples, 10:44, Safari, idle 0s, notif 0
+  4040 samples, 10:54, Safari, idle 0s, notif 0
+  4080 samples, 11:04, Safari, idle 1s, notif 0
+  4120 samples, 11:14, Safari, idle 0s, notif 0
+  4160 samples, 11:24, Safari, idle 0s, notif 0
+  4200 samples, 11:34, Safari, idle 3s, notif 0
+  4240 samples, 11:44, Safari, idle 0s, notif 0
+  4280 samples, 11:54, Safari, idle 2s, notif 0
+  4320 samples, 12:04, Safari, idle 113s, notif 0
+  4360 samples, 12:14, Safari, idle 241s, notif 0
+  4400 samples, 12:24, Safari, idle 0s, notif 0
+  4440 samples, 12:34, Music, idle 286s, notif 0
+  4480 samples, 12:44, Music, idle 887s, notif 0
+  4520 samples, 12:54, Music, idle 1487s, notif 0
+  4560 samples, 13:04, Music, idle 2087s, notif 0
+  4600 samples, 13:14, Music, idle 2688s, notif 0
+  4640 samples, 13:24, Music, idle 3288s, notif 0
+  4680 samples, 13:34, Music, idle 3889s, notif 0
+  4720 samples, 13:44, Music, idle 4489s, notif 0
+  4760 samples, 13:54, Music, idle 5089s, notif 0
+  4800 samples, 14:04, Music, idle 5690s, notif 0
+  4840 samples, 14:14, Safari, idle 123s, notif 0
+  4880 samples, 14:24, Safari, idle 0s, notif 0
+  4920 samples, 14:34, Safari, idle 317s, notif 0
+  4960 samples, 14:44, Safari, idle 48s, notif 0
+  5000 samples, 17:12, Safari, idle 0s, notif 0
+  5040 samples, 17:22, Safari, idle 21s, notif 0
+  5080 samples, 17:32, Code, idle 25s, notif 0
+  5120 samples, 17:46, Code, idle 0s, notif 0
+  5160 samples, 17:56, Music, idle 3s, notif 0
+  5200 samples, 18:06, Music, idle 5s, notif 0
+  5240 samples, 18:16, Safari, idle 214s, notif 0
+  5280 samples, 18:26, Safari, idle 25s, notif 0
+  5320 samples, 18:36, Safari, idle 37s, notif 0
+  5360 samples, 19:09, Safari, idle 0s, notif 0
+  5400 samples, 19:19, Code, idle 95s, notif 0
+  5440 samples, 19:29, Safari, idle 132s, notif 0
+  5480 samples, 19:55, Safari, idle 85s, notif 0
+  5520 samples, 20:05, Code, idle 38s, notif 0
+  5560 samples, 20:23, Code, idle 8s, notif 0
+  5600 samples, 20:38, Code, idle 20s, notif 0
+  5640 samples, 21:05, Code, idle 201s, notif 0
+  5680 samples, 22:11, Safari, idle 0s, notif 0
+  5720 samples, 02:20, Safari, idle 528s, notif 0
+  5760 samples, 06:59, Safari, idle 1128s, notif 0
+  5800 samples, 08:04, Safari, idle 0s, notif 0
+  5840 samples, 08:22, Safari, idle 0s, notif 0
+  5880 samples, 08:32, Safari, idle 0s, notif 0
+  5920 samples, 08:42, Safari, idle 3s, notif 0
+  5960 samples, 09:42, Safari, idle 3s, notif 0
+  6000 samples, 09:52, Safari, idle 0s, notif 0
+  6040 samples, 10:02, Safari, idle 0s, notif 0
+  6080 samples, 10:12, Safari, idle 0s, notif 0
+  6120 samples, 10:22, Safari, idle 84s, notif 0
+  6160 samples, 10:36, Safari, idle 1s, notif 0
+  6200 samples, 10:46, Safari, idle 0s, notif 0
+  6240 samples, 10:56, Microsoft OneNote, idle 67s, notif 0
+  6280 samples, 11:06, Microsoft OneNote, idle 0s, notif 0
+  6320 samples, 11:19, Microsoft OneNote, idle 0s, notif 0
+  6360 samples, 11:29, Microsoft OneNote, idle 2s, notif 0
+  6400 samples, 11:39, Safari, idle 39s, notif 0
+  6440 samples, 11:49, Safari, idle 0s, notif 0
+  6480 samples, 11:59, Microsoft OneNote, idle 115s, notif 0
+  6520 samples, 13:06, Safari, idle 330s, notif 0
+  6560 samples, 13:39, Safari, idle 0s, notif 0
+  6600 samples, 13:55, Safari, idle 1s, notif 0
+  6640 samples, 14:05, Safari, idle 6s, notif 0
+  6680 samples, 14:15, Safari, idle 29s, notif 0
+  6720 samples, 14:25, Code, idle 0s, notif 0
+  6760 samples, 14:35, Microsoft OneNote, idle 0s, notif 0
+  6800 samples, 16:48, FaceTime, idle 0s, notif 0
+  6840 samples, 17:14, FaceTime, idle 6s, notif 0
+  6880 samples, 17:24, Microsoft OneNote, idle 14s, notif 0
+  6920 samples, 18:31, Messages, idle 163s, notif 0
+  6960 samples, 18:53, Microsoft OneNote, idle 0s, notif 0
+  7000 samples, 19:03, Microsoft OneNote, idle 0s, notif 0
+  7040 samples, 19:13, Microsoft OneNote, idle 0s, notif 0
+  7080 samples, 19:23, Safari, idle 119s, notif 0
+  7120 samples, 19:35, Safari, idle 0s, notif 0
+  7160 samples, 19:45, Safari, idle 14s, notif 0
+  7200 samples, 19:55, Safari, idle 273s, notif 0
+  7240 samples, 20:05, Safari, idle 874s, notif 0
+  7280 samples, 20:15, Safari, idle 81s, notif 0
+  7320 samples, 20:29, Safari, idle 105s, notif 0
+  7360 samples, 20:39, Safari, idle 523s, notif 0
+  7400 samples, 20:49, Safari, idle 2s, notif 0
+  7440 samples, 20:59, Safari, idle 0s, notif 0
+  7480 samples, 21:09, Safari, idle 6s, notif 0
+  7520 samples, 21:19, Safari, idle 5s, notif 0
+  7560 samples, 21:29, Safari, idle 31s, notif 0
+  7600 samples, 21:39, Safari, idle 2s, notif 0
+  7640 samples, 21:49, Safari, idle 10s, notif 0
+  7680 samples, 21:59, Safari, idle 8s, notif 0
+  7720 samples, 22:09, Safari, idle 10s, notif 0
+  7760 samples, 22:19, Safari, idle 2s, notif 0
+  7800 samples, 02:16, Safari, idle 459s, notif 0
+  7840 samples, 06:50, Safari, idle 1031s, notif 0
+  7880 samples, 08:08, Safari, idle 0s, notif 0
+  7920 samples, 08:18, Safari, idle 0s, notif 0
+  7960 samples, 08:28, Safari, idle 0s, notif 0
+  8000 samples, 08:38, Safari, idle 0s, notif 0
+  8040 samples, 09:32, Safari, idle 0s, notif 0
+  8080 samples, 09:42, Safari, idle 0s, notif 0
+  8120 samples, 09:52, Safari, idle 39s, notif 0
+  8160 samples, 10:02, Safari, idle 48s, notif 0
+  8200 samples, 10:12, Safari, idle 11s, notif 0
+  8240 samples, 10:22, Safari, idle 0s, notif 0
+  8280 samples, 10:32, Safari, idle 0s, notif 0
+  8320 samples, 10:42, Safari, idle 0s, notif 0
+  8360 samples, 10:52, Code, idle 56s, notif 0
+  8400 samples, 13:18, Microsoft OneNote, idle 24s, notif 0
+  8440 samples, 13:28, Microsoft OneNote, idle 116s, notif 0
+  8480 samples, 13:38, Microsoft OneNote, idle 43s, notif 0
+  8520 samples, 13:48, Microsoft OneNote, idle 27s, notif 0
+  8560 samples, 14:24, Microsoft OneNote, idle 0s, notif 0
+  8600 samples, 14:34, Safari, idle 11s, notif 0
+  8640 samples, 16:07, Safari, idle 34s, notif 0
+  8680 samples, 16:17, Safari, idle 5s, notif 0
+  8720 samples, 16:27, Safari, idle 0s, notif 0
+  8760 samples, 16:46, Safari, idle 0s, notif 0
+  8800 samples, 17:12, Safari, idle 21s, notif 0
+  8840 samples, 17:28, Safari, idle 140s, notif 0
+  8880 samples, 17:38, Finder, idle 31s, notif 0
+  8920 samples, 17:57, Safari, idle 11s, notif 0
+  8960 samples, 18:11, Safari, idle 35s, notif 0
+  9000 samples, 22:25, Safari, idle 606s, notif 0
+  9040 samples, 03:03, Safari, idle 1192s, notif 0
+  9080 samples, 07:40, Safari, idle 1764s, notif 0
+  9120 samples, 08:28, Safari, idle 93s, notif 0
+  9160 samples, 08:45, Safari, idle 0s, notif 0
+  9200 samples, 09:46, Safari, idle 0s, notif 0
+  9240 samples, 09:56, Safari, idle 0s, notif 0
+  9280 samples, 10:06, Safari, idle 16s, notif 0
+  9320 samples, 10:43, Microsoft OneNote, idle 68s, notif 0
+  9360 samples, 10:53, Safari, idle 2s, notif 0
+  9400 samples, 11:03, Code, idle 336s, notif 0
+  9440 samples, 11:35, Safari, idle 27s, notif 0
+  9480 samples, 11:45, Code, idle 41s, notif 0
+  9520 samples, 11:55, Code, idle 79s, notif 0
+  9560 samples, 12:56, Code, idle 196s, notif 0
+  9600 samples, 13:09, LockDown Browser, idle 0s, notif 0
+  9640 samples, 13:19, LockDown Browser, idle 0s, notif 0
+  9680 samples, 13:30, Music, idle 0s, notif 0
+  9720 samples, 13:40, Safari, idle 0s, notif 0
+  9760 samples, 13:56, Microsoft OneNote, idle 84s, notif 0
+  9800 samples, 14:14, Microsoft OneNote, idle 19s, notif 0
+  9840 samples, 14:24, Microsoft OneNote, idle 115s, notif 0
+  9880 samples, 14:34, Safari, idle 109s, notif 0
+  9920 samples, 20:57, Safari, idle 586s, notif 0
+  9960 samples, 01:18, Safari, idle 1172s, notif 0
+  10000 samples, 07:09, Safari, idle 1758s, notif 0
+  10040 samples, 09:41, Safari, idle 1s, notif 0
+  10080 samples, 09:51, Safari, idle 0s, notif 0
+  10120 samples, 10:01, Safari, idle 14s, notif 0
+  10160 samples, 10:11, Safari, idle 5s, notif 0
+  10200 samples, 10:21, Safari, idle 0s, notif 0
+  10240 samples, 10:31, Terminal, idle 0s, notif 0
+  10280 samples, 10:41, Safari, idle 137s, notif 0
+  10320 samples, 10:51, Safari, idle 160s, notif 0
+  10360 samples, 11:01, Messages, idle 0s, notif 0
+  10400 samples, 11:11, Safari, idle 23s, notif 0
+  10440 samples, 11:21, Safari, idle 364s, notif 0
+  10480 samples, 11:31, Safari, idle 264s, notif 0
+  10520 samples, 11:41, Terminal, idle 0s, notif 0
+  10560 samples, 11:51, Terminal, idle 2s, notif 0
+  10600 samples, 12:01, Safari, idle 5s, notif 0
+  10640 samples, 13:06, Messages, idle 0s, notif 0
+  10680 samples, 15:51, Safari, idle 0s, notif 0
+  10720 samples, 16:05, Safari, idle 12s, notif 0
+  10760 samples, 16:17, Safari, idle 0s, notif 0
+  10800 samples, 16:27, Safari, idle 67s, notif 0
+  10840 samples, 16:42, Safari, idle 2s, notif 0
+  10880 samples, 16:52, Safari, idle 115s, notif 0
+  10920 samples, 17:21, Safari, idle 0s, notif 0
+  10960 samples, 17:34, Safari, idle 17s, notif 0
+  11000 samples, 17:44, Safari, idle 503s, notif 0
+  11040 samples, 17:54, Safari, idle 1103s, notif 0
+  11080 samples, 18:04, Safari, idle 1704s, notif 0
+  11120 samples, 18:14, Safari, idle 2304s, notif 0
+  11160 samples, 18:24, Safari, idle 2905s, notif 0
+  11200 samples, 18:34, Safari, idle 346s, notif 0
+  11240 samples, 18:44, Safari, idle 471s, notif 0
+  11280 samples, 18:54, Safari, idle 1071s, notif 0
+  11320 samples, 19:04, Safari, idle 1672s, notif 0
+  11360 samples, 19:14, Safari, idle 2272s, notif 0
+  11400 samples, 19:24, Safari, idle 2872s, notif 0
+  11440 samples, 19:34, Safari, idle 3473s, notif 0
+  11480 samples, 19:44, Safari, idle 4073s, notif 0
+  11520 samples, 19:54, Safari, idle 4673s, notif 0
+  11560 samples, 20:04, Safari, idle 5274s, notif 0
+  11600 samples, 20:29, Safari, idle 5874s, notif 0
+  11640 samples, 20:39, Safari, idle 6475s, notif 0
+  11680 samples, 20:49, Safari, idle 7075s, notif 0
+  11720 samples, 20:59, Safari, idle 7675s, notif 0
+  11760 samples, 21:09, Safari, idle 8276s, notif 0
+  11800 samples, 21:19, Safari, idle 8876s, notif 0
+  11840 samples, 21:29, Safari, idle 9476s, notif 0
+  11880 samples, 21:39, Safari, idle 10076s, notif 0
+  11920 samples, 21:49, Safari, idle 10677s, notif 0
+  11960 samples, 22:59, Safari, idle 11277s, notif 0
+  12000 samples, 23:09, Safari, idle 11878s, notif 0
+  12040 samples, 23:19, Safari, idle 12478s, notif 0
+  12080 samples, 23:29, Safari, idle 13078s, notif 0
+  12120 samples, 23:39, Safari, idle 13678s, notif 0
+  12160 samples, 00:19, Safari, idle 14279s, notif 0
+  12200 samples, 02:53, Code, idle 539s, notif 0
+  12240 samples, 05:18, Code, idle 1140s, notif 0
+  12280 samples, 08:17, Code, idle 1740s, notif 0
+  12320 samples, 09:23, Safari, idle 0s, notif 0
+  12360 samples, 09:33, Safari, idle 52s, notif 0
+  12400 samples, 09:43, Safari, idle 15s, notif 0
+  12440 samples, 09:53, Music, idle 0s, notif 0
+  12480 samples, 10:03, Safari, idle 4s, notif 0
+  12520 samples, 10:13, Safari, idle 0s, notif 0
+  12560 samples, 10:23, Safari, idle 85s, notif 0
+  12600 samples, 10:33, Safari, idle 24s, notif 0
+  12640 samples, 10:44, Code, idle 48s, notif 0
+  12680 samples, 10:54, Safari, idle 35s, notif 0
+  12720 samples, 11:05, Safari, idle 74s, notif 0
+  12760 samples, 11:19, Safari, idle 0s, notif 0
+  12800 samples, 12:06, Safari, idle 70s, notif 0
+  12840 samples, 15:46, Safari, idle 1s, notif 0
+  12880 samples, 15:56, Safari, idle 0s, notif 0
+  12920 samples, 16:06, Code, idle 4s, notif 0
+  12960 samples, 16:16, Safari, idle 0s, notif 0
+  13000 samples, 16:26, Code, idle 37s, notif 0
+  13040 samples, 16:36, Safari, idle 28s, notif 0
+  13080 samples, 16:46, Safari, idle 14s, notif 0
+  13120 samples, 16:56, Music, idle 30s, notif 0
+  13160 samples, 17:06, Safari, idle 4s, notif 0
+  13200 samples, 17:16, Safari, idle 90s, notif 0
+  13240 samples, 17:26, Safari, idle 230s, notif 0
+  13280 samples, 17:36, Safari, idle 528s, notif 0
+  13320 samples, 17:46, Safari, idle 0s, notif 0
+  13360 samples, 17:56, Music, idle 7s, notif 0
+  13400 samples, 18:06, Safari, idle 34s, notif 0
+  13440 samples, 18:16, Safari, idle 634s, notif 0
+  13480 samples, 18:26, Safari, idle 1235s, notif 0
+  13520 samples, 18:36, Safari, idle 191s, notif 0
+  13560 samples, 18:53, Safari, idle 10s, notif 0
+  13600 samples, 19:03, Music, idle 0s, notif 0
+  13640 samples, 19:13, Safari, idle 0s, notif 0
+  13680 samples, 19:23, Safari, idle 46s, notif 0
+  13720 samples, 21:48, Music, idle 102s, notif 0
+  13760 samples, 02:15, Music, idle 703s, notif 0
+  13800 samples, 07:42, Music, idle 0s, notif 0
+  13840 samples, 08:52, Safari, idle 30s, notif 0
+  13880 samples, 09:02, Safari, idle 0s, notif 0
+  13920 samples, 09:12, zoom.us, idle 245s, notif 0
+  13960 samples, 09:22, zoom.us, idle 17s, notif 0
+  14000 samples, 09:32, zoom.us, idle 0s, notif 0
+  14040 samples, 09:42, zoom.us, idle 0s, notif 0
+  14080 samples, 09:52, zoom.us, idle 1s, notif 0
+  14120 samples, 10:17, Safari, idle 47s, notif 0
+  14160 samples, 11:13, Safari, idle 461s, notif 0
+  14200 samples, 12:08, Safari, idle 1062s, notif 0
+  14240 samples, 12:33, Safari, idle 1662s, notif 0
+  14280 samples, 12:43, Safari, idle 2263s, notif 0
+  14320 samples, 12:53, Safari, idle 2863s, notif 0
+  14360 samples, 13:03, Safari, idle 3463s, notif 0
+  14400 samples, 13:13, Safari, idle 4064s, notif 0
+  14440 samples, 13:23, Safari, idle 4664s, notif 0
+  14480 samples, 14:07, Safari, idle 5265s, notif 0
+  14520 samples, 15:54, Safari, idle 5851s, notif 0
+  14560 samples, 16:38, Safari, idle 1s, notif 0
+  14600 samples, 16:48, Code, idle 7s, notif 0
+  14640 samples, 16:58, Safari, idle 24s, notif 0
+  14680 samples, 17:08, Safari, idle 0s, notif 0
+  14720 samples, 17:18, Code, idle 30s, notif 0
+  14760 samples, 17:28, Code, idle 33s, notif 0
+  14800 samples, 17:38, Safari, idle 22s, notif 0
+  14840 samples, 17:48, Safari, idle 1s, notif 0
+  14880 samples, 17:58, Safari, idle 8s, notif 0
+  14920 samples, 18:08, Code, idle 19s, notif 0
+  14960 samples, 18:18, Safari, idle 19s, notif 0
+  15000 samples, 18:28, Safari, idle 0s, notif 0
+  15040 samples, 18:38, Safari, idle 1s, notif 0
+  15080 samples, 18:48, Safari, idle 0s, notif 0
+  15120 samples, 18:58, Safari, idle 15s, notif 0
+  15160 samples, 19:08, Safari, idle 0s, notif 0
+  15200 samples, 19:21, Safari, idle 73s, notif 0
+  15240 samples, 19:33, Safari, idle 0s, notif 0
+  15280 samples, 19:43, Safari, idle 60s, notif 0
+  15320 samples, 19:53, Safari, idle 65s, notif 0
+  15360 samples, 20:03, Safari, idle 31s, notif 0
+  15400 samples, 20:13, Safari, idle 500s, notif 0
+  15440 samples, 20:23, Safari, idle 1100s, notif 0
+  15480 samples, 20:33, Safari, idle 1700s, notif 0
+  15520 samples, 20:43, Safari, idle 2301s, notif 0
+  15560 samples, 20:53, Safari, idle 2901s, notif 0
+  15600 samples, 21:03, Safari, idle 135s, notif 0
+  15640 samples, 21:13, Safari, idle 736s, notif 0
+  15680 samples, 21:23, Safari, idle 1336s, notif 0
+  15720 samples, 21:33, Safari, idle 13s, notif 0
+  15760 samples, 21:43, Music, idle 1s, notif 0
+  15800 samples, 21:53, Music, idle 19s, notif 0
+  15840 samples, 22:03, Code, idle 79s, notif 0
+  15880 samples, 22:13, Safari, idle 0s, notif 0
+  15920 samples, 22:23, Safari, idle 64s, notif 0
+  15960 samples, 22:33, Code, idle 0s, notif 0
+  16000 samples, 22:43, Safari, idle 31s, notif 0
+  16040 samples, 22:53, Safari, idle 0s, notif 0
+  16080 samples, 23:03, Music, idle 0s, notif 0
+  16120 samples, 23:59, Code, idle 97s, notif 0
+  16160 samples, 04:36, Code, idle 683s, notif 0
+  16200 samples, 08:02, Safari, idle 4s, notif 0
+  16240 samples, 08:12, Safari, idle 0s, notif 0
+  16280 samples, 08:22, Safari, idle 48s, notif 0
+  16320 samples, 08:32, Code, idle 0s, notif 0
+  16360 samples, 08:42, Safari, idle 0s, notif 0
+  16400 samples, 09:43, Safari, idle 41s, notif 0
+  16440 samples, 09:53, Terminal, idle 2s, notif 0
+  16480 samples, 10:03, Safari, idle 1s, notif 0
+  16520 samples, 10:34, Safari, idle 0s, notif 0
+  16560 samples, 10:44, Microsoft OneNote, idle 1s, notif 0
+  16600 samples, 10:54, Microsoft OneNote, idle 3s, notif 0
+  16640 samples, 11:04, Microsoft OneNote, idle 0s, notif 0
+  16680 samples, 11:14, Microsoft OneNote, idle 0s, notif 0
+  16720 samples, 11:28, Safari, idle 0s, notif 0
+  16760 samples, 11:38, Safari, idle 0s, notif 0
+  16800 samples, 11:48, Safari, idle 20s, notif 0
+  16840 samples, 11:58, Safari, idle 38s, notif 0
+  16880 samples, 13:02, Safari, idle 0s, notif 0
+  16920 samples, 13:12, Safari, idle 0s, notif 0
+  16960 samples, 13:22, Safari, idle 0s, notif 0
+  17000 samples, 13:32, Safari, idle 28s, notif 0
+  17040 samples, 13:42, Safari, idle 0s, notif 0
+  17080 samples, 13:58, Safari, idle 17s, notif 0
+  17120 samples, 14:08, Safari, idle 5s, notif 0
+  17160 samples, 14:18, Microsoft OneNote, idle 8s, notif 0
+  17200 samples, 14:28, Safari, idle 0s, notif 0
+  17240 samples, 14:42, Microsoft OneNote, idle 106s, notif 0
+  17280 samples, 14:52, Safari, idle 81s, notif 0
+  17320 samples, 15:11, Microsoft OneNote, idle 52s, notif 0
+  17360 samples, 15:21, Microsoft OneNote, idle 77s, notif 0
+  17400 samples, 18:18, Messages, idle 118s, notif 0
+  17440 samples, 18:43, Safari, idle 0s, notif 0
+  17480 samples, 18:53, Safari, idle 0s, notif 0
+  17520 samples, 19:18, Safari, idle 0s, notif 0
+  17560 samples, 20:56, Music, idle 224s, notif 0
+  17600 samples, 22:15, Safari, idle 1s, notif 0
+  17640 samples, 22:25, Safari, idle 0s, notif 0
+  17680 samples, 02:25, Safari, idle 560s, notif 0
+  17720 samples, 06:55, Safari, idle 1160s, notif 0
+  17760 samples, 08:03, Safari, idle 0s, notif 0
+  17800 samples, 08:13, Safari, idle 0s, notif 0
+  17840 samples, 08:23, Safari, idle 0s, notif 0
+  17880 samples, 08:33, Safari, idle 13s, notif 0
+  17920 samples, 08:43, Safari, idle 0s, notif 0
+  17960 samples, 09:43, Safari, idle 0s, notif 0
+  18000 samples, 09:53, Safari, idle 0s, notif 0
+  18040 samples, 10:03, Safari, idle 0s, notif 0
+  18080 samples, 10:13, Messages, idle 16s, notif 0
+  18120 samples, 10:30, Safari, idle 0s, notif 0
+  18160 samples, 10:40, Safari, idle 45s, notif 0
+  18200 samples, 10:50, Safari, idle 70s, notif 0
+  18240 samples, 11:00, Microsoft OneNote, idle 4s, notif 0
+  18280 samples, 11:10, Microsoft OneNote, idle 0s, notif 0
+  18320 samples, 12:42, Safari, idle 247s, notif 0
+  18360 samples, 13:06, Safari, idle 0s, notif 0
+  18400 samples, 13:16, Safari, idle 0s, notif 0
+  18440 samples, 13:26, Safari, idle 0s, notif 0
+  18480 samples, 13:36, Safari, idle 8s, notif 0
+  18520 samples, 13:51, Safari, idle 95s, notif 0
+  18560 samples, 14:01, Microsoft OneNote, idle 1s, notif 0
+  18600 samples, 14:11, Safari, idle 1s, notif 0
+  18640 samples, 14:21, Safari, idle 22s, notif 0
+  18680 samples, 14:31, Microsoft OneNote, idle 33s, notif 0
+  18720 samples, 17:31, Microsoft OneNote, idle 379s, notif 0
+  18760 samples, 18:10, Safari, idle 0s, notif 0
+  18800 samples, 18:22, Safari, idle 0s, notif 0
+  18840 samples, 18:32, Safari, idle 0s, notif 0
+  18880 samples, 18:43, Safari, idle 108s, notif 0
+  18920 samples, 19:11, Safari, idle 89s, notif 0
+  18960 samples, 19:21, Safari, idle 9s, notif 0
+  19000 samples, 19:31, Safari, idle 4s, notif 0
+  19040 samples, 19:41, Safari, idle 1s, notif 0
+  19080 samples, 19:51, Safari, idle 40s, notif 0
+  19120 samples, 20:15, Safari, idle 0s, notif 0
+  19160 samples, 20:25, Safari, idle 0s, notif 0
+  19200 samples, 20:35, Microsoft OneNote, idle 31s, notif 0
+  19240 samples, 20:45, Microsoft OneNote, idle 0s, notif 0
+  19280 samples, 20:55, Microsoft OneNote, idle 10s, notif 0
+  19320 samples, 21:05, Microsoft OneNote, idle 0s, notif 0
+  19360 samples, 21:15, Safari, idle 7s, notif 0
+  19400 samples, 21:25, Microsoft OneNote, idle 116s, notif 0
+  19440 samples, 21:35, Safari, idle 0s, notif 0
+  19480 samples, 21:45, Microsoft OneNote, idle 49s, notif 0
+  19520 samples, 21:55, Safari, idle 3s, notif 0
+  19560 samples, 22:05, Microsoft OneNote, idle 101s, notif 0
+  19600 samples, 22:16, Safari, idle 3s, notif 0
+  19640 samples, 22:26, Music, idle 34s, notif 0
+  19680 samples, 01:50, Music, idle 555s, notif 0
+  19720 samples, 06:15, Music, idle 1141s, notif 0
+  19760 samples, 08:04, Microsoft OneNote, idle 18s, notif 0
+  19800 samples, 08:14, Microsoft OneNote, idle 104s, notif 0
+  19840 samples, 08:24, Microsoft OneNote, idle 16s, notif 0
+  19880 samples, 08:34, Safari, idle 65s, notif 0
+  19920 samples, 08:44, Safari, idle 63s, notif 0
+  19960 samples, 09:43, Safari, idle 37s, notif 0
+  20000 samples, 09:53, LockDown Browser, idle 5s, notif 0
+  20040 samples, 10:03, Safari, idle 0s, notif 0
+  20080 samples, 10:13, Notes, idle 0s, notif 0
+  20120 samples, 10:23, Microsoft OneNote, idle 0s, notif 0
+  20160 samples, 10:36, Microsoft OneNote, idle 130s, notif 0
+  20200 samples, 10:46, Microsoft OneNote, idle 0s, notif 0
+  20240 samples, 10:56, Microsoft OneNote, idle 22s, notif 0
+  20280 samples, 11:06, Microsoft OneNote, idle 4s, notif 0
+  20320 samples, 11:21, Microsoft OneNote, idle 0s, notif 0
+  20360 samples, 11:31, Safari, idle 0s, notif 0
+  20400 samples, 11:41, Safari, idle 0s, notif 0
+  20440 samples, 11:51, Safari, idle 0s, notif 0
+  20480 samples, 12:01, Safari, idle 0s, notif 0
+  20520 samples, 13:05, Safari, idle 19s, notif 0
+  20560 samples, 13:15, Safari, idle 9s, notif 0
+  20600 samples, 13:25, Music, idle 0s, notif 0
+  20640 samples, 13:35, Safari, idle 211s, notif 0
+  20680 samples, 14:07, Microsoft OneNote, idle 0s, notif 0
+  20720 samples, 14:17, Microsoft OneNote, idle 25s, notif 0
+  20760 samples, 14:27, Messages, idle 0s, notif 0
+  20800 samples, 15:52, Safari, idle 56s, notif 0
+  20840 samples, 16:07, Safari, idle 0s, notif 0
+  20880 samples, 16:17, Microsoft OneNote, idle 0s, notif 0
+  20920 samples, 16:27, Safari, idle 0s, notif 0
+  20960 samples, 16:37, Safari, idle 15s, notif 0
+  21000 samples, 16:47, Safari, idle 12s, notif 0
+  21040 samples, 16:57, Safari, idle 34s, notif 0
+  21080 samples, 17:15, Safari, idle 0s, notif 0
+  21120 samples, 17:55, Safari, idle 92s, notif 0
+  21160 samples, 18:08, Safari, idle 242s, notif 0
+  21200 samples, 18:18, Safari, idle 27s, notif 0
+  21240 samples, 18:28, Safari, idle 11s, notif 0
+  21280 samples, 18:38, Safari, idle 2s, notif 0
+  21320 samples, 18:48, Safari, idle 33s, notif 0
+  21360 samples, 18:58, Safari, idle 48s, notif 0
+  21400 samples, 19:08, Safari, idle 13s, notif 0
+  21440 samples, 21:31, Preview, idle 299s, notif 0
+  21480 samples, 01:19, Preview, idle 885s, notif 0
+  21520 samples, 06:16, Preview, idle 1485s, notif 0
+  21560 samples, 08:02, Safari, idle 25s, notif 0
+  21600 samples, 08:12, Safari, idle 0s, notif 0
+  21640 samples, 08:22, Safari, idle 0s, notif 0
+  21680 samples, 08:32, Terminal, idle 0s, notif 0
+  21720 samples, 08:42, Safari, idle 47s, notif 0
+  21760 samples, 09:43, Safari, idle 9s, notif 0
+  21800 samples, 09:53, Microsoft OneNote, idle 26s, notif 0
+  21840 samples, 10:03, Microsoft OneNote, idle 60s, notif 0
+  21880 samples, 10:13, Microsoft OneNote, idle 18s, notif 0
+  21920 samples, 10:23, Microsoft OneNote, idle 11s, notif 0
+  21960 samples, 10:51, Safari, idle 2s, notif 0
+  22000 samples, 11:01, Safari, idle 10s, notif 0
+  22040 samples, 11:11, Safari, idle 75s, notif 0
+  22080 samples, 11:24, Safari, idle 7s, notif 0
+  22120 samples, 11:34, Safari, idle 23s, notif 0
+  22160 samples, 11:44, Safari, idle 10s, notif 0
+  22200 samples, 11:54, Safari, idle 0s, notif 0
+  22240 samples, 12:04, Safari, idle 1s, notif 0
+  22280 samples, 13:20, Safari, idle 0s, notif 0
+  22320 samples, 13:30, Safari, idle 0s, notif 0
+  22360 samples, 13:40, Messages, idle 0s, notif 0
+  22400 samples, 14:04, Microsoft OneNote, idle 0s, notif 0
+  22440 samples, 14:14, Microsoft OneNote, idle 0s, notif 0
+  22480 samples, 14:24, Safari, idle 0s, notif 0
+  22520 samples, 14:34, Safari, idle 0s, notif 0
+  22560 samples, 17:26, Safari, idle 472s, notif 0
+  22600 samples, 19:04, Safari, idle 0s, notif 0
+  22640 samples, 19:14, Safari, idle 42s, notif 0
+  22680 samples, 19:24, Safari, idle 214s, notif 0
+  22720 samples, 19:34, Safari, idle 2s, notif 0
+  22760 samples, 19:44, Safari, idle 56s, notif 0
+  22800 samples, 19:56, Safari, idle 157s, notif 0
+  22840 samples, 20:06, Safari, idle 757s, notif 0
+  22880 samples, 20:16, Safari, idle 1358s, notif 0
+  22920 samples, 20:26, Safari, idle 37s, notif 0
+  22960 samples, 20:36, Safari, idle 49s, notif 0
+  23000 samples, 20:46, Safari, idle 4s, notif 0
+  23040 samples, 20:56, Safari, idle 0s, notif 0
+  23080 samples, 21:06, Music, idle 0s, notif 0
+  23120 samples, 21:16, Music, idle 588s, notif 0
+  23160 samples, 21:26, Safari, idle 68s, notif 0
+  23200 samples, 21:36, Safari, idle 22s, notif 0
+  23240 samples, 23:29, Safari, idle 187s, notif 0
+  23280 samples, 03:55, Safari, idle 788s, notif 0
+  23320 samples, 07:55, Safari, idle 17s, notif 0
+  23360 samples, 08:05, Safari, idle 0s, notif 0
+  23400 samples, 08:15, Safari, idle 212s, notif 0
+  23440 samples, 08:25, Safari, idle 71s, notif 0
+  23480 samples, 08:36, Safari, idle 0s, notif 0
+  23520 samples, 09:33, Safari, idle 34s, notif 0
+  23560 samples, 09:43, Safari, idle 0s, notif 0
+  23600 samples, 09:53, Safari, idle 0s, notif 0
+  23640 samples, 10:03, Safari, idle 0s, notif 0
+  23680 samples, 10:20, Microsoft OneNote, idle 98s, notif 0
+  23720 samples, 10:30, Microsoft OneNote, idle 50s, notif 0
+  23760 samples, 10:40, Microsoft OneNote, idle 6s, notif 0
+  23800 samples, 10:50, Microsoft OneNote, idle 11s, notif 0
+  23840 samples, 11:05, Safari, idle 67s, notif 0
+  23880 samples, 11:15, Safari, idle 0s, notif 0
+  23920 samples, 11:25, Safari, idle 98s, notif 0
+  23960 samples, 11:35, Safari, idle 0s, notif 0
+  24000 samples, 13:20, Safari, idle 0s, notif 0
+  24040 samples, 13:32, Safari, idle 0s, notif 0
+  24080 samples, 13:42, Safari, idle 15s, notif 0
+  24120 samples, 13:52, Safari, idle 0s, notif 0
+  24160 samples, 16:15, Safari, idle 367s, notif 0
+  24200 samples, 19:36, Safari, idle 953s, notif 0
+  24240 samples, 22:22, Safari, idle 1539s, notif 0
+  24280 samples, 22:56, Safari, idle 2111s, notif 0
+  24320 samples, 03:28, Safari, idle 2683s, notif 0
+  24360 samples, 08:48, Safari, idle 3284s, notif 0
+  24400 samples, 11:21, Safari, idle 35s, notif 0
+  24440 samples, 11:31, Music, idle 0s, notif 0
+  24480 samples, 11:41, Safari, idle 0s, notif 0

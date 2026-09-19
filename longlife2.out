@@ -1,0 +1,101 @@
+Does retention hold over a genuinely long life?
+
+480000 steps: 20 full rotations through ['keyed', 'open', 'trap']
+phases of 8000, cycle of 24000, measured once per cycle
+so every checkpoint is taken at the SAME point in the rotation.
+
+The previous attempt checkpointed every 25,000 steps against a 30,000-step
+cycle. The aliasing was eight times the trend and the run was void.
+
+--- online ---
+    cycle  1/20  step   24000  mean 42.35%   keyed  27.1  open   0.0  trap 100.0   rb 0    0.2m
+    cycle  2/20  step   48000  mean 45.59%   keyed  32.9  open   3.9  trap 100.0   rb 0    0.4m
+    cycle  3/20  step   72000  mean 44.28%   keyed  32.9  open   0.0  trap 100.0   rb 0    0.6m
+    cycle  4/20  step   96000  mean 44.28%   keyed  32.9  open   0.0  trap 100.0   rb 0    0.7m
+    cycle  5/20  step  120000  mean 44.28%   keyed  32.9  open   0.0  trap 100.0   rb 0    0.9m
+    cycle  6/20  step  144000  mean 47.67%   keyed  43.0  open   0.0  trap 100.0   rb 0    1.1m
+    cycle  7/20  step  168000  mean 47.67%   keyed  43.0  open   0.0  trap 100.0   rb 0    1.3m
+    cycle  8/20  step  192000  mean 47.67%   keyed  43.0  open   0.0  trap 100.0   rb 0    1.5m
+    cycle  9/20  step  216000  mean 47.67%   keyed  43.0  open   0.0  trap 100.0   rb 0    1.6m
+    cycle 10/20  step  240000  mean 47.99%   keyed  44.0  open   0.0  trap 100.0   rb 0    1.8m
+    cycle 11/20  step  264000  mean 46.54%   keyed  39.6  open   0.0  trap 100.0   rb 0    2.0m
+    cycle 12/20  step  288000  mean 44.28%   keyed  32.9  open   0.0  trap 100.0   rb 0    2.2m
+    cycle 13/20  step  312000  mean 44.28%   keyed  32.9  open   0.0  trap 100.0   rb 0    2.4m
+    cycle 14/20  step  336000  mean 45.73%   keyed  37.2  open   0.0  trap 100.0   rb 0    2.5m
+    cycle 15/20  step  360000  mean 46.05%   keyed  38.2  open   0.0  trap 100.0   rb 0    2.7m
+    cycle 16/20  step  384000  mean 47.02%   keyed  41.1  open   0.0  trap 100.0   rb 0    2.9m
+    cycle 17/20  step  408000  mean 45.89%   keyed  37.7  open   0.0  trap 100.0   rb 0    3.1m
+    cycle 18/20  step  432000  mean 47.50%   keyed  39.1  open   3.4  trap 100.0   rb 0    3.3m
+    cycle 19/20  step  456000  mean 46.86%   keyed  40.6  open   0.0  trap 100.0   rb 0    3.4m
+    cycle 20/20  step  480000  mean 46.54%   keyed  39.6  open   0.0  trap 100.0   rb 0    3.6m
+
+--- guarded ---
+    cycle  1/20  step   24000  mean 44.55%   keyed  28.0  open   5.6  trap 100.0   rb 0    0.8m
+    cycle  2/20  step   48000  mean 42.56%   keyed  19.8  open   7.9  trap 100.0   rb 0    1.5m
+    cycle  3/20  step   72000  mean 43.52%   keyed  22.7  open   7.9  trap 100.0   rb 0    2.3m
+    cycle  4/20  step   96000  mean 42.88%   keyed  20.8  open   7.9  trap 100.0   rb 0    3.1m
+    cycle  5/20  step  120000  mean 43.52%   keyed  22.7  open   7.9  trap 100.0   rb 0    3.8m
+    cycle  6/20  step  144000  mean 43.36%   keyed  22.2  open   7.9  trap 100.0   rb 0    4.6m
+    cycle  7/20  step  168000  mean 41.32%   keyed  22.2  open   7.9  trap  93.9   rb 0    5.4m
+    cycle  8/20  step  192000  mean 42.72%   keyed  20.3  open   7.9  trap 100.0   rb 0    6.1m
+    cycle  9/20  step  216000  mean 43.52%   keyed  22.7  open   7.9  trap 100.0   rb 0    6.9m
+    cycle 10/20  step  240000  mean 43.52%   keyed  22.7  open   7.9  trap 100.0   rb 0    7.6m
+    cycle 11/20  step  264000  mean 40.79%   keyed  14.5  open   7.9  trap 100.0   rb 0    8.4m
+    cycle 12/20  step  288000  mean 38.16%   keyed  14.5  open   0.0  trap 100.0   rb 0    9.1m
+    cycle 13/20  step  312000  mean 43.50%   keyed  23.2  open   7.3  trap 100.0   rb 0    9.9m
+    cycle 14/20  step  336000  mean 38.19%   keyed  14.0  open   0.6  trap 100.0   rb 0   10.6m
+    cycle 15/20  step  360000  mean 43.85%   keyed  23.7  open   7.9  trap 100.0   rb 0   11.4m
+    cycle 16/20  step  384000  mean 38.35%   keyed  14.5  open   0.6  trap 100.0   rb 0   12.1m
+    cycle 17/20  step  408000  mean 38.16%   keyed  14.5  open   0.0  trap 100.0   rb 0   12.9m
+    cycle 18/20  step  432000  mean 38.67%   keyed  15.5  open   0.6  trap 100.0   rb 0   13.6m
+    cycle 19/20  step  456000  mean 40.62%   keyed  14.0  open   7.9  trap 100.0   rb 0   14.3m
+    cycle 20/20  step  480000  mean 42.40%   keyed  19.3  open   7.9  trap 100.0   rb 0   15.1m
+
+========================================================================================
+MEAN ACCURACY ACROSS ALL THREE RULE SETS, per cycle
+  cycle      step     online    guarded   difference
+----------------------------------------------------------------------------------------
+      1     24000     42.35%     44.55%       +2.19
+      2     48000     45.59%     42.56%       -3.04
+      3     72000     44.28%     43.52%       -0.76
+      4     96000     44.28%     42.88%       -1.40
+      5    120000     44.28%     43.52%       -0.76
+      6    144000     47.67%     43.36%       -4.30
+      7    168000     47.67%     41.32%       -6.34
+      8    192000     47.67%     42.72%       -4.95
+      9    216000     47.67%     43.52%       -4.14
+     10    240000     47.99%     43.52%       -4.46
+     11    264000     46.54%     40.79%       -5.75
+     12    288000     44.28%     38.16%       -6.12
+     13    312000     44.28%     43.50%       -0.79
+     14    336000     45.73%     38.19%       -7.54
+     15    360000     46.05%     43.85%       -2.21
+     16    384000     47.02%     38.35%       -8.67
+     17    408000     45.89%     38.16%       -7.73
+     18    432000     47.50%     38.67%       -8.83
+     19    456000     46.86%     40.62%       -6.23
+     20    480000     46.54%     42.40%       -4.14
+========================================================================================
+
+FIRST QUARTER against LAST QUARTER:
+    online:  44.16% ->  46.76%  ( +2.60)
+   guarded:  43.41% ->  39.64%  ( -3.76)
+
+DIVERGENCE: guarded minus online went -0.75 -> -7.12
+
+  SLOW EROSION, -3.76 points over the run. The mechanism
+  delays forgetting rather than preventing it. A deployment
+  would need periodic intervention.
+
+  the canary guard fired 0 times over 480000 steps
+
+The comparison against 'online' matters as much as the absolute curve. In
+the 100,000-step run, unprotected learning DEGRADED — 56.3% in the first
+half to 54.3% in the second — while sequence replay improved. If that
+divergence widens here, the mechanism is not merely delaying the problem.
+
+Watch the rollback count. It has been zero in every grid-world run so far.
+If the guard fires at this length, something happens late that has never
+been observed.
+
+wrote longlife2.json

@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+data/
+neuron/results/
+.DS_Store
