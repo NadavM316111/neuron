@@ -640,3 +640,13 @@ stop with Ctrl+C. Leave it running for a month.
   25280 samples, 11:15, Safari, idle 7s, notif 0
   25320 samples, 11:25, Safari, idle 4s, notif 0
   25360 samples, 11:35, Safari, idle 140s, notif 0
+  25400 samples, 11:45, Safari, idle 0s, notif 0
+  25440 samples, 11:55, Code, idle 236s, notif 0
+  25480 samples, 12:09, Safari, idle 99s, notif 0
+  25520 samples, 12:19, Safari, idle 19s, notif 0
+  25560 samples, 12:31, Safari, idle 40s, notif 0
+  25600 samples, 12:41, Safari, idle 1s, notif 0
+  25640 samples, 12:51, Safari, idle 14s, notif 0
+  25680 samples, 13:01, Safari, idle 29s, notif 0
+  25720 samples, 13:52, Messages, idle 0s, notif 0
+  25760 samples, 14:02, WhatsApp, idle 57s, notif 0

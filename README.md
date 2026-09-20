@@ -216,6 +216,58 @@ to close 77%, but was measured against an undertrained control.
 
 ---
 
+## Valence, 20 Sep 2026
+
+`core/valence.py`, `experiments/grid/valence_replay.py`
+
+A persistent value per stored unit. Born from the adjusted surprise already
+computed at intake, so it costs no extra forward pass. Updated toward the
+model's current loss every time the unit is replayed. Ranks replay
+selection and decides buffer eviction, so a unit that stays hard keeps
+earning replay and one that has been absorbed decays and is dropped before
+older material is.
+
+Fifth arm against offline, uniform, old and surprising on the three-phase
+grid world. Contested events in the earliest phase, 8 seeds:
+
+| arm | keyed |
+| --- | --- |
+| offline | 68.0% |
+| uniform | 56.3% |
+| valence | 55.7% |
+| surprising | 52.7% |
+| old | 44.1% |
+
+    valence minus surprising:   +2.9  (wins 7/8)
+    valence minus uniform:      -0.6  (wins 5/8)
+    valence minus offline:     -12.4  (wins 2/8)
+
+**Persistent value beats recomputed value, by a little and consistently.**
+`surprising` rescores candidates fresh every consolidation and has no
+memory, so a unit that is hard once and easy later is two unrelated
+observations. Accumulating across the unit's life is worth about 3 points.
+It is not worth anything against random selection.
+
+**The variance claim did not survive.** At 3 seeds valence spread 49 to 59
+against uniform's 45 to 70 and looked far more consistent, which read as
+the real finding. At 8 seeds both spread 37 to 70. A small-sample artifact
+that looked exactly like a result.
+
+**The first configuration was degenerate and the scores from it mean
+nothing.** `valence_floor=0.05` clamped 543 of roughly 600 units to the
+floor, so ranking was near-random across 90% of the pool. Fixed to 1e-4
+with decay 0.9. The internals block the script prints exists to catch this,
+and did.
+
+**Replay selection is not the bottleneck.** Four policies now tested and
+none closes the 12 to 24 point gap to offline on the first phase. The
+remaining candidates are replay volume, what the gate stores in the first
+place, and whether the gap is closeable at all. Offline sees every phase
+interleaved in every epoch and never has to retain anything, so it may be
+a ceiling rather than a target.
+
+---
+
 ## Reading further
 
 `docs/neuron.md` is the full write-up: every result, every failure, and the

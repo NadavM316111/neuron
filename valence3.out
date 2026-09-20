@@ -1,0 +1,82 @@
+do the phases genuinely contradict each other?
+   keyed vs open  : events differ on  11.7% of steps
+   keyed vs trap  : events differ on  35.6% of steps
+    open vs trap  : events differ on  36.3% of steps
+
+  good, 11.7% at worst
+
+life: keyed -> open -> trap, 6000 steps each
+recurrent network, has_key HIDDEN, sequence replay, runs of 10
+four ways of choosing WHAT to replay, one of them persistent
+
+  seed 0 done
+  seed 1 done
+  seed 2 done
+  seed 3 done
+  seed 4 done
+  seed 5 done
+  seed 6 done
+  seed 7 done
+
+==================================================================================
+CONTESTED events — where remembering the phase matters
+        arm      keyed        open        trap     grad    min
+                 (1st)                  (last)
+----------------------------------------------------------------------------------
+    offline      68.0%       77.0%       55.8%    89920    0.0
+    uniform      56.3%       65.2%       92.0%    76357    0.3
+        old      44.1%       42.7%       79.9%    75692    0.3
+ surprising      52.7%       61.7%       96.2%    76151    0.3
+    valence      55.7%       61.9%       93.6%    75968    0.3
+==================================================================================
+
+SHARED events — identical under every rule set
+    offline     100.0%      100.0%      100.0%
+    uniform      99.9%       99.9%       99.9%
+        old      97.1%       97.1%       98.8%
+ surprising      99.8%       99.9%       99.5%
+    valence      99.8%       99.9%       99.6%
+
+MILESTONE 3: contested events in the earliest phase 'keyed'
+      offline:   68.0%   (min 58.8, max 75.6)
+      uniform:   56.3%   (min 36.6, max 70.0)
+          old:   44.1%   (min 26.3, max 64.8)
+   surprising:   52.7%   (min 38.3, max 63.5)
+      valence:   55.7%   (min 37.0, max 68.6)
+
+      uniform minus offline:  -11.7  (wins 2/8)
+          old minus offline:  -23.9  (wins 1/8)
+   surprising minus offline:  -15.3  (wins 1/8)
+      valence minus offline:  -12.4  (wins 2/8)
+
+          old minus uniform:  -12.2  (wins 4/8)
+   surprising minus uniform:   -3.6  (wins 4/8)
+      valence minus uniform:   -0.6  (wins 5/8)
+
+  THE COMPARISON THAT MATTERS
+  valence minus surprising:   +2.9  (wins 7/8)
+
+valence internals, mean over seeds
+              stored:   1396.750
+         evicted_low:    796.750
+            revalued:   7194.000
+               faded:   6094.625
+         valence_max:      4.783
+      valence_median:      0.003
+         valence_min:      0.000
+    valence_at_floor:      0.125
+
+READ THE INTERNALS BEFORE THE SCORES.
+
+  faded near zero        nothing ever decayed, so value is just intake
+      surprise with extra steps and the comparison is meaningless.
+  valence_at_floor high  almost everything decayed to the floor, so ranking
+      is near-random and the decay is too fast.
+  evicted_low near zero  the buffer never overflowed, so the eviction half
+      of the mechanism was never exercised.
+
+Any of those three means the arm did not test what it claims to test, and
+the score is not evidence either way. Fix the constants and rerun before
+drawing a conclusion.
+
+wrote valence_replay.json
