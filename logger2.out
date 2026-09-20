@@ -618,3 +618,25 @@ stop with Ctrl+C. Leave it running for a month.
   24400 samples, 11:21, Safari, idle 35s, notif 0
   24440 samples, 11:31, Music, idle 0s, notif 0
   24480 samples, 11:41, Safari, idle 0s, notif 0
+  24520 samples, 11:51, Safari, idle 0s, notif 0
+  24560 samples, 12:01, Music, idle 0s, notif 0
+  24600 samples, 12:11, Safari, idle 0s, notif 0
+  24640 samples, 12:25, Safari, idle 204s, notif 0
+  24680 samples, 12:56, Safari, idle 804s, notif 0
+  24720 samples, 13:06, Safari, idle 1405s, notif 0
+  24760 samples, 13:16, Safari, idle 2005s, notif 0
+  24800 samples, 13:26, Safari, idle 2605s, notif 0
+  24840 samples, 13:36, Safari, idle 3206s, notif 0
+  24880 samples, 13:47, Safari, idle 3806s, notif 0
+  24920 samples, 13:57, Safari, idle 4407s, notif 0
+  24960 samples, 14:07, Safari, idle 5007s, notif 0
+  25000 samples, 17:43, Safari, idle 5607s, notif 0
+  25040 samples, 22:15, Safari, idle 6208s, notif 0
+  25080 samples, 01:30, Safari, idle 6808s, notif 0
+  25120 samples, 06:29, Safari, idle 7409s, notif 0
+  25160 samples, 10:39, Safari, idle 8010s, notif 0
+  25200 samples, 10:55, Safari, idle 57s, notif 0
+  25240 samples, 11:05, Safari, idle 77s, notif 0
+  25280 samples, 11:15, Safari, idle 7s, notif 0
+  25320 samples, 11:25, Safari, idle 4s, notif 0
+  25360 samples, 11:35, Safari, idle 140s, notif 0
