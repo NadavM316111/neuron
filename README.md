@@ -268,6 +268,163 @@ a ceiling rather than a target.
 
 ---
 
+## Wanting, 20 Sep 2026
+
+`experiments/grid/drive.py`, `experiments/grid/drive2.py`
+
+Every policy in `acting.py` is instantaneous. `greedy` reads the current
+predicted outcome, `curious` reads the current predicted entropy. Nothing
+carries between steps, so the agent has no memory of having been wrong.
+
+A drive is a persistent scalar per situation, built from the surprise the
+agent actually experienced and decaying as outcomes become predictable. The
+policy prefers what it has been wrong about rather than what it predicts it
+is unsure about.
+
+**The hypothesis: curiosity is blind exactly when it matters.** Entropy
+measures how unsure the model *says* it is. A model that is confidently
+wrong has low entropy, which is its state immediately after a rule
+reversal. Accumulated actual error has no such blind spot.
+
+Contested probes, 8 seeds, 4,000 steps per phase:
+
+| arm | after p1 | p2 rule | fungus p2 | spread | repeat |
+| --- | --- | --- | --- | --- | --- |
+| passive | 87.8% | 84.4% | 959 | 0.83 | 46.3% |
+| driven | 88.0% | 81.5% | 1499 | 0.59 | 41.5% |
+| explore | 75.4% | 80.4% | 625 | 0.96 | 59.2% |
+| curious | 64.1% | 73.2% | 595 | 1.01 | 73.6% |
+| greedy | 54.7% | 55.2% | 141 | 2.07 | 89.8% |
+
+    driven minus curious, phase-2 rule:  +8.2   (+3.6 at 3 seeds)
+    driven minus curious, phase-1 rule: +23.9
+
+**A drive is the first acting policy here that matches the passive random
+walk.** 88.0% against 87.8% while choosing its own actions. Nothing in
+`acting.py` came close to that.
+
+**Steering weakly beat steering hard, and that inverts the obvious
+reading.** `spread` is the drive's range across buckets, `repeat` the share
+of consecutive steps landing on the same cell type. `driven` has the
+LOWEST spread of any acting arm and the LOWEST repeat rate, below even the
+random walk, and wins. `greedy` has the highest of both and learns nothing.
+The relationship holds on all eight seeds. Whatever a drive is buying, it
+is not decisiveness.
+
+### The first attempt failed twice, and both failures were informative
+
+**No gradient to act on.** One scalar per cell type is three buckets
+updated across 8,000 steps, which is a running mean. Measured values ended
+at 0.293 / 0.607 / 0.631, so the policy was choosing between near-equal
+numbers. Raising the decay made it flatter still, which was the clue: the
+problem was resolution, not timescale. Twelve buckets keyed on
+(cell, action) gave it somewhere to develop structure.
+
+**ORDER MATTERS MORE THAN COVERAGE, and no passive experiment in this repo
+could have shown it.** Argmax over a drive makes the agent chase one
+bucket until it decays, so experience arrives in runs. In `drive.py` the
+driven arm ate MORE than any other arm — 1,487 fungus against the passive
+walk's 944 — and learned LESS, 50.3% against 91.4%. Coverage was never its
+constraint. Sampling from a softmax instead of taking the argmax kept the
+preference, dropped the repeat rate to 41.5%, and took the same arm from
+50.3% to 88.0% with its appetite essentially unchanged.
+
+For a single-pass online learner, WHEN things arrive matters more than how
+many of them do. A random walk interleaves by construction; any policy that
+steers is by construction doing the opposite, and that is the cost a drive
+has to pay for.
+
+### What this is not
+
+A persistent scalar that steers behaviour. Calling it a want is a
+functional description and nothing more. One toy world, two phases, one
+drive design, and the +8.2 sits on a metric where `curious` ranges from
+51.0% to 93.0% across seeds.
+
+`drive.py`'s own verdict line claimed the drive had collapsed onto one cell
+type while the table above it showed the flattest row in the run. A script
+that prints a diagnosis the data contradicts is worse than one that prints
+nothing. `drive2.py` gates every conclusion on the spread measurement
+instead.
+
+---
+
+## Valence, 20 Sep 2026
+
+`core/valence.py`, `experiments/grid/valence_replay.py`
+
+A persistent value per stored unit, born from the adjusted surprise already
+computed at intake and updated toward current loss on every replay. Ranks
+replay selection and decides buffer eviction, so a unit that stays hard
+keeps earning replay and one that has been absorbed decays and is dropped
+before older material is.
+
+Fifth arm against offline, uniform, old and surprising. Contested events in
+the earliest phase, 8 seeds:
+
+| arm | keyed |
+| --- | --- |
+| offline | 68.0% |
+| uniform | 56.3% |
+| valence | 55.7% |
+| surprising | 52.7% |
+| old | 44.1% |
+
+    valence minus surprising:   +2.9  (wins 7/8)
+    valence minus uniform:      -0.6  (wins 5/8)
+
+**Persistent value beats recomputed value, by a little and consistently.**
+`surprising` rescores fresh every consolidation, so a unit that is hard
+once and easy later is two unrelated observations. Accumulating across the
+unit's life is worth about 3 points. It is worth nothing against random
+selection.
+
+**The variance claim did not survive.** At 3 seeds valence spread 49 to 59
+against uniform's 45 to 70 and looked far more consistent, which read as
+the real finding. At 8 seeds both spread 37 to 70.
+
+**The first configuration was degenerate and its scores mean nothing.**
+`valence_floor=0.05` clamped 543 of roughly 600 units to the floor, so
+ranking was near-random across 90% of the pool. Fixed to 1e-4 with decay
+0.9.
+
+---
+
+## Replay budget, 20 Sep 2026
+
+`experiments/grid/replay_budget.py`
+
+Four selection policies all land 12 to 24 points behind offline, and the
+spread between them is smaller than the gap. So the untested variable was
+HOW MUCH rather than WHICH. Consolidation frequency swept from every 40
+items to every 1, uniform policy throughout, 8 seeds:
+
+| every | replays | keyed | trap |
+| --- | --- | --- | --- |
+| 40 | 9,000 | 52.8% | 94.4% |
+| 20 | 17,990 | 58.0% | 91.6% |
+| 10 | 35,970 | 52.7% | 97.2% |
+| 5 | 71,940 | 56.3% | 92.0% |
+| 2 | 179,850 | 54.6% | 89.5% |
+| 1 | 359,700 | 64.1% | 61.1% |
+| offline | - | 68.0% | 55.8% |
+
+**Within the online regime, replay volume buys nothing.** A 20x change from
+every_40 to every_2 moves the first phase by less than the seed noise.
+
+**At every_1 the system stops being an online learner.** Its profile across
+the three phases (64.1 / 76.7 / 61.1) is almost exactly offline's
+(68.0 / 77.0 / 55.8), including offline's weakness on the most recent
+material, where every other setting scores 89 to 97%. It did not close the
+gap by retaining better. It closed it by becoming the thing it was being
+compared to, and inherited that thing's failure mode.
+
+**So milestone 3 as stated is the wrong milestone.** Offline sees every
+phase interleaved in every epoch and never has to retain anything. It is a
+ceiling, not a target.
+
+---
+
 ## Reading further
 
 `docs/neuron.md` is the full write-up: every result, every failure, and the
