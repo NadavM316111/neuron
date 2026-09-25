@@ -17,80 +17,80 @@ WHAT IT DOES, and every piece here was validated separately first:
               points of retrieval.
   LEARNS      patterns into the weights, one moment at a time, never
               revisiting.
+  SLEEPS      and consolidates offline, in blocks, with no input arriving.
+              NEW 20 Sep, and it replaces the interleaved schedule this
+              file has used since it was written. See below.
   RETAINS     by replaying stored runs in order. Helps when a stream
-              genuinely contradicts itself — proven on real weather across
-              opposing climates — and costs a little when it does not.
+              genuinely contradicts itself and costs a little when it does
+              not.
   GUARDS      by watching fixed inputs and rolling back on degradation.
-  PERSISTS    everything to disk, so it survives being turned off. That is
-              new: until now, stopping the process destroyed the system.
+  PERSISTS    everything to disk, so it survives being turned off.
+  BOUNDS      itself, by refusing near-duplicates at intake and evicting
+              the least-retrieved tenth at capacity.
 
-FOUR THINGS FIXED 7 Sep 2026, all of which made the system report success
-it was not achieving:
+TWO CHANGES, 20 Sep 2026, both measured on the grid world at 8 seeds with
+matched replay budgets (experiments/grid/sleep_schedule.py,
+experiments/grid/dream_replay.py).
 
-  1. THE GUARD WAS DEAD. The layer was built with canary=[], which makes
-     every health path a no-op: the score is constant 0.0, health() is
-     permanently 0.0, and the rollback test asks whether 0.0 exceeds 0.40.
-     The guard has therefore never fired in the persistent system, despite
-     being listed above as working. It now gets a real canary by default
-     and stability.py refuses guard=True without one.
+1. SLEEP. This file consolidated every 5 items while the stream kept
+   arriving, which is the worst schedule of the five tested:
 
-  2. THE STATS LIED. observe() discarded the layer's decision and counted
-     every routed item as "learned". Gate rejections, vetoes and floored
-     items were all reported as learning, so a system learning nothing at
-     all would have looked identical to a working one. Decisions are now
-     read off the return value and counted separately.
+       awake between consolidations    contested accuracy, first phase
+       5    (what this file did)       64.7%
+       25                              65.3%
+       100                             66.6%
+       500                             71.7%
+       2,000                           73.6%
+       6,000                           72.8%
 
-  3. REINDEXING WAS O(n) PER QUERY. reindex() re-encoded the ENTIRE store
-     whenever anything was pending, and search() calls it lazily. So a
-     read-then-ask loop re-encoded everything on every question — 112
-     seconds at 200,000 sentences, per question. Only new sentences are
-     encoded now, and the index is saved with the store so a restart does
-     not pay for a full re-encode.
+   Identical replay budgets, 71,960 to 72,000 replays on every arm. The
+   cost was INTERFERENCE between replay and incoming data, not too little
+   replay. There is a threshold rather than a preference for separation:
+   25 items of separation buys nothing, the effect turns on between 100
+   and 500, and 6,000 is worse than 2,000 because a long waking block
+   accumulates drift with nothing protecting earlier material.
 
-  4. THE ROUTER SENT ALMOST EVERYTHING TO THE STORE. One capitalised word
-     anywhere past the first position marked a sentence factual, which on
-     real prose is nearly every sentence, so the learning half of the
-     system idled. The threshold is now a parameter (default 2) and the
-     split is counted, so the next run says which value is right instead
-     of leaving it to be guessed. This change is UNTESTED — read
-     status()["routing"] and set min_propers from what you see.
+   So the system now lives for SLEEP_EVERY items and then consolidates
+   with no input. The default is 2,000, which was the best of the six.
 
-  BOUNDS ITSELF. The store has a capacity and evicts when it exceeds it,
-              so a system left running for months does not grow until it
-              dies. Two mechanisms, and the first matters more.
+2. CONTIGUOUS STORAGE. StabilityLayer stored a run only from items its
+   gate REJECTED, so a "sequence" of 8 was 8 non-adjacent moments with
+   gaps wherever the gate fired. Storing every item instead moved the
+   control arm from 60.7% to 65.3% on the first phase and 84.0% to 99.8%
+   on the last. Free, and larger than anything the experiment it came out
+   of was designed to measure.
 
-EVICTION, added 8 Sep 2026, and the design follows a measurement.
+WHERE THE SCHEDULE LIVES, and this is a safety decision rather than a
+style one. SleepLayer suppresses its own consolidation while awake, so a
+caller that never calls sleep() gets NO rehearsal at all and no error. The
+counter therefore lives in observe() here, not in the runner: any caller
+that feeds the system gets the schedule, including one that calls
+observe() directly in a loop of its own.
 
-The September retrieval work found that 53% of a real corpus was
-unretrievable junk and that filtering it HALVED storage at no cost to what
-could be found. So the cheapest capacity mechanism is not eviction at all,
-it is refusing to store the same thing twice:
+WHAT IS DELIBERATELY NOT HERE.
 
-  AT INTAKE   exact duplicates were already rejected. Near-duplicates now
-              are too, by content-token fingerprint — the same words in a
-              different order, or with different punctuation, is the same
-              fact. Free, and it removes the most common kind of growth.
+  VALENCE (core/valence.py) beat recomputed surprise on replay selection
+  by 2.9 points but did not beat uniform random selection (-0.6, winning
+  5 of 8 seeds). A mechanism with no measured benefit does not go into the
+  system just to be complete.
 
-  AT CAPACITY when the store passes max_sentences it drops the least
-              useful tenth in one batch. Usefulness is RETRIEVAL COUNT,
-              because being retrieved is the only evidence the store has
-              that an item was ever wanted. Never-retrieved items go first,
-              oldest among them first. Batched rather than per-insert so
-              the index is rebuilt rarely.
+  THE DRIVE (core/dreaming.py's sibling, experiments/grid/drive2.py) beat
+  every other action policy by 8 to 24 points, and does not apply here:
+  this system is FED a stream, it does not choose what to look at. When it
+  acts, that is where the drive attaches.
 
-THE ARITHMETIC THAT SETS THE DEFAULT. An all-MiniLM-L6-v2 vector is 384
-floats, about 1.5KB, so the index alone is roughly 154MB at 100,000
-sentences and 1.5GB at a million. The cap defaults to 100,000 because that
-is what fits comfortably in memory on a laptop alongside a 1.5B model. It is
-a memory budget, not a claim about how much is useful.
+  DREAMING (core/dreaming.py) did not help. Splicing recombined runs came
+  in at -1.1 against ordinary replay and interleaving at -5.3.
 
 WHAT IT DOES NOT DO YET, stated so nobody is surprised:
 
   Eviction is by retrieval count, not by summarisation. Ten evicted
-  sentences are gone rather than compressed into one, so anything dropped
-  is lost rather than abstracted.
+  sentences are gone rather than compressed into one.
   Nothing has run longer than a few hours.
   There is no handling of malformed input beyond skipping it.
+  The sleep schedule was tuned on a grid world, not on language. The
+  threshold shape probably transfers; the specific 2,000 probably does
+  not.
 """
 
 import json
@@ -99,6 +99,16 @@ import os
 import re
 import time
 from collections import Counter
+
+
+# How many items the system lives through before it sleeps, and how many
+# consolidation rounds it runs when it does. 2,000 was the best of six
+# schedules on the grid world. ROUNDS is set so the total replay matches
+# what the old every-5-items schedule would have spent over the same
+# stretch, which is what made that comparison a schedule comparison rather
+# than a volume one.
+SLEEP_EVERY = 2000
+SLEEP_ROUNDS = SLEEP_EVERY // 5
 
 
 # Ordinary sentences the model should always handle, whatever it has been
@@ -420,11 +430,6 @@ def looks_factual(sentence, min_propers=2):
 # merely negative: "unable to" or "not included" on their own appear inside
 # perfectly good answers, and a detector that fires on those would inflate
 # the over-refusal figure it is used to compute.
-#
-# Widened 7 Sep after a live run scored "I cannot provide an answer to this
-# question as it was not included in the given notes" as a FABRICATION. It
-# was a textbook refusal. The system was behaving correctly and the metric
-# was wrong, which is the same failure this file has now had three times.
 REFUSALS = ["don't know", "do not know", "not know", "no information",
             "cannot find", "not mentioned", "unclear", "not specified",
             "not provided", "notes do not", "no mention", "not contain",
@@ -445,7 +450,8 @@ class NeuronSystem:
     def __init__(self, backend=None, path="neuron_state",
                  use_embeddings=True, retention=True, guard=True,
                  canary=None, min_propers=2, verbose=False,
-                 max_sentences=100_000):
+                 max_sentences=100_000,
+                 sleep_every=SLEEP_EVERY, sleep_rounds=SLEEP_ROUNDS):
         self.backend = backend
         self.path = path
         self.store = Store(use_embeddings=use_embeddings,
@@ -458,18 +464,27 @@ class NeuronSystem:
         self.stats = Counter()
         self.started = time.time()
 
+        # The sleep schedule. Counted here rather than in the runner
+        # because SleepLayer does nothing at all while awake: a caller that
+        # forgot to sleep would get no rehearsal and no error, which is the
+        # exact failure mode this file has had twice before.
+        self.sleep_every = sleep_every
+        self.sleep_rounds = sleep_rounds
+        self.since_sleep = 0
+        self.sleeps = 0
+
         if backend is not None and retention:
-            from stability import StabilityLayer
-            self.layer = StabilityLayer(
+            from sleeping import SleepLayer
+            self.layer = SleepLayer(
                 backend, canary=(self.canary if guard else None), seed=0,
                 verbose=verbose,
+                contiguous=True,
                 window=200, warmup=30, top_fraction=0.50,
                 coherence_veto=1.3, loss_floor=0.35, steps_per_update=1,
-                # 24, not 6, since 7 Sep. Measured on the language drift
-                # benchmark over two seeds: a quarter of the replay work
-                # matched the old setting exactly on final loss and beat it
-                # on rise from best. See stability.py's REHEARSAL BUDGET
-                # note. Not re-checked on the weather or grid-world configs.
+                # rehearse_per_item is now irrelevant: SleepLayer suppresses
+                # consolidation while awake and every replay happens in a
+                # sleep block. Left at the measured language value so the
+                # config is comparable with the pre-sleep runs.
                 rehearse_per_item=24, rehearse_count=2, rehearse_steps=1,
                 anchor_size=60, buffer_size=300, sequence_len=8,
                 guard=guard, guard_per_item=500, canary_tolerance=0.40)
@@ -477,7 +492,7 @@ class NeuronSystem:
     # ---------- the stream ----------
 
     def observe(self, text):
-        """One moment of input. Routed, then handled.
+        """One moment of input. Routed, then handled, then maybe sleep.
 
         Returns what actually happened, and the counter agrees with it.
         Until 7 Sep this incremented "learned" for every item that reached
@@ -509,6 +524,8 @@ class NeuronSystem:
             return "learned"
 
         d = self.layer.observe(text)
+        self._tick()
+
         if d.get("learned"):
             self.stats["learned"] += 1
             return "learned"
@@ -516,12 +533,51 @@ class NeuronSystem:
         self.stats[f"rejected_{reason}"] += 1
         return reason
 
-    def read(self, lines, progress_every=0):
-        """A whole stream. Returns what happened to it."""
+    def _tick(self):
+        """Count toward the next sleep, and take it when it is due."""
+        if self.layer is None or not self.sleep_every:
+            return
+        self.since_sleep += 1
+        if self.since_sleep >= self.sleep_every:
+            self.sleep()
+
+    def sleep(self, rounds=None):
+        """Stop taking input and consolidate.
+
+        Measured 20 Sep at 8 seeds with matched replay budgets: living for
+        2,000 items and then consolidating beat consolidating every 5 items
+        by 8.9 points on contested material, and every separated schedule
+        beat the interleaved one. Separation of 25 items bought nothing, so
+        this is a threshold rather than a preference — short blocks get
+        interrupted before they finish.
+        """
+        if self.layer is None:
+            return 0
+        n = self.layer.sleep(rounds if rounds is not None
+                             else self.sleep_rounds)
+        self.since_sleep = 0
+        self.sleeps += 1
+        self.stats["replays_in_sleep"] += n
+        return n
+
+    def read(self, lines, progress_every=0, sleep_at_end=True):
+        """A whole stream. Returns what happened to it.
+
+        Sleeping happens inside observe() on the schedule, so this loop is
+        the same as it always was. The final sleep exists because a stream
+        that ends mid-cycle would otherwise leave its last items with no
+        consolidation at all, and a short read would get none whatsoever.
+        """
         for i, line in enumerate(lines):
             self.observe(line)
             if progress_every and (i + 1) % progress_every == 0:
                 print(f"  {i + 1} lines, {dict(self.stats)}", flush=True)
+        if sleep_at_end and self.layer is not None and self.since_sleep:
+            # Proportional to how far through the cycle the stream stopped,
+            # so a short read does not get a full night's consolidation on
+            # a handful of items.
+            share = self.since_sleep / max(1, self.sleep_every)
+            self.sleep(max(1, int(self.sleep_rounds * share)))
         return dict(self.stats)
 
     # ---------- questions ----------
@@ -571,6 +627,10 @@ class NeuronSystem:
                     uptime=time.time() - self.started,
                     retention=self.retention,
                     min_propers=self.min_propers,
+                    sleeps=self.sleeps,
+                    since_sleep=self.since_sleep,
+                    sleep_every=self.sleep_every,
+                    sleep_rounds=self.sleep_rounds,
                     saved_at=time.strftime("%Y-%m-%d %H:%M:%S"))
         if self.layer is not None:
             try:
@@ -606,7 +666,12 @@ class NeuronSystem:
         mp = os.path.join(self.path, "meta.json")
         if os.path.exists(mp):
             with open(mp) as f:
-                self.stats = Counter(json.load(f).get("stats", {}))
+                m = json.load(f)
+            self.stats = Counter(m.get("stats", {}))
+            self.sleeps = m.get("sleeps", 0)
+            # Resume mid-cycle rather than restarting it: a system stopped
+            # and started repeatedly would otherwise never reach a sleep.
+            self.since_sleep = m.get("since_sleep", 0)
 
         wp = os.path.join(self.path, "weights.pt")
         if (os.path.exists(wp) and self.backend is not None
@@ -644,6 +709,12 @@ class NeuronSystem:
             store_share=(self.stats["routed_store"] / routed
                          if routed else None),
             min_propers=self.min_propers)
+        st["sleep"] = dict(
+            every=self.sleep_every,
+            rounds=self.sleep_rounds,
+            sleeps_taken=self.sleeps,
+            items_since_last=self.since_sleep,
+            replays_in_sleep=self.stats["replays_in_sleep"])
         if self.layer is not None:
             st["layer"] = self.layer.summary()
         return st
