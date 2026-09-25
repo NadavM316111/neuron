@@ -1,0 +1,80 @@
+do the phases genuinely contradict each other?
+   keyed vs open  : events differ on  11.7% of steps
+   keyed vs trap  : events differ on  35.6% of steps
+    open vs trap  : events differ on  36.3% of steps
+
+  good, 11.7% at worst
+
+life: keyed -> open -> trap, 6000 steps each
+stored runs are now CONTIGUOUS: every item enters the run, not
+only the ones the gate rejected. That is the fix the first run
+needed, and the reason its control could not bite.
+
+  seed 0 done
+  seed 1 done
+  seed 2 done
+  seed 3 done
+  seed 4 done
+  seed 5 done
+  seed 6 done
+  seed 7 done
+
+============================================================================================
+THE PRECONDITION — are the stored runs actually contiguous?
+============================================================================================
+          arm  contiguity  sequences   dreams   share
+  contiguity 1.00 means every item entered a run. 0.50 means the old behaviour.
+--------------------------------------------------------------------------------------------
+    veridical        1.00       1800        0    0.00
+       splice        1.00       1800     3593    2.00
+   interleave        1.00       1800     3593    2.00
+     scramble        1.00       1800     3618    2.01
+
+============================================================================================
+CONTESTED events — where remembering the phase matters
+        arm      keyed        open        trap    min
+                 (1st)                  (last)
+--------------------------------------------------------------------------------------------
+    offline      68.0%       77.0%       55.8%    0.0
+  veridical      65.3%       61.3%       99.8%    0.2
+     splice      64.2%       61.3%       99.5%    0.2
+ interleave      60.0%       58.8%       99.0%    0.2
+   scramble      63.2%       62.0%       99.9%    0.2
+============================================================================================
+
+SHARED events — identical under every rule set
+  (this is where scrambled replay did its damage in August)
+    offline     100.0%      100.0%      100.0%
+  veridical      99.9%       99.9%      100.0%
+     splice      99.9%       99.9%      100.0%
+ interleave      99.9%      100.0%      100.0%
+   scramble      99.9%       99.9%      100.0%
+
+============================================================================================
+THE CONTROLS, READ FIRST
+============================================================================================
+  Contiguity 1.00. Stored runs are real trajectories now.
+
+  scramble is the known-bad arm. August measured scrambled replay damaging
+  shared knowledge, 96.2% against 99.8%.
+
+  shared:     veridical 99.9%   scramble 100.0%   (+0.0)
+  contested:  veridical 65.3%   scramble 63.2%   (-2.1)
+
+  CONTROL STILL FAILED. With contiguous runs, scrambling them STILL does no
+  damage. That is itself a finding: on this world the model is not using
+  sequence order at all, and the August +15.5 result came from something else
+  about sequence replay rather than from order. Worth chasing separately.
+
+============================================================================================
+DOES DREAMING HELP? contested events, 'keyed'
+============================================================================================
+  veridical     65.3%
+  splice        64.2%   (-1.1)
+  interleave    60.0%   (-5.3)
+  scramble      63.2%   (-2.1)
+
+  One world, 8 seeds, dream_fraction 0.5. Every moment inside a dream is
+  real with its real outcome; only the order is invented.
+
+wrote dream_replay.json

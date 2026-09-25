@@ -268,6 +268,100 @@ a ceiling rather than a target.
 
 ---
 
+## Sleep, 20 Sep 2026
+
+`core/sleeping.py`, `experiments/grid/sleep_schedule.py`
+
+Everything in this repo consolidates every 5 items while the stream keeps
+arriving. Living and consolidating are interleaved at the finest possible
+grain. That setting was chosen early and never questioned, and no
+experiment here has ever run any other shape.
+
+An animal does the opposite: a long block of living with no consolidation,
+then a block of consolidation with no input. Same work, different shape in
+time.
+
+Five schedules, **identical replay budgets** (71,960 to 72,000 replays,
+1.00x across every arm), 8 seeds. Contested events in the earliest phase:
+
+| schedule | awake between | keyed | open |
+| --- | --- | --- | --- |
+| continuous | 5 | 64.7% | 60.9% |
+| micro | 25 | 65.3% | 62.7% |
+| small | 100 | 66.6% | 63.9% |
+| nap | 500 | 71.7% | 67.2% |
+| sleep | 2,000 | 73.6% | 67.4% |
+| hibernate | 6,000 | 72.8% | 62.7% |
+
+**Sleeping wins by up to 8.9 points on the same replay budget.** The
+system has been consolidating in the worst available shape since August.
+Not too little replay. The right amount, spent wrong.
+
+**There is a threshold, not a preference for separation.** Separating
+consolidation from input by 25 items buys +0.6, which is nothing. The
+effect turns on between 100 and 500 and is mostly there by 500. Short
+blocks get interrupted before they achieve anything; long blocks complete.
+
+**And there is an optimum.** `hibernate` at 6,000 comes in below `sleep` at
+2,000, and drops sharply on the middle phase (62.7% against 67.4%). Two
+forces trade off: longer blocks let consolidation finish, longer waking
+periods let drift accumulate with nothing protecting earlier material.
+
+The claim this supports is narrow and mechanical: the cost was
+INTERFERENCE between replay and incoming data, not insufficient replay. An
+offline phase is worth building into the system rather than interleaving.
+
+---
+
+## Dreaming, 20 Sep 2026
+
+`core/dreaming.py`, `experiments/grid/dream_replay.py`
+
+Sleep also recombines stored fragments into sequences that never occurred.
+Outcomes cannot be invented — a dream that makes up what happens is
+training on fiction — so every moment in a dream here is a real moment with
+its real outcome, and only the ORDER is invented.
+
+Three recombinations against veridical replay, 8 seeds, contested events in
+the earliest phase:
+
+    veridical    65.3%
+    splice       64.2%   (-1.1)
+    interleave   60.0%   (-5.3)
+    scramble     63.2%   (-2.1)
+
+**Recombination does not help.** Splice is inside noise, interleave is
+worse.
+
+**AND THE CONTROL FAILED, WHICH IS THE REAL FINDING.** `scramble` exists
+to lose: August measured scrambled replay damaging shared knowledge, 96.2%
+against 99.8%. Here scrambling a genuine contiguous trajectory costs 2.1
+points on contested and 0.0 on shared. The model is not using sequence
+order on this world at all.
+
+So whatever the +15.5 sequence-replay result (21 Aug) was measuring, it was
+not order. Most likely the fact that a sequence delivers 10 correlated
+items per consolidation instead of 1. **That result needs re-checking and
+should not be cited as evidence about ordering until it is.**
+
+### The bug this found, which was worth more than the experiment
+
+`StabilityLayer._remember` is called ONLY on branches where the gate
+REJECTS an item. Anything it learns from goes to the weights and is never
+stored. At `top_fraction=0.50` that is roughly half the stream.
+
+**So a stored "sequence" of 10 was never 10 consecutive moments.** It was
+10 non-adjacent rejected moments spanning about 20 steps, with gaps
+wherever the gate fired. Every sequence result in this repo was measured on
+units that are not trajectories.
+
+`contiguous=True` stores every item into the run. The first dream run had
+to be thrown away and rerun with it, and the fix alone moved the veridical
+control from 60.7% to 65.3% on the first phase and 84.0% to 99.8% on the
+last — larger than any effect the experiment was designed to measure.
+
+---
+
 ## Wanting, 20 Sep 2026
 
 `experiments/grid/drive.py`, `experiments/grid/drive2.py`

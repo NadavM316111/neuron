@@ -1,0 +1,68 @@
+do the phases genuinely contradict each other?
+   keyed vs open  : events differ on  11.7% of steps
+   keyed vs trap  : events differ on  35.6% of steps
+    open vs trap  : events differ on  36.3% of steps
+
+  good, 11.7% at worst
+
+life: keyed -> open -> trap, 6000 steps each
+same total replay, spent in different shapes:
+  continuous   consolidate every 5 items while living
+  nap          live 500 items, then 100 consolidations with no input
+  sleep        live 2000 items, then 400 consolidations with no input
+  hibernate    live 6000 items, then 1200 consolidations with no input
+
+  seed 0 done
+  seed 1 done
+  seed 2 done
+  seed 3 done
+  seed 4 done
+  seed 5 done
+  seed 6 done
+  seed 7 done
+
+============================================================================================
+THE PRECONDITION — is the replay budget actually matched?
+============================================================================================
+          arm    replays  vs control   sleeps  rollbacks
+--------------------------------------------------------------------------------------------
+   continuous      71960       1.00x     3600        0.0
+          nap      72000       1.00x       36        0.0
+        sleep      72000       1.00x        9        0.0
+    hibernate      72000       1.00x        3        0.0
+
+============================================================================================
+CONTESTED events — where remembering the phase matters
+        arm      keyed        open        trap    min
+                 (1st)                  (last)
+--------------------------------------------------------------------------------------------
+ continuous      64.7%       60.9%       99.6%    0.2
+        nap      71.7%       67.2%       99.7%    0.2
+      sleep      73.6%       67.4%       99.9%    0.2
+  hibernate      72.8%       62.7%       98.9%    0.2
+============================================================================================
+
+SHARED events — identical under every rule set
+ continuous      99.9%       99.9%      100.0%
+        nap      99.8%       99.9%      100.0%
+      sleep      99.8%       99.9%      100.0%
+  hibernate      99.6%       99.8%      100.0%
+
+============================================================================================
+DOES SLEEPING HELP? contested events, 'keyed'
+============================================================================================
+          arm    score   vs continuous   awake between
+   continuous    64.7%                               5
+          nap    71.7%           +7.0             500
+        sleep    73.6%           +8.9            2000
+    hibernate    72.8%           +8.1            6000
+
+  SLEEPING WINS: sleep beat continuous by 8.9 points on the same replay
+  budget. Consolidation works better when the live stream is not competing
+  for the weights, which is an argument for building an offline phase into
+  the system rather than interleaving it.
+
+  One world, 8 seeds, matched replay budget. A result about schedule,
+  not about sleep in general.
+
+wrote sleep_schedule.json
