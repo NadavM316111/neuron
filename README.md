@@ -268,6 +268,93 @@ a ceiling rather than a target.
 
 ---
 
+## A body, 26 Sep 2026
+
+`experiments/device/live.py`
+
+Every experiment before this one ran in a world this project designed. Grid
+worlds, invented vocabularies, synthetic contradictions: the rules were
+written by hand, so every result was partly a result about whoever wrote
+them. Even the weather run replayed a fixed file after the fact.
+
+This one watches the machine it runs on. CPU, memory, battery, disk,
+network, load, time of day, day of week, sampled every few seconds. It
+predicts what CPU load does next, learns from being wrong, and decides when
+to consolidate.
+
+**The loop is actually closed.** Consolidating costs CPU. CPU is part of
+what it observes. So its own choices change its own future input,
+permanently, with no reset: in the grid worlds the agent acted but the
+episode restarted, and here it is Tuesday afternoon exactly once.
+
+**It persists.** Weights and counters go to disk every hundred samples, so
+it survives being killed, a closed lid, or a restart, and resumes by
+default.
+
+First run, 1,736 samples at 0.5s intervals: the loop works end to end,
+nothing leaked, and the guard fired zero times. It also learned nothing
+beyond the majority class, which is correct for that interval: CPU rarely
+moves more than the change threshold in half a second, so SAME dominates
+and guessing SAME is optimal. At 10s the classes balance. Left running, the
+thing it has to learn is a daily cycle, and a twenty-minute run contains
+none of one.
+
+Small and unglamorous, and it closes the last structural gap before a
+device: a world nobody designed, running in real time, where its actions
+change what it sees next.
+
+---
+
+## The guard degrades over a long life, 26 Sep 2026
+
+`experiments/grid/longrun.py`
+
+Everything in this repo is short. The longest run was 100,000 steps; most
+finish in seconds. The central claim of the project is that a system
+accumulates a life over time, and time had never been the variable.
+
+3,000,000 steps, one continuous life, no resets, 16 minutes of wall clock.
+A passive random walk rather than a policy, so slow layer failure could not
+be confused with slow policy collapse.
+
+**Almost everything survived.** Accuracy flat at 58 to 61% across the whole
+life, replay buffer pinned at its cap of 500 with no leak, wall clock flat
+at 33 seconds per 100,000-step block from start to finish. No drift, no
+slowdown, no saturation.
+
+**The guard did not.** Rollbacks over the life:
+
+| step | rollbacks |
+| --- | --- |
+| 500,000 | 0 |
+| 1,000,000 | 13 |
+| 2,000,000 | 51 |
+| 3,000,000 | 232 |
+
+Not a constant rate. A curve bending upward. **In August the guard fired
+zero times in a 100,000-step life and was written up as working. It needed
+thirty times that length to show this.**
+
+**The cause is in the health column, which oscillates with the world.** It
+alternates between about -1.09 and about +0.3 in lockstep with the rule
+reversals, and the positive side grows: +0.05 early, +0.47 by 2.6M. The
+canary is built from one rule, so when the world flips, canary loss spikes
+and the guard reads WORLD-CHANGE AS SELF-DAMAGE. Previous-rule accuracy
+falls 3 points over the same span, consistent with rollbacks eating
+retention.
+
+`stability.py` has documented this mismatch since 10 Sep — "the canary
+decides what the guard protects, and that is the whole problem" — and has
+shipped `canary_from_stream` as the fix since then. **Nothing had ever used
+it.** `live.py` is the first thing that does, and its guard has so far
+fired zero times.
+
+The general lesson is the one this run exists to make: a mechanism that has
+never fired is not protection, it is an untested claim, and short runs
+cannot tell the difference.
+
+---
+
 ## Sleep, 20 Sep 2026
 
 `core/sleeping.py`, `experiments/grid/sleep_schedule.py`
