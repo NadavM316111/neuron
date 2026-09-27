@@ -1,0 +1,13 @@
+  probing sources:
+    weather   ok    raw 0.7680
+    wind      ok    raw 0.0617
+    quakes    ok    raw 0.3333
+    btc       ok    raw 84435.9850
+    hn        ok    raw 49868518.0000
+
+  5 sources, 3 policies, one query each per tick, every 90s
+  every 10 ticks all sources are read and every policy is scored on all of them
+  that audit is the comparable number; what each policy CHOSE to ask is the action
+
+    tick     round    random    driven  queries   elapsed
+------------------------------------------------------------

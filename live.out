@@ -1,0 +1,21 @@
+  sensors: cpu, mem, battery, plugged, disk, net, load
+  every 10.0s, policy 'quiet', 10 rounds per consolidation
+  RESUMING a life of 500 samples over 1.4 hours
+  predicting the next change in CPU load: down / same / up
+  consolidating costs CPU, which it then observes
+
+    sample     acc  majority  surprise  sleeps   rb   elapsed
+----------------------------------------------------------------
+       540   57.5%     57.5%     1.016      21    0      6.7m
+       600   80.0%     80.0%     0.782      24    0     16.7m
+       660   83.3%     83.3%     0.561      26    0     26.7m
+       720   86.7%     86.7%     0.533      29    0     36.7m
+       780   95.0%     95.0%     0.161      31    0     46.7m
+       840   98.3%     98.3%     0.174      34    0     56.7m
+       900  100.0%    100.0%     0.076      37    0     66.7m
+       960  100.0%    100.0%     0.066      40    0     76.8m
+     1,020  100.0%    100.0%     0.068      43    0     86.8m
+     1,080  100.0%    100.0%     0.043      46    0     96.8m
+     1,140   96.7%     96.7%     0.234      48    0    106.8m
+     1,200  100.0%    100.0%     0.051      51    0    116.8m
+     1,260   75.0%     75.0%     0.868      51    0    126.8m

@@ -1,0 +1,8 @@
+  predicting whether you will be at the keyboard in 5 minutes
+  sampling every 30s, so the answer arrives 10 samples later
+  sensors: idle time, machine, clock, weather (26.12, -80.14)
+  it consolidates when it thinks you are AWAY, and that costs CPU it then sees
+  RESUMING a life of 40 samples over 0.4 hours
+
+    sample     acc  majority    edge   here  sleeps   rb   elapsed
+--------------------------------------------------------------------

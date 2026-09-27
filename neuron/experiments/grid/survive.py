@@ -107,7 +107,7 @@ START_ENERGY = 200.0
 MAX_ENERGY = 260.0
 STEP_COST = 1.0
 FOOD_GAIN = 18.0
-POISON_COST = 12.0
+POISON_COST = 16.0
 SLEEP_COST_PER_ROUND = 0.15
 
 # How often the rule flips. Long enough to learn, short enough that a
@@ -136,8 +136,8 @@ MAX_STEPS = 10_000              # a life this long counts as survival
 # described the symptom. This is the arithmetic behind it.
 
 # Density of food, kept constant by replacing what is eaten.
-N_BERRY = 14
-N_FUNGUS = 14
+N_BERRY = 30
+N_FUNGUS = 30
 
 HIDDEN = 64
 LR = 3e-4
