@@ -354,8 +354,15 @@ class Policy:
                 return s
         return world.names[-1]
 
-    def learn(self, world, name, before, after, age):
-        f = self.features(world, name, age)
+    def learn(self, world, name, before, after, age, feats=None):
+        # feats MUST be captured before the query. world.ask() overwrites
+        # world.last_val with the answer, and features() reads last_val,
+        # so building them afterwards hands the model the very value it is
+        # being asked to predict the direction of. That leak is why round
+        # and random produced identical accuracy to a tenth of a point at
+        # all 77 checkpoints of the 21-hour run: every policy was reading
+        # the answer, so none of them was really predicting.
+        f = feats if feats is not None else self.features(world, name, age)
         label = bucket(before, after)
         item = (f, label)
         s, _ = self.b.score(item)
@@ -364,11 +371,14 @@ class Policy:
         self.layer.observe(item)
         self.asked[name] += 1
 
-    def audit(self, world, name, before, after, age):
+    def audit(self, world, name, before, after, age, feats=None):
         """Scored on a source whether or not it chose to look. This is the
         only number comparable across policies, because they spend their
-        budgets differently by design."""
-        f = self.features(world, name, age)
+        budgets differently by design.
+
+        feats must be captured before the query, for the same reason as in
+        learn()."""
+        f = feats if feats is not None else self.features(world, name, age)
         self.audit_hits.append(
             1 if self.b.predict(f) == bucket(before, after) else 0)
 
@@ -462,22 +472,26 @@ def main():
                     before = world.last_val.get(name, 0.5)
                     age = time.time() - world.last_at.get(
                         name, time.time())
+                    feats = p.features(world, name, age)
                     after = world.ask(name)
                     if after is None:
                         continue
                     queries += 1
-                    p.learn(world, name, before, after, age)
+                    p.learn(world, name, before, after, age, feats)
                     break
 
             if ticks % AUDIT_EVERY == 0:
                 for name in world.names:
                     before = world.last_val.get(name, 0.5)
                     age = time.time() - world.last_at.get(name, time.time())
+                    snap = {p.name: p.features(world, name, age)
+                            for p in policies}
                     after = world.ask(name)
                     if after is None:
                         continue
                     for p in policies:
-                        p.audit(world, name, before, after, age)
+                        p.audit(world, name, before, after, age,
+                                snap[p.name])
 
             if ticks % args.report_every == 0:
                 print(f"  {ticks:>6} " +
