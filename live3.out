@@ -1,0 +1,8 @@
+  predicting whether you will be at the keyboard in 5 minutes
+  IT CAN DIE. Each sample costs 0.1, each correct prediction pays 0.15,
+  each consolidation round costs 0.05. Break-even accuracy is 67%.
+  At zero credit the life ends and nothing survives it.
+  generation 0, starting with 100 credit
+
+   gen   credit     acc  majority    edge   here  sleeps      age
+--------------------------------------------------------------------

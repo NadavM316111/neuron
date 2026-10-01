@@ -268,6 +268,110 @@ a ceiling rather than a target.
 
 ---
 
+## Stakes, 1 Oct 2026
+
+`experiments/device/live3.py`
+
+The system perceived a world nobody designed and took actions that left the
+machine. Both real, and nothing it did mattered TO IT. It could be wrong
+forever at no cost, and a run ended when the process was killed rather than
+because the system failed at anything.
+
+It now has credit. Every sample costs 0.10, every correct prediction pays
+0.15, every consolidation round costs 0.05, so break-even is 67% accuracy.
+At zero the life ends and the weights, the buffer and the drives go with
+it. A new generation starts from random weights. There is no snapshot to
+restore, because a failure you can roll back from is not a failure.
+
+**The bar is set where the dumbest policy survives and a wrong one does
+not.** The majority baseline on this task runs 75 to 90%, so a system that
+learns nothing beyond "say PRESENT" lives. One that is actively wrong
+starves. A world where the dumbest policy dies measures the harness; one
+where nothing dies does not measure stakes.
+
+**Sleep is now a bet it pays for, in real time.** It won on accuracy when
+consolidation was free (20 Sep, +8.9 points), and the advantage vanished
+when it cost energy (`lineage.py`, -4). This is the third setting and the
+first where the cost is paid in a currency the system needs to survive.
+
+This is also where the parked population work rejoins the project.
+`pop.py` and `pop2.py` failed in a grid world that could not show whether
+inheritance helps. Here lives are days long and the world is real, so
+generations accumulate slowly and honestly.
+
+**The honest limit: I chose the costs.** Stakes defined in a config file
+are not stakes the world imposes, and a resource that exists only in this
+repo is a long way from one anybody else recognises. The next rung needs a
+transaction with a system that does not know this is an experiment.
+
+---
+
+## The body in the real world, 26 to 30 Sep 2026
+
+`experiments/device/live2.py`, `experiments/device/reach.py`
+
+Two systems ran continuously on a laptop for three days.
+
+`live2` predicts whether the person will be at the keyboard in five
+minutes, from idle time, the machine, the clock and Fort Lauderdale
+weather. It consolidates when it believes nobody is there, which costs CPU
+that it then observes.
+
+`reach` chooses one public source to query per tick out of five, and three
+allocation policies run side by side against the same world: round-robin,
+random, and the drive from 20 Sep. It made 3,161 real requests over 79
+hours.
+
+### What held up
+
+79 hours of continuous running across lid closes and sleeps, resuming from
+disk every time. **Zero rollbacks** over the whole stretch with
+`canary_from_stream` on, against 232 and accelerating in the 3,000,000-step
+grid run without it. That fix had shipped in `stability.py` on 10 Sep and
+nothing had ever used it.
+
+### What the results showed
+
+`live2`: ambiguous. Whenever presence was high and the baseline easy, edge
+was exactly 0.0, meaning it was predicting PRESENT and nothing more. Edge
+only went positive when presence dropped — +27.5 at 67% present, +12.5 at
+74%. That is either a system whose learning only shows when the task is
+hard, or a slight bias toward AWAY that pays off in mixed windows and costs
+nothing in easy ones. The occasional -0.8 rows are mild evidence for the
+second. Unresolved, and it needs a transition-specific metric rather than
+overall accuracy.
+
+`reach`: nothing. Round-robin and random produced identical accuracy to a
+tenth of a point at every checkpoint across 1,060 ticks, before and after
+the leak fix below. Most likely all three policies collapsed to predicting
+SAME, which is right about 90% of the time at the chosen change threshold,
+so their accuracies converge on the base rate regardless of what they
+learned. Same failure as the original `live.py`: a prediction target with
+almost no variance.
+
+### Two bugs that cannot happen in a simulator
+
+**The infrastructure destroyed its own sensor.** `caffeinate -i` prevents
+idle sleep by continuously resetting HIDIdleTime, which is exactly the
+signal the presence detector reads. A 21-hour overnight run reported 99%
+presence through a night of sleep, trained entirely on a constant label,
+and consolidated 2,065 times out of 2,320 samples because it believed
+nobody was there. `caffeinate -s` prevents system sleep without touching
+the idle timer. Verified: 45.08 seconds reported after a 45-second wait.
+
+**The answer leaked into the features.** In `reach`, `world.ask()` updates
+`last_val` and the feature vector reads `last_val`, so building features
+after the query handed the model the very value it was being asked to
+predict the direction of. Fixed by capturing features before the query.
+This is a real-time hazard specifically: the observation and the query
+happen at the same instant, so ordering within a tick is load-bearing in a
+way it never is when replaying a file.
+
+Neither bug has an analogue in a grid world. That is what leaving the
+simulator costs, and finding them is the work.
+
+---
+
 ## A body, 26 Sep 2026
 
 `experiments/device/live.py`
