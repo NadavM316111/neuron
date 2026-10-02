@@ -268,6 +268,63 @@ a ceiling rather than a target.
 
 ---
 
+## The drive does not scale, 2 Oct 2026
+
+`experiments/language/drive_scale.py`
+
+The drive was the strongest result in this project. On the grid world it
+beat every other action policy by 8 to 24 points (`drive2.py`, 20 Sep) and
+doubled survival under stakes (`lineage.py`, 27 Sep). It is also the "wants"
+mechanism the whole direction of the project rests on. So the question that
+mattered most was whether it survives a jump in model size, because every
+result behind it came from a 64-unit GRU with roughly 10,000 parameters.
+
+Qwen2.5-1.5B is about 150,000 times larger. The test: 20 invented domains
+spanning a difficulty range (1 to 12 phrasing templates each, so some
+learnable in a handful of reads and some needing many), one read per step,
+and three allocation policies with identical budgets — round-robin, random,
+and the drive. Scored every 100 steps on held-out probes from all 20
+domains. One model in memory at a time, run sequentially on the same seeded
+streams.
+
+**The task is a valid test, which the first attempt was not.** Round-robin
+finished at 1.937 mean probe loss and random at 2.234, so even allocation
+beat random allocation. Allocation matters here. A 4-domain pilot had shown
+no such gap and was underpowered; 20 domains fixed that.
+
+**The drive collapsed.** Final loss 6.804 against round-robin's 1.937 —
+more than three times worse, a catastrophic result rather than a narrow
+loss.
+
+The allocation row shows why. Of 1,200 reads, the drive spent 437 on one
+domain and 309 on another, and gave sixteen of the twenty fewer than 20
+reads each. It did not spread and it did not seek the hard domains: the two
+it fixated on were a 1-template and a 5-template domain, among the easier
+ones. It learned almost nothing because it barely read almost everything.
+
+**This is the `drive2.py` argmax collapse, back at scale, despite the fix
+that was supposed to prevent it.** In September the argmax version chased
+one bucket until it decayed and produced temporally clustered experience;
+softmax sampling fixed it on the grid. At 1.5B the surprise signal is sharp
+enough that even sampled selection collapses onto a couple of buckets. Four
+grid cells could not collapse the way twenty domains can, which is why the
+grid masked this.
+
+**The honest conclusion: the drive is a small-world, few-option mechanism.**
+Given a large model and many options it fixates and fails. The grid-world
+results do not transfer, and the "wants" layer — the part closest to the
+centre of what this project is reaching for — is its weakest, not its
+strongest. Any integrated system built from here either leaves the drive
+out or adds a hard anti-fixation cap that would have to be designed and
+tested from scratch.
+
+One seed, one model, twenty invented domains. 1.5B is roughly 0.1% of a
+frontier model, so this tests generality rather than frontier behaviour.
+But the collapse is large and mechanistic enough that more seeds are
+unlikely to rescue it.
+
+---
+
 ## Stakes, 1 Oct 2026
 
 `experiments/device/live3.py`

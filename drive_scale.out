@@ -1,0 +1,70 @@
+  4 domains, 400 reads per policy, one domain per read
+    signals   1 phrasings  (12 sentences, 6 probes)
+    tides     2 phrasings  (24 sentences, 12 probes)
+    markets   4 phrasings  (60 sentences, 12 probes)
+    beasts    8 phrasings  (132 sentences, 12 probes)
+  domains differ in how many ways the rule is stated, so they differ in how
+  much reading they need. A drive should notice; a uniform policy cannot.
+
+
+  === policy 'round' (1/3) ===
+    loading Qwen/Qwen2.5-1.5B-Instruct for 'round' ...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 9062.16it/s]
+    baseline signals=5.566  tides=6.468  markets=7.392  beasts=7.391
+       100  mean   5.808     0.5m
+       200  mean   5.259     0.9m
+       300  mean   4.675     1.3m
+       400  mean   3.656     1.7m
+
+  === policy 'random' (2/3) ===
+    loading Qwen/Qwen2.5-1.5B-Instruct for 'random' ...
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 8305.26it/s]
+    baseline signals=5.566  tides=6.468  markets=7.392  beasts=7.391
+       100  mean   5.522     2.3m
+       200  mean   5.014     2.6m
+       300  mean   3.865     3.0m
+       400  mean   3.478     3.4m
+
+  === policy 'driven' (3/3) ===
+    loading Qwen/Qwen2.5-1.5B-Instruct for 'driven' ...
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 7569.65it/s]
+    baseline signals=5.566  tides=6.468  markets=7.392  beasts=7.391
+       100  mean   5.700     4.0m
+       200  mean   4.823     4.4m
+       300  mean   4.153     4.8m
+       400  mean   3.742     5.2m
+
+========================================================================
+WHERE EACH POLICY SPENT ITS READING
+========================================================================
+    policy   signals     tides   markets    beasts
+     round        98       100        97       105
+    random       101       107        88       104
+    driven       100        85       111       104
+  phrasings         1         2         4         8
+
+========================================================================
+PROBE LOSS BY DOMAIN, LOWER IS BETTER
+========================================================================
+    policy   signals     tides   markets    beasts      mean
+     round     3.735     3.744     3.434     3.711     3.656
+    random     3.682     3.319     3.179     3.734     3.478
+    driven     3.855     3.211     3.974     3.926     3.742
+
+========================================================================
+DOES WANTING SURVIVE THE SIZE JUMP?
+========================================================================
+  round 3.656   random 3.478   driven 3.742
+  driven against the better uniform policy: -0.263 (positive means the drive won)
+
+  the drive's allocation spread was 26 reads against round-robin's 8
+
+  WANTING DOES NOT SCALE. The drive allocated and lost to spreading reads
+  evenly. The grid results do not transfer, and the wants work needs
+  rethinking from the bottom rather than extending.
+
+  One seed, one model, four invented domains. 1.5B is roughly 0.1% of a
+  frontier model, so this tests generality rather than frontier behaviour.
+
+  written to /Users/nadavminkowitz/neuron/neuron/results/drive_scale.json

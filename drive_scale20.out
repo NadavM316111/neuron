@@ -1,0 +1,110 @@
+  20 domains, 1200 reads per policy, one domain per read
+    d00_1t    1 phrasings  (12 sentences, 6 probes)
+    d01_1t    1 phrasings  (12 sentences, 6 probes)
+    d02_2t    2 phrasings  (24 sentences, 12 probes)
+    d03_2t    2 phrasings  (24 sentences, 12 probes)
+    d04_3t    3 phrasings  (42 sentences, 12 probes)
+    d05_3t    3 phrasings  (42 sentences, 12 probes)
+    d06_4t    4 phrasings  (60 sentences, 12 probes)
+    d07_5t    5 phrasings  (78 sentences, 12 probes)
+    d08_5t    5 phrasings  (78 sentences, 12 probes)
+    d09_6t    6 phrasings  (96 sentences, 12 probes)
+    d10_6t    6 phrasings  (96 sentences, 12 probes)
+    d11_7t    7 phrasings  (114 sentences, 12 probes)
+    d12_7t    7 phrasings  (114 sentences, 12 probes)
+    d13_8t    8 phrasings  (132 sentences, 12 probes)
+    d14_9t    9 phrasings  (150 sentences, 12 probes)
+    d15_9t    9 phrasings  (150 sentences, 12 probes)
+    d16_10t   10 phrasings  (168 sentences, 12 probes)
+    d17_10t   10 phrasings  (168 sentences, 12 probes)
+    d18_11t   11 phrasings  (186 sentences, 12 probes)
+    d19_12t   12 phrasings  (204 sentences, 12 probes)
+  domains differ in how many ways the rule is stated, so they differ in how
+  much reading they need. A drive should notice; a uniform policy cannot.
+
+
+  === policy 'round' (1/3) ===
+    loading Qwen/Qwen2.5-1.5B-Instruct for 'round' ...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 7901.61it/s]
+    baseline d00_1t=7.844  d01_1t=8.001  d02_2t=7.407  d03_2t=7.112  d04_3t=7.573  d05_3t=7.748  d06_4t=7.564  d07_5t=7.048  d08_5t=6.558  d09_6t=7.115  d10_6t=7.234  d11_7t=7.083  d12_7t=6.880  d13_8t=6.951  d14_9t=6.403  d15_9t=7.217  d16_10t=7.493  d17_10t=6.643  d18_11t=6.672  d19_12t=6.611
+       100  mean   6.903     1.0m
+       200  mean   6.903     1.6m
+       300  mean   6.743     2.2m
+       400  mean   6.318     2.8m
+       500  mean   5.669     3.5m
+       600  mean   5.669     4.1m
+       700  mean   4.604     4.7m
+       800  mean   3.937     5.4m
+       900  mean   3.444     6.1m
+      1000  mean   2.730     7.0m
+      1100  mean   2.190     7.8m
+      1200  mean   1.937     8.7m
+
+  === policy 'random' (2/3) ===
+    loading Qwen/Qwen2.5-1.5B-Instruct for 'random' ...
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 5503.99it/s]
+    baseline d00_1t=7.844  d01_1t=8.001  d02_2t=7.407  d03_2t=7.112  d04_3t=7.573  d05_3t=7.748  d06_4t=7.564  d07_5t=7.048  d08_5t=6.558  d09_6t=7.115  d10_6t=7.234  d11_7t=7.083  d12_7t=6.880  d13_8t=6.951  d14_9t=6.403  d15_9t=7.217  d16_10t=7.493  d17_10t=6.643  d18_11t=6.672  d19_12t=6.611
+       100  mean   7.153    10.8m
+       200  mean   7.042    11.6m
+       300  mean   6.758    12.5m
+       400  mean   6.365    13.4m
+       500  mean   5.521    14.3m
+       600  mean   5.288    15.3m
+       700  mean   4.205    16.2m
+       800  mean   3.708    17.0m
+       900  mean   3.192    17.9m
+      1000  mean   2.529    18.9m
+      1100  mean   2.168    19.9m
+      1200  mean   2.234    20.9m
+
+  === policy 'driven' (3/3) ===
+    loading Qwen/Qwen2.5-1.5B-Instruct for 'driven' ...
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 4173.15it/s]
+    baseline d00_1t=7.844  d01_1t=8.001  d02_2t=7.407  d03_2t=7.112  d04_3t=7.573  d05_3t=7.748  d06_4t=7.564  d07_5t=7.048  d08_5t=6.558  d09_6t=7.115  d10_6t=7.234  d11_7t=7.083  d12_7t=6.880  d13_8t=6.951  d14_9t=6.403  d15_9t=7.217  d16_10t=7.493  d17_10t=6.643  d18_11t=6.672  d19_12t=6.611
+       100  mean   7.152    23.4m
+       200  mean   6.955    24.4m
+       300  mean   6.530    25.3m
+       400  mean   6.334    26.3m
+       500  mean   6.334    27.4m
+       600  mean   6.334    28.4m
+       700  mean   6.334    29.4m
+       800  mean   6.024    30.4m
+       900  mean   5.843    31.4m
+      1000  mean   5.588    32.5m
+      1100  mean   5.414    33.7m
+      1200  mean   6.804    34.7m
+
+========================================================================
+WHERE EACH POLICY SPENT ITS READING
+========================================================================
+    policy    d00_1t    d01_1t    d02_2t    d03_2t    d04_3t    d05_3t    d06_4t    d07_5t    d08_5t    d09_6t    d10_6t    d11_7t    d12_7t    d13_8t    d14_9t    d15_9t   d16_10t   d17_10t   d18_11t   d19_12t
+     round        57        58        58        66        61        59        60        59        59        60        58        59        58        57        68        63        61        60        58        61
+    random        62        48        64        48        51        63        83        59        72        61        48        44        50        61        54        63        66        65        73        65
+    driven         6       437         8         8        12         8        83         6       309        16        44        15        72       112         6        11        18         7         8        14
+  phrasings         1         1         2         2         3         3         4         5         5         6         6         7         7         8         9         9        10        10        11        12
+
+========================================================================
+PROBE LOSS BY DOMAIN, LOWER IS BETTER
+========================================================================
+    policy    d00_1t    d01_1t    d02_2t    d03_2t    d04_3t    d05_3t    d06_4t    d07_5t    d08_5t    d09_6t    d10_6t    d11_7t    d12_7t    d13_8t    d14_9t    d15_9t   d16_10t   d17_10t   d18_11t   d19_12t      mean
+     round     1.692     2.121     1.925     1.869     1.737     2.151     2.124     1.739     1.684     1.902     2.117     2.031     1.765     1.732     1.700     2.208     1.774     1.888     2.121     2.451     1.937
+    random     1.811     2.336     2.860     2.581     2.057     2.592     2.194     2.159     2.237     1.886     2.207     1.924     2.380     2.328     1.889     2.430     2.239     1.972     2.052     2.550     2.234
+    driven     6.532     6.525     8.310     8.053     7.993     7.390     5.987     5.852     5.752     7.063     6.613     7.164     6.502     5.986     5.722     7.586     6.294     8.362     6.389     6.011     6.804
+
+========================================================================
+DOES WANTING SURVIVE THE SIZE JUMP?
+========================================================================
+  round 1.937   random 2.234   driven 6.804
+  driven against the better uniform policy: -4.868 (positive means the drive won)
+
+  the drive's allocation spread was 431 reads against round-robin's 11
+
+  WANTING DOES NOT SCALE. The drive allocated and lost to spreading reads
+  evenly. The grid results do not transfer, and the wants work needs
+  rethinking from the bottom rather than extending.
+
+  One seed, one model, four invented domains. 1.5B is roughly 0.1% of a
+  frontier model, so this tests generality rather than frontier behaviour.
+
+  written to /Users/nadavminkowitz/neuron/neuron/results/drive_scale.json
