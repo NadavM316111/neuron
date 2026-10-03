@@ -109,6 +109,8 @@ SAMPLE_COST = 0.10
 CORRECT_PAYS = 0.15
 SLEEP_COST = 0.05
 SAVE_EVERY = 40
+SLEEP_REFRACTORY = 60     # samples that must pass before it may sleep again
+SLEEP_MAX_FRACTION = 0.15 # at most this share of samples may be sleeps
 
 STATE_DIR = "being_state"
 UA = "neuron-research/0.1 (personal experiment)"
@@ -379,6 +381,7 @@ class Life:
         self.born = time.time()
         self.samples = 0
         self.sleeps = 0
+        self.last_sleep = -10**9
         self.pending = deque()
         self.correct = deque(maxlen=120)
         self.labels = deque(maxlen=120)
@@ -547,11 +550,28 @@ def main():
                     save(args.state, life, history)
                     break
 
+            # Sleep is now RATE-LIMITED. The over-sleep spiral (gen 0,
+            # 3 Oct): it slept every tick it believed you were away, each
+            # sleep costing credit and perturbing the weights, so a genuine
+            # absence consolidated the system to death -- 168 sleeps in
+            # 1,240 samples, accuracy below the majority baseline, credit
+            # bleeding out. An animal does not sleep every idle minute; it
+            # sleeps once a cycle. Two gates:
+            #   refractory: enough NEW samples since the last sleep that
+            #               there is something worth consolidating.
+            #   budget:     sleeps may not exceed a fraction of all samples,
+            #               so no stretch of absence can run the credit down
+            #               through consolidation alone.
             cost = args.rounds * SLEEP_COST
-            if p_present < 0.35 and here == 0.0 and life.credit > cost + 5:
+            enough_new = (life.samples - life.last_sleep) >= SLEEP_REFRACTORY
+            under_budget = life.sleeps < SLEEP_MAX_FRACTION * max(
+                1, life.samples)
+            if (p_present < 0.35 and here == 0.0 and life.credit > cost + 5
+                    and enough_new and under_budget):
                 life.layer.sleep(args.rounds)
                 life.credit -= cost
                 life.sleeps += 1
+                life.last_sleep = life.samples
                 just_slept = 1.0
 
             time.sleep(args.interval)
