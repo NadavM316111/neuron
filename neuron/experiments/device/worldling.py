@@ -99,6 +99,19 @@ VALUE_LR = 0.15
 VALUE_DECAY = 0.98
 
 STATE_DIR = "worldling_state"
+
+# ---- REAL MONEY ----
+# The being can spend from a real, finite $5 budget to interpret its world
+# in words via a paid API call. This is the first action with a price the
+# WORLD sets rather than one invented in this file. Safety is layered:
+#   - OpenAI enforces a $5 hard cap on the account side (outside this code)
+#   - this code self-caps at REAL_SOFT_CAP, well below $5
+#   - calls are rate-limited to at most one per REAL_MIN_GAP seconds
+#   - spend is tracked on the persistent volume so a restart cannot forget
+#     what was already spent
+REAL_SOFT_CAP = 2.00        # the code stops here, below OpenAI's $5 floor
+REAL_MIN_GAP = 300.0        # at most one paid call per 5 minutes
+REAL_COST_PER_CALL = 0.01   # rough; a tiny gpt call is well under a cent
 UA = "neuron-research/0.1 (personal experiment)"
 
 
@@ -191,6 +204,72 @@ class WorldSignals:
         self.last_at[name] = now
         self.last_val[name] = new
         return old, new
+
+
+class RealBudget:
+    """Tracks real money spent, persisted to the volume. Reads the key from
+    the environment (never hardcoded, never in the repo). If no key or the
+    library is missing, it simply refuses to spend and says so, so the being
+    runs fine with or without money."""
+
+    def __init__(self, state_dir):
+        self.path = os.path.join(state_dir, "real_spend.json")
+        self.spent = 0.0
+        self.calls = 0
+        self.last_call = 0.0
+        self.enabled = False
+        self.client = None
+        if os.path.exists(self.path):
+            try:
+                d = json.load(open(self.path))
+                self.spent = d.get("spent", 0.0)
+                self.calls = d.get("calls", 0)
+            except Exception:
+                pass
+        key = os.environ.get("OPENAI_API_KEY")
+        if key:
+            try:
+                from openai import OpenAI
+                self.client = OpenAI(api_key=key)
+                self.enabled = True
+            except Exception as e:
+                print(f"  real budget: key present but openai import "
+                      f"failed ({type(e).__name__}); running without money")
+
+    def can_spend(self):
+        return (self.enabled
+                and self.spent < REAL_SOFT_CAP
+                and (time.time() - self.last_call) > REAL_MIN_GAP)
+
+    def interpret(self, world, names):
+        """Spend one real call to put the world into words. Returns the
+        text, or None if it could not or would not spend."""
+        if not self.can_spend():
+            return None
+        vals = ", ".join(f"{n}={world.last_val.get(n, 0.5):.2f}"
+                         for n in names)
+        try:
+            r = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user",
+                           "content": f"In one sentence, what does this "
+                           f"snapshot of the world suggest? {vals}"}],
+                max_tokens=40)
+            txt = r.choices[0].message.content.strip()
+        except Exception as e:
+            # a 429 here means the real $5 cap was hit: the world said no
+            print(f"  the world refused the spend ({type(e).__name__})")
+            self.last_call = time.time()
+            return None
+        self.spent += REAL_COST_PER_CALL
+        self.calls += 1
+        self.last_call = time.time()
+        try:
+            json.dump({"spent": self.spent, "calls": self.calls},
+                      open(self.path, "w"))
+        except Exception:
+            pass
+        return txt
 
 
 def clock():
@@ -406,6 +485,10 @@ def save(path, life, history):
             attended=life.attended_counts, names=life.names,
             wants=life.wants.summary(),
             rollbacks=life.layer.summary().get("rollbacks", 0),
+            real_spent=getattr(life, "_budget_spent", 0.0),
+            real_calls=getattr(life, "_budget_calls", 0),
+            interpretations=getattr(life, "interpretations", 0),
+            last_interpretation=getattr(life, "last_interpretation", ""),
             history=history,
             last_seen=time.strftime("%Y-%m-%d %H:%M:%S")), f, indent=2)
 
@@ -435,6 +518,8 @@ def main():
         print(f"  consolidations {m.get('sleeps', 0)}   "
               f"attends {m.get('attends', 0)}")
         print(f"  wants          {m.get('wants', {})}")
+        print(f"  REAL MONEY     ${m.get('real_spent', 0):.2f} spent over "
+              f"{m.get('real_calls', 0)} paid calls")
         print(f"  where it looked")
         att = m.get("attended", {})
         for n in sorted(att, key=lambda k: -att[k]):
@@ -460,6 +545,13 @@ def main():
             history = json.load(f).get("history", [])
     gen = (history[-1]["gen"] + 1) if history else 0
     life = Life(gen, world.names, seed=gen)
+    budget = RealBudget(args.state)
+    if budget.enabled:
+        print(f"  REAL MONEY: ${budget.spent:.2f} spent so far, "
+              f"soft cap ${REAL_SOFT_CAP:.2f}. it can spend to "
+              f"interpret the world.")
+    else:
+        print("  no real budget (no key); it lives without money")
 
     horizon = args.horizon * 60.0
     pending = deque()
@@ -507,6 +599,8 @@ def main():
                           f"{max(life.attended_counts, key=life.attended_counts.get):>14} "
                           f"{life.age_hours():>5.1f}h", flush=True)
                 if life.samples % SAVE_EVERY == 0:
+                    life._budget_spent = budget.spent
+                    life._budget_calls = budget.calls
                     save(args.state, life, history)
 
                 if life.credit <= 0:
@@ -532,6 +626,14 @@ def main():
                           if life.correct else 0.5)
             life.wants.sense(life.credit, recent_acc, life.since_attended)
             action, signal = life.wants.choose()
+            # understanding is a want too: when curiosity is high and the
+            # being can really afford it, spending to interpret the world
+            # competes with merely attending. the real cost is weighed by
+            # whether it chooses this over a free action.
+            if (action == "attend"
+                    and max(life.wants.curiosity.values(), default=0) > 0.6
+                    and budget.can_spend()):
+                action = "interpret"
 
             if action == "consolidate":
                 cost = args.rounds * SLEEP_COST
@@ -542,6 +644,15 @@ def main():
                     life.credit -= cost
                     life.sleeps += 1
                     life.last_sleep = life.samples
+
+            elif action == "interpret":
+                txt = budget.interpret(world, life.names)
+                if txt:
+                    life.last_interpretation = txt
+                    life.interpretations = getattr(
+                        life, "interpretations", 0) + 1
+                    print(f"  [spent ~${budget.spent:.2f}] it says: {txt}",
+                          flush=True)
 
             elif action == "attend" and signal is not None:
                 # make a prediction about this signal, to be scored at horizon
