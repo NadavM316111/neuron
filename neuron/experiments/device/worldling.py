@@ -62,8 +62,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 _here = os.path.dirname(os.path.abspath(__file__))
-_core = os.path.join(os.path.dirname(_here), "core")
-for _pth in (_here, _core):
+# worldling is at neuron/experiments/device/, core is at neuron/core/,
+# so go up TWO levels (device -> experiments -> neuron) then into core
+_neuron = os.path.dirname(os.path.dirname(_here))
+_core = os.path.join(_neuron, "core")
+for _pth in (_here, _core, _neuron):
     if _pth not in sys.path:
         sys.path.insert(0, _pth)
 
