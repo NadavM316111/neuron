@@ -268,6 +268,92 @@ a ceiling rather than a target.
 
 ---
 
+## Wants, rebuilt from the ground up, 2 to 3 Oct 2026
+
+The drive collapsed at scale (`drive_scale.py`, 2 Oct): a want for novelty
+that fixated on one option out of twenty and learned almost nothing. Wanting
+was the part of the project closest to its heart and it had just failed. So
+it was rebuilt, as a want for a STATE rather than for surprise, in five
+steps, each its own experiment with its own control. None of the individual
+mechanisms is novel, they are acquired value, model-based planning, and
+need-driven goals, all long studied. What is here is the assembly: all five,
+built from scratch, after a public failure, as one account.
+
+### 1. Pursue a goal with no reward — `goal.py`
+
+The agent learns a world model by moving at random, no goal and no reward.
+Then it is handed a preferred cell and must reach it using only that model.
+Nothing rewards arrival. On a detour world where the goal needs going
+AROUND a wall, the planner reached it 41% of the time against random's 16%,
+and beat one-step greedy (29%), which jams against the wall. A preference
+pursued through a self-learned model, with no reinforcement. The three
+properties of a goal, held, acted toward, unrewarded, in the smallest form.
+
+### 2. Hold the goal through interruption — `goal_persist.py`
+
+Mid-pursuit, the agent is teleported to a random cell. Does it still reach
+the ORIGINAL goal? It reached it re-planning from wherever it landed,
+clearly above an agent that cached a path once and followed it blindly. The
+goal is held separately from position: being knocked off course costs steps,
+not the goal. The difference between having a goal and following
+instructions.
+
+### 3. Generate the goal from an internal need — `goal_own.py`
+
+No goal is assigned. The agent has one internal need that rises on its own,
+and resources it is never told about. When the need is high it must decide,
+from its own state, to seek a resource, planning toward one it discovered by
+living. Judged by how well it kept its own need low over a life: it matched
+an agent handed the resource every time, and far beat one that never forms a
+goal. The want is produced by the agent, from a condition inside it, not
+handed in.
+
+### 4. Juggle several wants without collapse — `goal_many.py`
+
+Three needs rising at once, each resolved by a different resource, judged by
+the WORST need over the life so abandoning any one is punished. The first
+version FAILED: re-choosing the most-urgent need every step made it dither
+between targets and never arrive, worse than random. The fix was
+COMMITMENT: stay on a need until it is handled or another clearly overtakes
+it. With it, the juggler kept its worst need at 0.471, against 0.930 for an
+agent serving only one need, and roughly matched being told the answer. The
+anti-collapse property the drive never had, and the principle behind it:
+**too much switching is as bad as too little; wanting well lives in the
+middle.**
+
+### 5. Acquire a want it was not born with — `goal_learned.py`
+
+The agent has one base need only food resolves, and food works only if a
+BELL was rung first. The bell is never food and rewards nothing. Does the
+agent come to seek the bell FOR ITS OWN SAKE, even when its need is already
+satisfied? First attempt: the bell's learned value stayed exactly 0.000,
+because the agent never stumbled through bell-then-food to get a first
+example. With the bell and food placed adjacent so the sequence happens
+early, the bell earned a value of 0.02 by reliably preceding relief, and
+when its need was satisfied the agent was at the bell 42% of the time
+against 24% for an agent that can only want food. A means became an end: a
+want learned from a life, not built in. The smallest version of a developing
+character, two of which, living different lives, would come to want
+different things.
+
+### Integration — `experiments/device/being2.py`
+
+The five results are wired into the living system, replacing the stub
+`being.py` carried. `being2.py` runs continuously with three internal needs,
+solvency (credit low), sharpness (accuracy dropping), curiosity (time since
+it looked outside). It commits to the most urgent via the rule from step 4
+and takes the real action that serves it, watch, consolidate, or reach a
+public feed, and can learn value on the hours that reliably let it
+consolidate cheaply (step 5). Wanting now drives the system's real choices.
+
+The honest limit: the live action space is thin and the world is slow and
+partly hidden, so this will not show the clean separations the grid did. The
+grid PROVED the mechanisms; the live system tests whether they survive a
+real, sparse, slow world, which is genuinely uncertain and the point of
+leaving it running.
+
+---
+
 ## The drive does not scale, 2 Oct 2026
 
 `experiments/language/drive_scale.py`
