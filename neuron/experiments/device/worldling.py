@@ -61,9 +61,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "core"))
+_here = os.path.dirname(os.path.abspath(__file__))
+_core = os.path.join(os.path.dirname(_here), "core")
+for _pth in (_here, _core):
+    if _pth not in sys.path:
+        sys.path.insert(0, _pth)
 
 from sleeping import SleepLayer          # noqa: E402
 
