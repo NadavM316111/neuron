@@ -545,9 +545,9 @@ def main():
             history = json.load(f).get("history", [])
     gen = (history[-1]["gen"] + 1) if history else 0
     life = Life(gen, world.names, seed=gen)
-    budget = RealBudget(args.state)
-    if budget.enabled:
-        print(f"  REAL MONEY: ${budget.spent:.2f} spent so far, "
+    wallet = RealBudget(args.state)
+    if wallet.enabled:
+        print(f"  REAL MONEY: ${wallet.spent:.2f} spent so far, "
               f"soft cap ${REAL_SOFT_CAP:.2f}. it can spend to "
               f"interpret the world.")
     else:
@@ -599,8 +599,8 @@ def main():
                           f"{max(life.attended_counts, key=life.attended_counts.get):>14} "
                           f"{life.age_hours():>5.1f}h", flush=True)
                 if life.samples % SAVE_EVERY == 0:
-                    life._budget_spent = budget.spent
-                    life._budget_calls = budget.calls
+                    life._budget_spent = wallet.spent
+                    life._budget_calls = wallet.calls
                     save(args.state, life, history)
 
                 if life.credit <= 0:
@@ -632,7 +632,7 @@ def main():
             # whether it chooses this over a free action.
             if (action == "attend"
                     and max(life.wants.curiosity.values(), default=0) > 0.6
-                    and budget.can_spend()):
+                    and wallet.can_spend()):
                 action = "interpret"
 
             if action == "consolidate":
@@ -646,12 +646,12 @@ def main():
                     life.last_sleep = life.samples
 
             elif action == "interpret":
-                txt = budget.interpret(world, life.names)
+                txt = wallet.interpret(world, life.names)
                 if txt:
                     life.last_interpretation = txt
                     life.interpretations = getattr(
                         life, "interpretations", 0) + 1
-                    print(f"  [spent ~${budget.spent:.2f}] it says: {txt}",
+                    print(f"  [spent ~${wallet.spent:.2f}] it says: {txt}",
                           flush=True)
 
             elif action == "attend" and signal is not None:
