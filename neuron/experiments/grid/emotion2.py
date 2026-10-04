@@ -88,9 +88,14 @@ class SelfFormedEmotion:
         # W[i] = what kind of event pushes dimension i. starts small/random
         # (formless); differentiates through living. inherited if given.
         if inherited is not None:
-            self.W = [[w + rng.uniform(-0.05, 0.05) for w in row]
+            # inherit a BENT, not a clone: keep 60% of the parent's structure,
+            # relax 40% toward a fresh formless start, and add real drift. the
+            # child begins shaped by its parent but with room for its own life
+            # to reshape it -- nature AND nurture, not nature alone.
+            self.W = [[0.6 * w + 0.4 * rng.uniform(-0.2, 0.2)
+                       + rng.uniform(-0.1, 0.1) for w in row]
                       for row in inherited["W"]]
-            self.inter = [[v + rng.uniform(-0.03, 0.03) for v in row]
+            self.inter = [[0.6 * v + rng.uniform(-0.06, 0.06) for v in row]
                           for row in inherited["inter"]]
         else:
             self.W = [[rng.uniform(-0.2, 0.2) for _ in range(event_dim)]
@@ -101,7 +106,7 @@ class SelfFormedEmotion:
         self.state = [0.0] * k          # fast emotion
         self.mood = [0.0] * k           # slow background
         self.rng = rng
-        self.lr = 0.02
+        self.lr = 0.035
         self.decorr = 0.01
 
     def feel(self, event_vec, significance):
