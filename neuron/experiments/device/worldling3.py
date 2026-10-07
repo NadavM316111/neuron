@@ -55,6 +55,8 @@ import statistics
 import sys
 import time
 import urllib.request
+import socket
+socket.setdefaulttimeout(15)  # no network call may ever hang the being
 from collections import deque
 
 import torch
