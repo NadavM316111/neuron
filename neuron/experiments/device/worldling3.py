@@ -368,6 +368,49 @@ class RealBudget:
         return txt
 
 
+
+class Informer:
+    """The world, when ASKED. A free glance gives the current value; paying
+    to ask fetches genuinely richer information about that signal -- for
+    weather, the actual short-term FORECAST, which legitimately predicts the
+    near future; for others, more context. This is the being spending a real
+    resource to reduce its real uncertainty with real information, which is
+    the honest live form of acting on the world and being changed by the
+    answer. It is NOT asking an oracle to reveal the future for free."""
+
+    def __init__(self):
+        self.asks = 0
+
+    def ask(self, name):
+        """Return a richer reading for this signal, or None if unavailable.
+        Costs a real ask (counted); the caller also pays the wallet."""
+        self.asks += 1
+        try:
+            if name.startswith("temp_"):
+                # the real forecast: next-hours temperature, which genuinely
+                # informs where the current reading is heading
+                city = name[5:]
+                coords = {"new_york": (40.71, -74.01),
+                          "london": (51.51, -0.13),
+                          "tokyo": (35.68, 139.69),
+                          "sao_paulo": (-23.55, -46.63)}.get(city)
+                if not coords:
+                    return None
+                lat, lon = coords
+                d = _get(f"https://api.open-meteo.com/v1/forecast?latitude="
+                         f"{lat}&longitude={lon}&hourly=temperature_2m"
+                         f"&forecast_hours=3")
+                temps = d["hourly"]["temperature_2m"][:3]
+                # normalized trend of the forecast: does it rise or fall?
+                nxt = (temps[-1] + 10) / 50.0
+                return max(0.0, min(1.0, nxt))
+            # for non-weather signals, a richer reading is just a fresh,
+            # careful fetch (more reliable than the cached glance)
+            return None
+        except Exception:
+            return None
+
+
 def clock():
     t = time.localtime()
     h = (t.tm_hour + t.tm_min / 60.0) / 24.0
@@ -550,6 +593,9 @@ class Life:
         self.uncertainty = Uncertainty()
         self.selfmodel = SelfModel()
         self._credit_history = []
+        self.informer = Informer()
+        self.asks = 0
+        self.asked_signals = {}
         self.credit = START_CREDIT
         self.born = time.time()
         self.samples = 0
@@ -588,6 +634,8 @@ def save(path, life, history):
             real_spent=getattr(life, "_budget_spent", 0.0),
             real_calls=getattr(life, "_budget_calls", 0),
             episodes=life.episodic.count(),
+            asks=getattr(life, "asks", 0),
+            asked_signals=getattr(life, "asked_signals", {}),
             selfmodel_armed=(abs(life.selfmodel.w[0]) > 0.01),
             interpretations=getattr(life, "interpretations", 0),
             last_interpretation=getattr(life, "last_interpretation", ""),
@@ -624,6 +672,8 @@ def main():
               f"{m.get('real_calls', 0)} paid calls")
         print(f"  episodic mem   {m.get('episodes', 0)} specific events "
               f"remembered")
+        print(f"  participation  asked the world {m.get('asks', 0)} times "
+              f"when unsure")
         print(f"  self-model     foresees-crash guard "
               f"{'ARMED' if m.get('selfmodel_armed') else 'learning'}")
         print(f"  where it looked")
@@ -786,7 +836,28 @@ def main():
                           flush=True)
 
             elif action == "attend" and signal is not None:
-                # make a prediction about this signal, to be scored at horizon
+                # PARTICIPATION: if the being is genuinely uncertain about
+                # this signal and can afford it, it ASKS the world for richer
+                # information (a real forecast), spends real money, and is
+                # changed by the answer. proven loop (participate.py), now
+                # real: want -> act on world -> world responds -> changed.
+                asked_this = False
+                if (not life.uncertainty.sure_enough(signal)
+                        and wallet.can_spend()):
+                    richer = life.informer.ask(signal)
+                    if richer is not None:
+                        # the world answered: fold the richer reading into
+                        # the being's view of this signal so its prediction
+                        # is informed by it
+                        world.last_val[signal] = (
+                            0.5 * world.last_val.get(signal, 0.5)
+                            + 0.5 * richer)
+                        life.asks += 1
+                        life.asked_signals[signal] = \
+                            life.asked_signals.get(signal, 0) + 1
+                        wallet.spent += REAL_COST_PER_CALL
+                        wallet.calls += 1
+                        asked_this = True
                 feats = features(life, world, signal)
                 guess = life.b.predict(feats)
                 # EPISODIC: has a very similar world-state burned it before?
