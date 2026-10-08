@@ -72,7 +72,11 @@ for _pth in (_here, _core, _neuron):
     if _pth not in sys.path:
         sys.path.insert(0, _pth)
 
-from sleeping import SleepLayer          # noqa: E402
+from sleeping import SleepLayer
+try:
+    from window import Window
+except Exception:
+    Window = None          # noqa: E402
 
 
 DOWN, SAME, UP = 0, 1, 2
@@ -596,6 +600,9 @@ class Life:
         self.informer = Informer()
         self.asks = 0
         self.asked_signals = {}
+        self.diary = []          # real events of its life
+        self._was_low = False
+        self.pub = {}            # the shared state its window shows
         self.credit = START_CREDIT
         self.born = time.time()
         self.samples = 0
@@ -608,6 +615,15 @@ class Life:
 
     def age_hours(self):
         return (time.time() - self.born) / 3600.0
+
+    def log_event(self, kind, **extra):
+        import time as _t
+        ev = {"kind": kind,
+              "when": _t.strftime('%b %d, %H:%M')}
+        ev.update(extra)
+        self.diary.append(ev)
+        if len(self.diary) > 60:
+            self.diary = self.diary[-60:]
 
     def accuracy(self):
         return (100.0 * sum(self.correct) / len(self.correct)
@@ -701,7 +717,15 @@ def main():
             history = json.load(f).get("history", [])
     gen = (history[-1]["gen"] + 1) if history else 0
     life = Life(gen, world.names, seed=gen)
+    life.log_event("inherit" if gen > 0 else "born")
     wallet = RealBudget(args.state)
+    _pubstate = {}
+    _win = None
+    if Window is not None:
+        import os as _os
+        _port = int(_os.environ.get("PORT", "8080"))
+        _win = Window(_pubstate)
+        _win.start(_port)
     if wallet.enabled:
         print(f"  REAL MONEY: ${wallet.spent:.2f} spent so far, "
               f"soft cap ${REAL_SOFT_CAP:.2f}. it can spend to "
@@ -778,6 +802,14 @@ def main():
                     life._budget_calls = wallet.calls
                     save(args.state, life, history)
 
+                # real near-death / recovery, logged honestly
+                if life.credit < 25 and not life._was_low:
+                    life.log_event("near_death")
+                    life._was_low = True
+                elif life.credit > 60 and life._was_low:
+                    life.log_event("recovered")
+                    life._was_low = False
+
                 if life.credit <= 0:
                     rec = dict(gen=life.gen, hours=life.age_hours(),
                                samples=life.samples,
@@ -786,6 +818,7 @@ def main():
                     print(f"\n  GENERATION {life.gen} DIED after "
                           f"{life.age_hours():.1f}h")
                     child = Life(life.gen + 1, world.names, seed=life.gen + 1)
+                    child.log_event("inherit")
                     child.b.restore(life.b.snapshot())
                     child.layer.canary_baseline = child.layer._canary_score()
                     child.layer._canary_now = child.layer.canary_baseline
@@ -852,9 +885,13 @@ def main():
                         world.last_val[signal] = (
                             0.5 * world.last_val.get(signal, 0.5)
                             + 0.5 * richer)
+                        if life.asks == 0:
+                            life.log_event("first_ask")
                         life.asks += 1
                         life.asked_signals[signal] = \
                             life.asked_signals.get(signal, 0) + 1
+                        life.log_event("learned", about=signal.replace(
+                            "temp_", "").replace("_", " "))
                         wallet.spent += REAL_COST_PER_CALL
                         wallet.calls += 1
                         asked_this = True
@@ -864,6 +901,8 @@ def main():
                 # (recorded as a note; in this thin world "burned" = a large
                 # prediction error event, logged when scored below.)
                 life._recall_flag = life.episodic.recalls_disaster(feats)
+                if life._recall_flag:
+                    life.log_event("recall")
                 pending.append((signal, now + horizon, guess, feats))
                 life.attends += 1
                 life.attended_counts[signal] += 1
@@ -874,6 +913,37 @@ def main():
 
             for nme in life.names:
                 life.since_attended[nme] += 1
+
+            # keep the being's public window current with its REAL state
+            if _win is not None:
+                import time as _t
+                hrs = life.age_hours()
+                age = ("newly alive" if hrs < 1 else
+                       f"alive {int(hrs)} hours" if hrs < 48 else
+                       f"alive {int(hrs/24)} days")
+                em = life.wants.committed or "taking in the world"
+                head = {"consolidate": "going quiet to turn over what it saw",
+                        "reach": "reaching out to the world",
+                        "attend": "watching the world, predicting"}.get(
+                            em if isinstance(em, str) else "", 
+                            "living, moment to moment")
+                emo_vec = []
+                try:
+                    emo_vec = [round(x, 2) for x in
+                               getattr(life.wants, "signal_value", {}).values()][:4]
+                except Exception:
+                    emo_vec = []
+                _pubstate.clear()
+                _pubstate.update(dict(
+                    generation=life.gen, age=age, headline=head,
+                    emotion=emo_vec or [0.0, 0.0, 0.0, 0.0],
+                    perception={n.replace("temp_", "").replace("_", " "):
+                                world.last_val.get(n, 0.5)
+                                for n in life.names},
+                    journal=life.diary,
+                    asks=life.asks, spent=wallet.spent,
+                    episodes=life.episodic.count(),
+                    updated=_t.strftime("%b %d, %H:%M")))
             if life.samples % 200 == 0:
                 life.wants.decay()
 
