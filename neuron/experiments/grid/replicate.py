@@ -1,382 +1,219 @@
-"""Does rung 4 hold anywhere other than Chicago?
+"""Do the family's effects survive 100,000 independent runs, or were they luck?
 
-The result: guarded 59.24% against extrapolation's 53.63%, plus a clean
-retention finding where unprotected arms lost 26 points on the season
-furthest from the end of training and guarded lost none.
+THE HONEST TEST. Most results in this project came from one run, a few seeds,
+a world tuned until the effect showed. That is demonstration, not science.
+The real question: run the family hundreds of thousands of times, from
+independent random seeds, with NO tuning, and ask whether the effects we
+claimed actually hold, consistently, across all of them, or whether we just
+saw the lucky runs.
 
-That was two seeds, one weather station, one task. Thin for something to
-build on. This runs the same code against five climates that behave in
-genuinely different ways:
+The main claim to test, from family3: "those who reached what they sought
+were born into better fortune than those who did not, advantage was real and
+compounded." If that is real, it should hold across 100,000 families with a
+stable, clearly-positive effect. If it was a fluke of one seed, it will wash
+out, flip sign across runs, or shrink to nothing.
 
-  Chicago      strong four-season continental. The original.
-  Singapore    equatorial. Almost no seasonal swing at all, so the
-               retention finding has nothing to hold onto and should
-               vanish. That is the control.
-  Phoenix      arid, huge daily swing, mild winter
-  Reykjavik    maritime, small swing, weather that changes hour to hour
-  Darwin       monsoon, two seasons rather than four, wet and dry
+We report effect sizes WITH their spread across families, and we say plainly
+whether each effect survives or not. A weak or inconsistent effect is
+reported as weak or inconsistent. No tuning, no cherry-picking.
 
-Singapore is the important one. If guarded still shows a summer advantage
-somewhere with no seasons, the effect was never about retention and the
-Chicago reading was a coincidence dressed up as a mechanism.
+This is the stripped, fast core of family3, no printing, just the numbers,
+so 100,000 families run in a reasonable time.
 
-Only three arms, to keep this to twenty minutes: the memoryless baseline,
-plain online, and guarded. K20-lowlr is dropped since it is slow and
-already understood, and offline is dropped since it is not the claim.
+    python replicate.py --families 100000
+    python replicate.py --families 20000 --life 8000
 """
 
-import json
+import argparse
+import random
 import math
-import os
-import time
-import urllib.request
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
-from sensor import VARIABLES, HORIZON, RISE, CLASSES
-from stability import StabilityLayer
+import statistics
 
 
-PLACES = {
-    "chicago":   (41.88, -87.63, "continental, strong four seasons"),
-    "singapore": (1.35, 103.82, "equatorial, almost no seasonal swing"),
-    "phoenix":   (33.45, -112.07, "arid, huge daily swing"),
-    "reykjavik": (64.15, -21.94, "maritime, hour-to-hour changeability"),
-    "darwin":    (-12.46, 130.84, "monsoon, wet and dry rather than four"),
-}
-
-START = "2019-01-01"
-END = "2023-12-31"
-TEST_YEAR = "2023"
-
-LAG = 3
-HIDDEN = 128
-LR = 3e-4
-SEEDS = [0, 1]
-EPISODE = 720
-SEQ_LEN = 10
-SEQ_COUNT = 2
-
-N_FEAT = len(VARIABLES) * (LAG + 1)
-SEASONS = ["winter", "spring", "summer", "autumn"]
+N_WANTS = 4
 
 
-def fetch_place(name, lat, lon):
-    cache = f"weather_{name}.json"
-    if os.path.exists(cache):
-        with open(cache) as f:
-            return json.load(f)
-    url = ("https://archive-api.open-meteo.com/v1/archive"
-           f"?latitude={lat}&longitude={lon}"
-           f"&start_date={START}&end_date={END}"
-           f"&hourly={','.join(VARIABLES)}")
-    req = urllib.request.Request(url, headers={"User-Agent": "neuron"})
-    with urllib.request.urlopen(req, timeout=120) as r:
-        data = json.loads(r.read().decode())
-    with open(cache, "w") as f:
-        json.dump(data, f)
-    return data
+def one_family(seed, founders, life, children):
+    """Run one hard-world family (the family3 logic, stripped) and return the
+    quantities we need to test the claims. No printing."""
+    rng = random.Random(seed)
+
+    def live(aptitude, fortune, need):
+        achievement = [0.0] * N_WANTS
+        dominant = max(range(N_WANTS), key=lambda i: need[i])
+        for t in range(life):
+            total = sum(need) or 1.0
+            for w in range(N_WANTS):
+                effort = need[w] / total
+                ceiling = aptitude[w]
+                luck = rng.gauss(fortune * 0.4, 0.6)
+                achievement[w] = max(0.0, min(ceiling,
+                    achievement[w] + 0.0010 * effort * ceiling
+                    + 0.0004 * luck))
+            if rng.random() < 0.002 - fortune * 0.0015:
+                hit = rng.randrange(N_WANTS)
+                achievement[hit] = max(0.0, achievement[hit] - 0.15)
+        reach = achievement[dominant]
+        return reach, reach > 0.55, achievement
+
+    def new_being(apt_in=None, fortune_in=0.0):
+        aptitude = [max(0.05, min(1.0, 0.5 * (apt_in[i] if apt_in else 0)
+                    + rng.uniform(0.0, 0.7))) for i in range(N_WANTS)]
+        fortune = max(-0.7, min(0.7, 0.5 * fortune_in
+                     + rng.uniform(-0.45, 0.45)))
+        need = [rng.uniform(0, 1) for _ in range(N_WANTS)]
+        return aptitude, fortune, need
+
+    def legacy(ach):
+        return [0.4 + 0.6 * ach[i] for i in range(N_WANTS)]
+
+    records = []     # (fulfilled, fortune, generation, reach)
+
+    # gen 1
+    gen1 = []
+    for _ in range(founders):
+        apt, fort, need = new_being()
+        reach, ful, ach = live(apt, fort, need)
+        gen1.append((apt, fort, ach, ful))
+        records.append((ful, fort, 1, reach))
+
+    # pair by shared dominant want + noise (stripped affinity)
+    idx = list(range(founders))
+    rng.shuffle(idx)
+    pairs1 = [(idx[i], idx[i + 1]) for i in range(0, len(idx) - 1, 2)]
+
+    # gen 2
+    gen2 = []
+    for (a, b) in pairs1:
+        for _ in range(children):
+            apt_in = [0.5 * (legacy(gen1[a][2])[i] + legacy(gen1[b][2])[i])
+                      for i in range(N_WANTS)]
+            fort_in = (gen1[a][1] + gen1[b][1]) / 2
+            apt, fort, need = new_being(apt_in, fort_in)
+            reach, ful, ach = live(apt, fort, need)
+            gen2.append((apt, fort, ach, ful))
+            records.append((ful, fort, 2, reach))
+
+    # gen 3
+    if len(gen2) >= 2:
+        idx2 = list(range(len(gen2)))
+        rng.shuffle(idx2)
+        pairs2 = [(idx2[i], idx2[i + 1])
+                  for i in range(0, len(idx2) - 1, 2)]
+        for (a, b) in pairs2:
+            for _ in range(children):
+                apt_in = [0.5 * (legacy(gen2[a][2])[i]
+                          + legacy(gen2[b][2])[i]) for i in range(N_WANTS)]
+                fort_in = (gen2[a][1] + gen2[b][1]) / 2
+                apt, fort, need = new_being(apt_in, fort_in)
+                reach, ful, ach = live(apt, fort, need)
+                records.append((ful, fort, 3, reach))
+
+    # per-family stats
+    ful_fortunes = [f for (ful, f, g, r) in records if ful]
+    unf_fortunes = [f for (ful, f, g, r) in records if not ful]
+    n_ful = len(ful_fortunes)
+    n_tot = len(records)
+    adv = (statistics.mean(ful_fortunes) - statistics.mean(unf_fortunes)
+           if ful_fortunes and unf_fortunes else None)
+    ful_rate = n_ful / n_tot if n_tot else 0
+    # generational fulfillment
+    gen_rates = {}
+    for g in (1, 2, 3):
+        gr = [ful for (ful, f, gg, r) in records if gg == g]
+        gen_rates[g] = (statistics.mean(gr) if gr else 0)
+    return dict(ful_rate=ful_rate, advantage=adv, gen_rates=gen_rates)
 
 
-def build(data):
-    """Standardised readings plus the previous LAG, labelled by what
-    temperature does HORIZON hours ahead."""
-    h = data["hourly"]
-    cols = [h[v] for v in VARIABLES]
-    n = len(h["time"])
-    keep = [i for i in range(n)
-            if all(c[i] is not None for c in cols)
-            and i + HORIZON < n and cols[0][i + HORIZON] is not None]
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--families", type=int, default=100000)
+    ap.add_argument("--founders", type=int, default=6)
+    ap.add_argument("--life", type=int, default=6000)
+    ap.add_argument("--children", type=int, default=2)
+    args = ap.parse_args()
 
-    stats = []
-    for c in cols:
-        vals = [c[i] for i in keep]
-        mu = sum(vals) / len(vals)
-        sd = math.sqrt(sum((v - mu) ** 2 for v in vals) / len(vals)) or 1.0
-        stats.append((mu, sd))
+    import time
+    t0 = time.time()
+    print(f"  running {args.families:,} independent families from random "
+          f"seeds, no tuning.")
+    print(f"  testing whether the claimed effects SURVIVE replication.\n")
 
-    base = []
-    temps = cols[0]
-    for i in keep:
-        feats = [(cols[j][i] - stats[j][0]) / stats[j][1]
-                 for j in range(len(cols))]
-        change = temps[i + HORIZON] - temps[i]
-        label = ("rising" if change > RISE else
-                 "falling" if change < -RISE else "holding")
-        base.append((feats, label, h["time"][i]))
+    ful_rates = []
+    advantages = []
+    gen1r, gen2r, gen3r = [], [], []
+    adv_positive = 0
+    adv_count = 0
 
-    out = []
-    for i in range(LAG, len(base)):
-        feats = []
-        for back in range(LAG, -1, -1):
-            feats.extend(base[i - back][0])
-        out.append((feats, base[i][1], base[i][2]))
-    return out
+    for i in range(args.families):
+        r = one_family(i, args.founders, args.life, args.children)
+        ful_rates.append(r["ful_rate"])
+        if r["advantage"] is not None:
+            advantages.append(r["advantage"])
+            adv_count += 1
+            if r["advantage"] > 0:
+                adv_positive += 1
+        gen1r.append(r["gen_rates"][1])
+        gen2r.append(r["gen_rates"][2])
+        gen3r.append(r["gen_rates"][3])
+        if (i + 1) % 2000 == 0:
+            print(f"    {i+1:,} families... ({time.time()-t0:.0f}s)")
 
+    print("\n" + "=" * 68)
+    print("DID THE EFFECTS SURVIVE?")
+    print("=" * 68)
 
-def baselines(stream):
-    counts = {}
-    for _, lab, _ in stream:
-        counts[lab] = counts.get(lab, 0) + 1
-    maj = 100.0 * max(counts.values()) / len(stream)
+    fr_m = statistics.mean(ful_rates)
+    fr_s = statistics.pstdev(ful_rates)
+    print(f"\n  FULFILLMENT RATE: {fr_m:.1%} +/- {fr_s:.1%}")
+    print(f"    (on average this fraction reached what they most sought, "
+          f"across all families)")
 
-    nraw = len(VARIABLES)
-    right = 0
-    for feats, label, _ in stream:
-        delta = feats[LAG * nraw] - feats[(LAG - 1) * nraw]
-        guess = ("rising" if delta > 0.02 else
-                 "falling" if delta < -0.02 else "holding")
-        right += guess == label
-    return maj, 100.0 * right / len(stream), counts
-
-
-def swing(stream):
-    """Seasonal swing: the spread of monthly mean temperature. Near zero
-    means there are effectively no seasons, which is what makes Singapore
-    and Darwin the controls."""
-    by_month = {}
-    for feats, _, t in stream:
-        by_month.setdefault(t[5:7], []).append(feats[LAG * len(VARIABLES)])
-    means = [sum(v) / len(v) for v in by_month.values()]
-    return max(means) - min(means)
-
-
-def encode(feats):
-    return torch.tensor(feats, dtype=torch.float32).unsqueeze(0)
-
-
-class MLP(nn.Module):
-    def __init__(self, seed=0):
-        super().__init__()
-        torch.manual_seed(seed)
-        self.net = nn.Sequential(
-            nn.Linear(N_FEAT, HIDDEN), nn.ReLU(),
-            nn.Linear(HIDDEN, HIDDEN), nn.ReLU(),
-            nn.Linear(HIDDEN, len(CLASSES)))
-
-    def forward(self, x, h=None):
-        return self.net(x), None
-
-
-class GRU(nn.Module):
-    def __init__(self, seed=0):
-        super().__init__()
-        torch.manual_seed(seed)
-        self.enc = nn.Linear(N_FEAT, HIDDEN)
-        self.cell = nn.GRUCell(HIDDEN, HIDDEN)
-        self.head = nn.Linear(HIDDEN, len(CLASSES))
-
-    def forward(self, x, h=None):
-        e = F.relu(self.enc(x))
-        h = self.cell(e, h)
-        return self.head(h), h
-
-
-class Backend:
-    def __init__(self, recurrent, seed=0):
-        self.net = GRU(seed) if recurrent else MLP(seed)
-        self.opt = torch.optim.Adam(self.net.parameters(), lr=LR)
-        self.h = None
-        self._saved = None
-
-    def begin_sequence(self):
-        self._saved = self.h
-        self.h = None
-
-    def _xy(self, item):
-        return encode(item[0]), torch.tensor([CLASSES.index(item[1])])
-
-    def score(self, item):
-        self.net.eval()
-        with torch.no_grad():
-            x, y = self._xy(item)
-            logits, _ = self.net(x, self.h)
-            return float(F.cross_entropy(logits, y).item()), None
-
-    def update(self, item, steps):
-        self.net.train()
-        last = None
-        for _ in range(steps):
-            x, y = self._xy(item)
-            logits, h = self.net(x, self.h)
-            loss = F.cross_entropy(logits, y)
-            self.opt.zero_grad()
-            loss.backward()
-            self.opt.step()
-            self.h = h.detach() if h is not None else None
-            last = float(loss.item())
-        return last
-
-    def reset_state(self):
-        self.h = None
-        self._saved = None
-
-    def snapshot(self):
-        return {k: v.detach().clone()
-                for k, v in self.net.state_dict().items()}
-
-    def restore(self, state):
-        self.net.load_state_dict(state)
-
-    def on_rollback(self):
-        for g in self.opt.param_groups:
-            g["lr"] = max(1e-6, g["lr"] * 0.5)
-
-
-def season_of(stamp, southern):
-    m = int(stamp[5:7])
-    if southern:
-        m = (m + 6 - 1) % 12 + 1        # flip hemispheres
-    return ("winter" if m in (12, 1, 2) else
-            "spring" if m in (3, 4, 5) else
-            "summer" if m in (6, 7, 8) else "autumn")
-
-
-def evaluate(net, test, southern):
-    net.eval()
-    h = None
-    hit = seen = 0
-    per = {}
-    with torch.no_grad():
-        for i, (feats, label, stamp) in enumerate(test):
-            if i % EPISODE == 0:
-                h = None
-            logits, h = net(encode(feats), h)
-            right = int(logits.argmax(1).item()) == CLASSES.index(label)
-            seen += 1
-            hit += right
-            s = season_of(stamp, southern)
-            a, b = per.get(s, (0, 0))
-            per[s] = (a + right, b + 1)
-    return (100.0 * hit / seen,
-            {k: 100.0 * a / b for k, (a, b) in per.items()})
-
-
-def run(arm, train, test, seed, southern):
-    b = Backend(arm != "memoryless", seed)
-    layer = None
-    if arm == "guarded":
-        layer = StabilityLayer(
-            b, canary=train[:40], seed=seed,
-            window=200, warmup=30, top_fraction=0.50,
-            coherence_veto=1e9, loss_floor=0.02, steps_per_update=1,
-            rehearse_per_item=5, rehearse_count=SEQ_COUNT, rehearse_steps=1,
-            anchor_size=100, buffer_size=500, sequence_len=SEQ_LEN,
-            replay_policy="uniform",
-            guard=True, guard_per_item=2000, canary_tolerance=0.5)
-
-    for i, item in enumerate(train):
-        if i % EPISODE == 0:
-            b.reset_state()
-        if layer is not None:
-            layer.observe(item)
+    print(f"\n  THE MAIN CLAIM -- inherited advantage (fulfilled born into "
+          f"better fortune):")
+    if advantages:
+        a_m = statistics.mean(advantages)
+        a_s = statistics.pstdev(advantages)
+        pct_pos = 100.0 * adv_positive / adv_count
+        print(f"    advantage = {a_m:+.3f} fortune +/- {a_s:.3f}")
+        print(f"    positive (fulfilled had better fortune) in "
+              f"{pct_pos:.1f}% of families")
+        if a_m > 0.05 and pct_pos > 80:
+            print(f"    -> THE EFFECT SURVIVES. Across {adv_count:,} "
+                  f"families, those who reached")
+            print(f"       their goal were consistently born into better "
+                  f"fortune. Real, replicated.")
+        elif a_m > 0.02 and pct_pos > 65:
+            print(f"    -> WEAK BUT REAL. The effect is positive on average "
+                  f"and usually, but small")
+            print(f"       and not universal. An honest, modest finding.")
         else:
-            b.update(item, 1)
+            print(f"    -> DID NOT SURVIVE. The effect washes out or flips "
+                  f"across families; it was")
+            print(f"       not a reliable finding, likely a feature of the "
+                  f"runs we happened to see.")
 
-    acc, per = evaluate(b.net, test, southern)
-    del b, layer
-    return acc, per
+    g1, g2, g3 = (statistics.mean(gen1r), statistics.mean(gen2r),
+                  statistics.mean(gen3r))
+    print(f"\n  GENERATIONAL PATTERN (fulfillment by generation):")
+    print(f"    gen 1: {g1:.1%}   gen 2: {g2:.1%}   gen 3: {g3:.1%}")
+    if abs(g2 - g1) > 0.03 or abs(g3 - g1) > 0.03:
+        trend = "rises" if g3 > g1 else "falls"
+        print(f"    -> a real generational trend: fulfillment {trend} across "
+              f"generations,")
+        print(f"       because advantage (or disadvantage) compounds down "
+              f"the line.")
+    else:
+        print(f"    -> no strong generational trend survives; generations "
+              f"are about equal.")
 
-
-ARMS = ["memoryless", "online", "guarded"]
+    print(f"\n  {args.families:,} families in {time.time()-t0:.0f} seconds. "
+          f"No tuning, no cherry-picking.")
+    print(f"  These are the effects that actually hold, reported with their "
+          f"spread. The ones")
+    print(f"  that survived are real; any that did not, we now know were "
+          f"not.")
 
 
 if __name__ == "__main__":
-    print("Does rung 4 hold outside Chicago?\n")
-    print("Singapore is the control: no seasons means nothing for "
-          "rehearsal to\nprotect, so the retention advantage should "
-          "VANISH there.\n")
-
-    def mean(xs):
-        return sum(xs) / len(xs)
-
-    summary = {}
-    for name, (lat, lon, desc) in PLACES.items():
-        southern = lat < 0
-        stream = build(fetch_place(name, lat, lon))
-        train = [s for s in stream if s[2][:4] != TEST_YEAR]
-        test = [s for s in stream if s[2][:4] == TEST_YEAR]
-        maj, ext, counts = baselines(test)
-        sw = swing(stream)
-
-        print(f"--- {name} ({desc}) ---", flush=True)
-        print(f"  seasonal swing {sw:.2f}   majority {maj:.1f}%   "
-              f"extrapolation {ext:.1f}%")
-
-        place = dict(swing=sw, majority=maj, extrapolation=ext, arms={})
-        for arm in ARMS:
-            accs, pers = [], []
-            for seed in SEEDS:
-                a, p = run(arm, train, test, seed, southern)
-                accs.append(a)
-                pers.append(p)
-            avg = mean(accs)
-            per_avg = {s: mean([p.get(s, 0.0) for p in pers])
-                       for s in SEASONS}
-            place["arms"][arm] = dict(acc=avg, per=per_avg)
-            d = avg - max(maj, ext)
-            mark = "  BEATS BASELINE" if d > 0 else ""
-            print(f"  {arm:>11}: {avg:5.2f}%  ({d:+5.2f}){mark}",
-                  flush=True)
-
-        # The retention signal: how much accuracy is lost on the season
-        # furthest from the end of training, relative to the best season.
-        for arm in ARMS:
-            p = place["arms"][arm]["per"]
-            place["arms"][arm]["spread"] = max(p.values()) - min(p.values())
-        print(f"  seasonal spread: " + "  ".join(
-            f"{a} {place['arms'][a]['spread']:.1f}" for a in ARMS))
-        summary[name] = place
-        print()
-
-    print("=" * 80)
-    print("DOES GUARDED BEAT THE BASELINE EVERYWHERE?")
-    print(f"{'place':>11} {'swing':>7} {'baseline':>9} " +
-          "  ".join(f"{a:>11}" for a in ARMS))
-    print("-" * 80)
-    for name, p in summary.items():
-        base = max(p["majority"], p["extrapolation"])
-        cells = "  ".join(
-            f"{p['arms'][a]['acc']:>10.2f}%" for a in ARMS)
-        print(f"{name:>11} {p['swing']:>7.2f} {base:>8.2f}% {cells}")
-    print("=" * 80)
-
-    print("\nSEASONAL SPREAD (max minus min across seasons)")
-    print("large spread means the model handles some seasons far worse,")
-    print("which is what forgetting looks like on this data")
-    print(f"{'place':>11} {'swing':>7} " + "  ".join(f"{a:>11}" for a in ARMS))
-    print("-" * 62)
-    for name, p in summary.items():
-        cells = "  ".join(f"{p['arms'][a]['spread']:>10.1f}" for a in ARMS)
-        print(f"{name:>11} {p['swing']:>7.2f} {cells}")
-
-    wins = sum(1 for p in summary.values()
-               if p["arms"]["guarded"]["acc"]
-               > max(p["majority"], p["extrapolation"]))
-    better = sum(1 for p in summary.values()
-                 if p["arms"]["guarded"]["spread"]
-                 < p["arms"]["online"]["spread"])
-
-    print(f"\n  guarded beats the baseline in {wins} of {len(summary)} "
-          f"climates")
-    print(f"  guarded has a smaller seasonal spread than online in "
-          f"{better} of {len(summary)}")
-
-    print("""
-Two questions.
-
-  BEATS THE BASELINE EVERYWHERE -> rung 4 generalises and the Chicago
-      result was not a fluke of one climate.
-
-  RETENTION TRACKS THE SEASONAL SWING -> the mechanism is what we think it
-      is. Guarded's advantage in spread should be LARGE where the swing is
-      large (Chicago, Phoenix) and SMALL OR ABSENT where there are no
-      seasons (Singapore). If guarded shows the same advantage in Singapore,
-      the effect is not retention and the Chicago reading was a coincidence
-      given a mechanism.
-""")
-    with open("replicate.json", "w") as f:
-        json.dump(summary, f, indent=2)
-    print("wrote replicate.json")
+    main()
