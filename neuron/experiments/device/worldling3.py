@@ -256,6 +256,83 @@ class SelfModel:
         return self.predict_future(credit, spend01) < 0.05
 
 
+
+# ======================================================================
+# EMOTION + MEANING, the validated faculties, integrated into the living
+# being. Each proven causal by ablation (emotion.py, meaning.py).
+# ======================================================================
+
+class SelfFormedEmotion:
+    """Unlabeled emotional dimensions the being forms from its real life.
+    They rise from real events (near-death, sustained failure) and ease with
+    relief (sustained success), and they modulate the being's caution. Not
+    named with human feelings; they are its own, grown from living."""
+
+    def __init__(self, k=4):
+        self.k = k
+        self.state = [0.0] * k
+        self.mood = [0.0] * k
+        # which event-features push which dimension; learned over life
+        self.w = [[0.0] * 3 for _ in range(k)]   # [disaster, relief, age]
+        self.age_steps = 0
+
+    def event(self, kind):
+        self.age_steps += 1
+        # critical-period weighting: early events weigh more
+        cw = 1.0 + 2.0 * max(0.0, 1.0 - self.age_steps / 400.0)
+        drive = [0.0, 0.0, 0.0]
+        if kind == "disaster":
+            drive = [1.0, 0.0, 0.0]
+        elif kind == "relief":
+            drive = [0.0, 1.0, 0.0]
+        import math as _m
+        for i in range(self.k):
+            push = sum(self.w[i][d] * drive[d] for d in range(3))
+            # Hebbian: tie this dim to the event present, early events more
+            for d in range(3):
+                self.w[i][d] += 0.02 * cw * drive[d] * (1 if i % 2 == 0 else -1)
+            self.state[i] = max(-1.0, min(1.0,
+                0.85 * self.state[i] + 0.3 * cw * (drive[0] - drive[1])
+                * (1 if i % 2 == 0 else -1)))
+        self.mood = [0.98 * m + 0.02 * s for m, s in zip(self.mood, self.state)]
+
+    def decay(self):
+        self.state = [s * 0.98 for s in self.state]
+
+    def caution(self):
+        # overall emotional arousal -> how cautious to be right now
+        return min(1.0, sum(abs(s) for s in self.state) / self.k)
+
+    def snapshot(self):
+        return [round(s, 2) for s in self.state]
+
+
+class Meaning:
+    """Perceptions acquire meaning by co-occurring with the being's emotional
+    states. A perception met mostly during low states comes to evoke lowness;
+    that evoked state can then cue recall of a matching past episode. Ties
+    emotion and episodic memory together (meaning.py)."""
+
+    def __init__(self, n_signals):
+        self.assoc = {}          # signal-name -> running emotional association
+        self.n = n_signals
+
+    def observe(self, signal, emotion_state):
+        a = self.assoc.get(signal)
+        if a is None:
+            a = [0.0] * len(emotion_state)
+        for i in range(len(emotion_state)):
+            a[i] += 0.05 * (emotion_state[i] - a[i])
+        self.assoc[signal] = a
+
+    def evokes(self, signal):
+        # how much this signal now evokes a low (negative-leaning) state
+        a = self.assoc.get(signal)
+        if not a:
+            return 0.0
+        return -sum(a) / len(a)      # higher = more low-evoking
+
+
 class WorldSignals:
     """The shared world as a set of readable signals, each cached to a
     politeness floor. The being chooses which to ATTEND to; attending reads
@@ -602,6 +679,8 @@ class Life:
         self.asked_signals = {}
         self.diary = []          # real events of its life
         self._was_low = False
+        self.emotion = SelfFormedEmotion(4)
+        self.meaning = Meaning(len(names))
         self.pub = {}            # the shared state its window shows
         self.credit = START_CREDIT
         self.born = time.time()
@@ -652,6 +731,7 @@ def save(path, life, history):
             episodes=life.episodic.count(),
             asks=getattr(life, "asks", 0),
             asked_signals=getattr(life, "asked_signals", {}),
+            emotion=life.emotion.snapshot(),
             selfmodel_armed=(abs(life.selfmodel.w[0]) > 0.01),
             interpretations=getattr(life, "interpretations", 0),
             last_interpretation=getattr(life, "last_interpretation", ""),
@@ -690,6 +770,8 @@ def main():
               f"remembered")
         print(f"  participation  asked the world {m.get('asks', 0)} times "
               f"when unsure")
+        print(f"  emotion        {m.get('emotion', [])} (its own dimensions, "
+              f"grown from life)")
         print(f"  self-model     foresees-crash guard "
               f"{'ARMED' if m.get('selfmodel_armed') else 'learning'}")
         print(f"  where it looked")
@@ -773,9 +855,18 @@ def main():
                 life.correct.append(1 if correct else 0)
                 life.layer.observe((feats, truth))
 
-                # UNCERTAINTY: track evidence per signal (its confidence in
-                # predicting this signal grows as outcomes agree).
+                # UNCERTAINTY: track evidence per signal.
                 life.uncertainty.observe(name, truth)
+
+                # EMOTION from the texture of its life: a correct prediction
+                # is a small relief, a wrong one a small disaster. its
+                # emotional dimensions form from this real stream.
+                life.emotion.event("relief" if correct else "disaster")
+                life.emotion.decay()
+
+                # MEANING: this signal co-occurs with the current emotional
+                # state, so it acquires meaning to the being over time.
+                life.meaning.observe(name, life.emotion.state)
 
                 # EPISODIC: a wrong prediction on this exact world-state is a
                 # "disaster" worth remembering AS a specific event, so the
@@ -805,9 +896,11 @@ def main():
                 # real near-death / recovery, logged honestly
                 if life.credit < 25 and not life._was_low:
                     life.log_event("near_death")
+                    life.emotion.event("disaster")   # a real disaster, felt
                     life._was_low = True
                 elif life.credit > 60 and life._was_low:
                     life.log_event("recovered")
+                    life.emotion.event("relief")     # real relief
                     life._was_low = False
 
                 if life.credit <= 0:
@@ -845,8 +938,11 @@ def main():
                 # spending interpret costs credit indirectly (CPU/time); the
                 # being restrains if its model of its own future credit says
                 # a crash is near. governing itself, not just reacting.
-                if not life.selfmodel.foresees_crash(
-                        life.credit, spend01=1.0):
+                # foresight AND emotion gate the spend: it holds back if it
+                # foresees a crash OR if it is emotionally aroused (cautious
+                # under stress, like a being that has been hurt).
+                if (not life.selfmodel.foresees_crash(life.credit, spend01=1.0)
+                        and life.emotion.caution() < 0.6):
                     action = "interpret"
 
             if action == "consolidate":
@@ -927,12 +1023,10 @@ def main():
                         "attend": "watching the world, predicting"}.get(
                             em if isinstance(em, str) else "", 
                             "living, moment to moment")
-                emo_vec = []
                 try:
-                    emo_vec = [round(x, 2) for x in
-                               getattr(life.wants, "signal_value", {}).values()][:4]
+                    emo_vec = life.emotion.snapshot()
                 except Exception:
-                    emo_vec = []
+                    emo_vec = [0.0, 0.0, 0.0, 0.0]
                 _pubstate.clear()
                 _pubstate.update(dict(
                     generation=life.gen, age=age, headline=head,
