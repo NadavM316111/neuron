@@ -292,12 +292,21 @@ class SelfFormedEmotion:
             for d in range(3):
                 self.w[i][d] += 0.02 * cw * drive[d] * (1 if i % 2 == 0 else -1)
             self.state[i] = max(-1.0, min(1.0,
-                0.85 * self.state[i] + 0.3 * cw * (drive[0] - drive[1])
+                0.85 * self.state[i] + 0.18 * cw * (drive[0] - drive[1])
                 * (1 if i % 2 == 0 else -1)))
         self.mood = [0.98 * m + 0.02 * s for m, s in zip(self.mood, self.state)]
 
+    def nudge(self, amount):
+        # a gentle push, alternating sign per dimension so dims differentiate
+        for i in range(self.k):
+            self.state[i] = max(-1.0, min(1.0,
+                self.state[i] + amount * (1 if i % 2 == 0 else -1)))
+
     def decay(self):
-        self.state = [s * 0.98 for s in self.state]
+        # decay toward neutral faster, so emotion reflects the RECENT texture
+        # of life rather than accumulating forever
+        self.state = [s * 0.95 for s in self.state]
+        self.mood = [0.99 * m + 0.01 * s for m, s in zip(self.mood, self.state)]
 
     def caution(self):
         # overall emotional arousal -> how cautious to be right now
@@ -858,10 +867,11 @@ def main():
                 # UNCERTAINTY: track evidence per signal.
                 life.uncertainty.observe(name, truth)
 
-                # EMOTION from the texture of its life: a correct prediction
-                # is a small relief, a wrong one a small disaster. its
-                # emotional dimensions form from this real stream.
-                life.emotion.event("relief" if correct else "disaster")
+                # EMOTION from the texture of its life: ordinary correct/
+                # wrong predictions nudge emotion GENTLY (not full events,
+                # which are reserved for real disasters/recoveries), so the
+                # dimensions move and vary rather than pinning at the ceiling.
+                life.emotion.nudge(0.03 if correct else -0.03)
                 life.emotion.decay()
 
                 # MEANING: this signal co-occurs with the current emotional
