@@ -45,13 +45,29 @@ PHONEMES = ["ka", "ta", "mi", "no", "shu", "re", "la", "vo", "zi", "de",
 # generations face only the first few; later ones face more (the world asks
 # more of them as the language matures). labels are for US; beings never see
 # them.
-ALL_MEANINGS = [
-    "food", "danger", "other", "gone", "want", "safe",      # gen 0 base
-    "water", "young", "follow", "away", "here", "come",     # early additions
-    "sky", "dark", "many", "one", "give", "take",           # mid
-    "help", "sleep", "far", "near", "good", "bad",          # later
-    "mother", "hunt", "cold", "light", "fear", "rest",      # latest
+_CORE = [
+    "food", "danger", "other", "gone", "want", "safe",
+    "water", "young", "follow", "away", "here", "come",
+    "sky", "dark", "many", "one", "give", "take",
+    "help", "sleep", "far", "near", "good", "bad",
+    "mother", "hunt", "cold", "light", "fear", "rest",
 ]
+# a larger world: many more things a being might need to name. these are
+# concept labels for US; the beings invent every word themselves.
+_THINGS = ["stone","tree","river","hill","cave","wind","rain","sun","moon",
+    "star","fire","ice","root","leaf","seed","fruit","meat","bone","blood",
+    "skin","eye","hand","foot","voice","path","edge","deep","high","low",
+    "fast","slow","big","small","old","new","first","last","again","never",
+    "soft","hard","wet","dry","sharp","round","empty","full","open","shut",
+    "father","child","friend2","enemy","group","alone","above","below",
+    "inside","outside","before","after","now","then","day","night","season",
+    "warm","heavy","quiet","loud","hidden","seen","lost","found","broken",
+    "whole","clean","dirty","alive","dead","sick","well","strong","weak",
+    "climb","dig","swim","throw","catch","carry","build","break2","gather",
+    "share","guard","chase","flee","wait","watch","listen","call","answer",
+    "trust","doubt","joy","grief","anger","calm","hope","dread","memory",
+    "dream","name","mark","trade","gift","debt","leader","follower","elder"]
+ALL_MEANINGS = _CORE + _THINGS
 
 
 def invent_word(rng):
@@ -144,7 +160,7 @@ def main():
     total_compounds = 0
     for g in range(1, args.generations):
         # the world asks for more meanings as generations pass
-        want = min(len(ALL_MEANINGS), base_n + g * 3)
+        want = min(len(ALL_MEANINGS), base_n + g * 14)
         new_meanings = ALL_MEANINGS[:want]
         lex, inh, coined, comp = next_generation(
             lex, new_meanings, args.seed * 100 + g)
