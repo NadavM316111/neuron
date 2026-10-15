@@ -75,6 +75,7 @@ for _pth in (_here, _core, _neuron):
 from sleeping import SleepLayer
 try:
     from window import Window
+    from voice import Voice
 except Exception:
     Window = None          # noqa: E402
 
@@ -690,6 +691,10 @@ class Life:
         self._was_low = False
         self.emotion = SelfFormedEmotion(4)
         self.meaning = Meaning(len(names))
+        try:
+            self.voice = Voice()
+        except Exception:
+            self.voice = None
         self.pub = {}            # the shared state its window shows
         self.credit = START_CREDIT
         self.born = time.time()

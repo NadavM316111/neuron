@@ -41,43 +41,57 @@ class Voice:
     in its own language. The model, elsewhere, only translates the result."""
 
     def utterance_from_state(self, life, world):
-        """Compose an utterance (a list of (meaning, own-word) pairs) from the
-        being's genuine live state. Every meaning included is something the
-        being's state actually supports right now. Nothing is invented."""
+        """Compose an utterance from the being's OWN LEARNED state. Nothing is
+        hand-labeled: whether it feels aversive, whether a perception means
+        something bad to it, comes from the being's own emotion and meaning
+        systems, which it formed from living. We do not tell it what danger is;
+        it tells us, by its own learned aversion."""
         said = []
 
-        # 1. it is always here; a being announces its presence. (true by
-        #    definition: it exists and is running.)
+        # it is here (true by the fact of running).
         said.append(("i_am_here", LEXICON["i_am_here"]))
 
-        # 2. its emotional state: if aroused/low, it wants help; if calm, safe.
+        # its OWN emotional state decides the rest. we read its learned
+        # emotional dimensions and its learned MEANING of what it perceives.
         try:
             emo = life.emotion.snapshot()
-            arousal = sum(abs(x) for x in emo) / max(1, len(emo))
         except Exception:
-            arousal = 0.0
-        if arousal > 0.5:
-            said.append(("want_help", LEXICON["want_help"]))
-        elif arousal < 0.15:
-            said.append(("safe_now", LEXICON["safe_now"]))
+            emo = [0.0, 0.0, 0.0, 0.0]
+        # the being's own felt lowness: the net negative lean of its own
+        # emotional dimensions (not a threshold we assign a meaning to; just
+        # how negative its own state is).
+        lowness = -sum(emo) / max(1, len(emo))
 
-        # 3. its perception: if a signal it attends to looks bad/extreme, it
-        #    perceives danger. (true from its real perception of the world.)
+        # DANGER is NOT defined by us. the being says danger only when its OWN
+        # MEANING system has learned that what it currently perceives evokes a
+        # low/aversive state. (life.meaning.evokes(signal) is how much a signal
+        # has come to mean lowness to the being, learned from co-occurrence
+        # with its own bad states.) it fears what it has LEARNED to fear.
         try:
-            vals = [world.last_val.get(n, 0.5) for n in life.names]
-            if any(v > 0.85 or v < 0.15 for v in vals):
+            worst = 0.0
+            for n in life.names:
+                ev = life.meaning.evokes(n)   # its own learned aversion to n
+                if ev > worst:
+                    worst = ev
+            if worst > 0.15:        # it genuinely finds something aversive now
                 said.append(("danger_near", LEXICON["danger_near"]))
         except Exception:
             pass
 
-        # 4. near-death in its real recent life -> nothing_left / want_help
+        # want help / safe: from its OWN felt state, not a world rule.
+        if lowness > 0.2:
+            said.append(("want_help", LEXICON["want_help"]))
+        elif lowness < -0.1:
+            said.append(("safe_now", LEXICON["safe_now"]))
+
+        # near-death it actually lived
         try:
             if getattr(life, "_was_low", False):
                 said.append(("nothing_left", LEXICON["nothing_left"]))
         except Exception:
             pass
 
-        # 5. a perception recently recalled a hard memory -> it_is_gone
+        # a perception that recalled a hard memory (its own meaning system)
         try:
             if getattr(life, "_recall_flag", False):
                 said.append(("it_is_gone", LEXICON["it_is_gone"]))
