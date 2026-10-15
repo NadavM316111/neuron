@@ -709,6 +709,18 @@ class Life:
     def age_hours(self):
         return (time.time() - self.born) / 3600.0
 
+    def speak(self, world):
+        """The being speaks from its OWN real state. Returns its utterance in
+        its own language plus the meanings behind it (its own). The model, if
+        used, only translates these meanings - it never authors them."""
+        if getattr(self, "voice", None) is None:
+            return None
+        utt = self.voice.utterance_from_state(self, world)
+        return {
+            "own_language": self.voice.own_language(utt),
+            "meanings": self.voice.meanings(utt),
+        }
+
     def log_event(self, kind, **extra):
         import time as _t
         ev = {"kind": kind,
