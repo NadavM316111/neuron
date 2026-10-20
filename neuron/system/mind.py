@@ -230,6 +230,33 @@ class Backend:
         (total / len(items)).backward()
         self.opt.step()
 
+    def batched_consolidate(self, items, batch_size=256):
+        """GPU-efficient consolidation: process stored experience in parallel
+        batches instead of one at a time. Same learning signal (replay of past
+        experience), but it feeds the GPU properly, so it is dramatically
+        faster at large brain sizes. The live stream stays sequential; only
+        this offline replay batches."""
+        if not items:
+            return
+        dev = next(self.net.parameters()).device
+        # build one big tensor of all feature vectors and labels
+        feats = torch.tensor([it["feats"] for it in items],
+                             dtype=torch.float32, device=dev)
+        labels = torch.tensor([it["label"] for it in items],
+                             dtype=torch.long, device=dev)
+        n = feats.shape[0]
+        for start in range(0, n, batch_size):
+            xb = feats[start:start + batch_size]
+            yb = labels[start:start + batch_size]
+            self.opt.zero_grad()
+            # the GRU processes the batch in parallel (one step each)
+            e = torch.tanh(self.net.enc(xb))
+            h = self.net.cell(e)                 # (batch, hidden), parallel
+            logits = self.net.head(h)
+            loss = F.cross_entropy(logits, yb)
+            loss.backward()
+            self.opt.step()
+
     def predict(self, feats):
         with torch.no_grad():
             x = torch.tensor(feats, dtype=torch.float32).unsqueeze(0)
@@ -444,7 +471,9 @@ class Mind:
 
         if action == "consolidate":
             # offline replay (sleep): stabilize learning
-            self.backend.consolidate(self.replay[-8:])
+            # batched consolidation: replay a larger slice in
+            # parallel (GPU-efficient) instead of 8 one-at-a-time
+            self.backend.batched_consolidate(self.replay[-256:])
             self.emotion.decay()
             # EARNED GROWTH: if it has been struggling hard for a sustained
             # stretch (its recent accuracy stays low), it has hit its capacity
