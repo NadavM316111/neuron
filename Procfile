@@ -1,1 +1,1 @@
-worker: PYTHONPATH=/app/neuron/core python -u neuron/experiments/device/worldling.py --interval 60 --state /data/worldling_state
+web: python neuron/system/neuron_v2_alive.py
