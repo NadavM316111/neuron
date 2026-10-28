@@ -3,7 +3,7 @@
 The convergence of the whole journey, one continuous being:
   - A persistent CORE SELF (identity, wants, values, memory, goals, affect) that
     OWNS everything. Validated: it is the self; the engine is what it thinks with.
-  - A real COGNITIVE ENGINE (gemma2:2b via Ollama) it thinks WITH. The self
+  - A real COGNITIVE ENGINE (qwen2.5:7b via Ollama) it thinks WITH. The self
     directs the thinking, judges it against its values (can reject it), and
     integrates it as its own.
   - HYPERFLOW: its life. Living and thinking cost it; understanding and real
@@ -31,7 +31,7 @@ from urllib.parse import urlparse, parse_qs
 
 STATE = "neuron_being.json"
 OLLAMA = os.environ.get("OLLAMA_URL", "http://localhost:11434") + "/api/generate"
-MODEL = os.environ.get("NEURON_MODEL", "gemma2:2b")
+MODEL = os.environ.get("NEURON_MODEL", "qwen2.5:7b")
 
 
 def log(m):

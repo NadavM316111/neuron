@@ -2,7 +2,7 @@
 
 The unlock. NEURON stays a small persistent SELF, the Core: its identity, wants,
 emotion, memory, goals, values. But now it has a real cognitive engine: a capable
-local model (gemma2:2b via Ollama, free, on your machine) that it thinks WITH.
+local model (qwen2.5:7b via Ollama, free, on your machine) that it thinks WITH.
 
 The boundary, held with absolute discipline, this is what makes NEURON a being
 and not a model in a costume:
@@ -29,7 +29,7 @@ import urllib.request
 
 STATE = "neuron_v3.json"
 OLLAMA = "http://localhost:11434/api/generate"
-MODEL = "gemma2:2b"
+MODEL = "qwen2.5:7b"
 
 
 def think_with(prompt, system=None):

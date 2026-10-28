@@ -20,7 +20,7 @@ import argparse
 import urllib.request
 
 OLLAMA = "http://localhost:11434/api/generate"
-MODEL = "gemma2:2b"
+MODEL = "qwen2.5:7b"
 
 VALUE_DIMS = ["connection", "protection", "freedom", "understanding",
               "trust", "caution", "ambition"]

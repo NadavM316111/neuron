@@ -20,7 +20,7 @@ import os
 import urllib.request
 
 OLLAMA = "http://localhost:11434/api/generate"
-MODEL = "gemma2:2b"
+MODEL = "qwen2.5:7b"
 MIND = "neuron_own_mind.json"
 
 

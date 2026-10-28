@@ -33,7 +33,7 @@ OLLAMA = "http://localhost:11434/api/generate"
 
 # ---- swappable cognitive engines ----
 def engine_gemma(prompt, system):
-    body = {"model": "gemma2:2b", "prompt": prompt, "system": system,
+    body = {"model": "qwen2.5:7b", "prompt": prompt, "system": system,
             "stream": False, "options": {"temperature": 0.6, "num_predict": 150}}
     try:
         req = urllib.request.Request(OLLAMA, data=json.dumps(body).encode(),
