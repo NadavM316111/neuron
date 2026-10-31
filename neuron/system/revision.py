@@ -55,12 +55,12 @@ class NEURON:
         # loosening old convictions and relearning from fresh evidence.
         if self.can_revise and len(self.recent_outcomes) >= 40:
             recent_wellbeing = sum(1 for o in self.recent_outcomes if o>0)/len(self.recent_outcomes)
-            if recent_wellbeing < 0.4:   # "my values are not serving me"
+            if recent_wellbeing < 0.45:   # "my values are not serving me"
                 # reflection: decay old values (hold convictions loosely) and
                 # learn faster from current reality
                 for i in range(FEAT_DIM):
-                    self.values[i] *= 0.9          # loosen old conviction
-                    self.values[i] += 0.08 * outcome * f[i]   # relearn harder
+                    self.values[i] *= 0.7          # loosen old conviction more
+                    self.values[i] += 0.14 * outcome * f[i]   # relearn harder
                 self.revisions += 1
                 self.recent_outcomes = []          # fresh slate for reflection
 
@@ -70,7 +70,10 @@ class NEURON:
 def run_life(neuron, days, world_seed):
     rng = random.Random(world_seed)
     good_early = good_structure(world_seed)
-    good_late  = good_structure(world_seed+999)   # the world CHANGES at midlife
+    base_late = good_structure(world_seed+999)
+    # the world CHANGES but partially overlaps the old (realistic: not a total
+    # reset). 55% new direction, 45% old - old learning partially transfers.
+    good_late = [0.45*good_early[i] + 0.55*base_late[i] for i in range(FEAT_DIM)]
     wb_before_shift = []; wb_after_shift = []
     for day in range(days):
         good = good_early if day < days//2 else good_late
