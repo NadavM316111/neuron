@@ -23,6 +23,10 @@ import random, math, argparse, statistics
 from collections import deque
 
 N_BEHAV=4
+def argmax_random(vals, rng):
+    # argmax with RANDOM tie-breaking (no structural bias toward low indices)
+    m=max(vals); best=[i for i,v in enumerate(vals) if abs(v-m)<1e-9]
+    return rng.choice(best)
 _id=[0]
 def nid(): _id[0]+=1; return _id[0]
 LIFESPAN=700
@@ -31,7 +35,7 @@ class Being:
     def __init__(self, seed=0):
         self.id=nid(); r=random.Random(self.id*7+seed)
         # symmetric start: tiny random noise only, no behavior favored
-        self.tendency=[r.uniform(0.49,0.51) for _ in range(N_BEHAV)]
+        self.tendency=[0.5 for _ in range(N_BEHAV)]   # perfectly symmetric start
         # MEMORY of observations: what others did + whether they were approved
         # (approval_count[b] = how often behavior b was socially approved)
         self.approval_mem=[0.0]*N_BEHAV
@@ -39,11 +43,11 @@ class Being:
         self.wellbeing=0.5; self.age=0; self.alive=True; self.rng=r
         self.reputation=0.5
     def does(self):
-        return max(range(N_BEHAV), key=lambda i:self.tendency[i])
+        return argmax_random(self.tendency, self.rng)
     def inferred_norm(self):
         # what IT thinks the norm is, inferred purely from observed approvals
         if self.obs_count==0: return self.does()
-        return max(range(N_BEHAV), key=lambda i:self.approval_mem[i])
+        return argmax_random(self.approval_mem, self.rng)
     def observe(self, actor_behavior, was_approved):
         # social learning: remember what behavior got approved/sanctioned
         self.obs_count+=1
