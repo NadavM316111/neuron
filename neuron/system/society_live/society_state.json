@@ -1,0 +1,60 @@
+{
+  "tick": 6450,
+  "year": 18,
+  "groups": {
+    "0": {
+      "alive": 6,
+      "convention": 2,
+      "adherence": 1.0,
+      "avg_confidence": 1.0,
+      "lineage_depth": 8,
+      "avg_age": 1393
+    },
+    "1": {
+      "alive": 12,
+      "convention": 2,
+      "adherence": 1.0,
+      "avg_confidence": 1.0,
+      "lineage_depth": 12,
+      "avg_age": 1116
+    },
+    "2": {
+      "alive": 6,
+      "convention": 2,
+      "adherence": 1.0,
+      "avg_confidence": 1.0,
+      "lineage_depth": 0,
+      "avg_age": 1326
+    }
+  },
+  "recent_history": [
+    {
+      "year": 1,
+      "event": "two cultures made CONTACT - their boundary opened"
+    },
+    {
+      "year": 4,
+      "event": "a RESOURCE SHOCK hit niche #2 - the world changed"
+    },
+    {
+      "year": 6,
+      "event": "a group SPLIT - a new group 1 formed and departed"
+    },
+    {
+      "year": 8,
+      "event": "a RESOURCE SHOCK hit niche #0 - the world changed"
+    },
+    {
+      "year": 12,
+      "event": "a RESOURCE SHOCK hit niche #1 - the world changed"
+    },
+    {
+      "year": 14,
+      "event": "a RESOURCE SHOCK hit niche #2 - the world changed"
+    },
+    {
+      "year": 17,
+      "event": "a group SPLIT - a new group 2 formed and departed"
+    }
+  ]
+}
