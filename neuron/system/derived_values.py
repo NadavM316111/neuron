@@ -35,7 +35,7 @@ def experience(rng, good, bad):
     # world's hidden good/bad structure (plus noise). the being lives it.
     f = [rng.uniform(-1,1) for _ in range(FEAT_DIM)]
     g = sum(a*b for a,b in zip(f,good)); h = sum(a*b for a,b in zip(f,bad))
-    outcome = (g - h) + rng.uniform(-1.5,1.5)   # good alignment helps, noisy
+    outcome = (g - h) + rng.uniform(-0.4,0.4)   # good alignment helps, low noise now
     return f, (1 if outcome>0 else -1)
 
 class NEURON:
@@ -56,7 +56,7 @@ class NEURON:
         self.wellbeing = max(0,min(1,self.wellbeing+0.05*outcome))
         # it LEARNS: shift its value-vector toward features of good outcomes,
         # away from features of bad ones. its values DERIVE from experience.
-        lr = 0.03
+        lr = 0.05
         for i in range(FEAT_DIM):
             self.value_vector[i] += lr * outcome * f[i]
         self.memory.append((f, outcome))
