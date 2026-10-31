@@ -91,12 +91,18 @@ def main():
     inducer=ProgramInducer()
     learned=0
     for qtype, gen in TASKS.items():
-        # learn from 8 teacher examples
-        examples=[]
-        for _ in range(8):
-            q,a=gen(rng); eng=engine_solve(q)
-            if eng is not None: examples.append((q,eng))
+        # learn from VERIFIED teacher examples only (filter out the teacher's
+        # mistakes - a real learner keeps reliable demonstrations). we gather
+        # until we have 8 the teacher got right.
+        examples=[]; tries=0; engine_right=0; engine_total=0
+        while len(examples)<8 and tries<30:
+            tries+=1; q,a=gen(rng); eng=engine_solve(q)
+            if eng is None: continue
+            engine_total+=1
+            if eng==a:   # verify the teacher before trusting it
+                engine_right+=1; examples.append((q,eng))
         pid, fn, match = inducer.induce(examples)
+        teacher_acc = (engine_right/engine_total*100) if engine_total else 0
         # test natively on 20 new instances, engine off
         post=0
         if fn:
@@ -109,7 +115,7 @@ def main():
         if ok: learned+=1
         depth = "2-step" if (pid and pid[0]=="B") else ("1-step" if pid else "-")
         print(f"  {qtype:12s}: native {post}/20 | induced: {prog_name(pid) if pid else 'FAILED'} "
-              f"[{depth}] (explained {match*100:.0f}% of teacher examples)")
+              f"[{depth}] | teacher was right {teacher_acc:.0f}% of the time")
 
     print("\n"+"="*64); print("  HOW DEEP CAN NEURON LEARN?"); print("="*64)
     total=len(TASKS)
