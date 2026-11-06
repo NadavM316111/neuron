@@ -32,6 +32,8 @@ def ensure():
     os.makedirs(ST,exist_ok=True); os.makedirs(SNAP,exist_ok=True)
 def now(): return time.time()
 def iso(t): return datetime.fromtimestamp(t,timezone.utc).isoformat()
+def ordinal(n):
+    return f"{n}{'th' if 10<=n%100<=20 else {1:'st',2:'nd',3:'rd'}.get(n%10,'th')}"
 
 def load(f, default):
     p=P(f)
@@ -117,7 +119,7 @@ class PersistentNEURON:
         before={"values":dict(self.values["values"]),"skill":round(self.state["skill"],3),
                 "bonds":round(self.state["bonds"],3),"mood":round(self.state["mood"],3)}
         # decay (neglect has a cost)
-        for k in ("skill","bonds","calm"): self.state[k]=max(0,self.state[k]-0.01)
+        for k in ("skill","bonds","calm"): self.state[k]=max(0,self.state[k]-0.03)
         V=self.values["values"]
         gaps={"mastery":V["mastery"]-self.state["skill"],"connection":V["connection"]-self.state["bonds"],"peace":V["peace"]-self.state["calm"]}
         pull={k:max(0.01,V[k]*0.6+gaps[k]*0.8) for k in gaps}
@@ -138,7 +140,7 @@ class PersistentNEURON:
                     sg["done"]=True; solved_now+=1
             if all(sg["done"] for sg in self.projects["open"]):
                 self.projects["done"]+=1; self.projects["open"]=[]
-                self.state["skill"]=min(1,self.state["skill"]+0.05); outcome=f"finished a project (my {self.projects['done']}th); my skill grew"
+                self.state["skill"]=min(1,self.state["skill"]+0.05); outcome=f"finished a project (my {ordinal(self.projects['done'])}); my skill grew"
             else:
                 self.state["skill"]=min(1,self.state["skill"]+0.02); outcome="worked on my project; still unfinished - I'll return to it"
         elif choice=="connection":
