@@ -73,7 +73,7 @@ class Agent:
             try:
                 if all(run(p,L)==a for L,a in ex): found=p; break
             except Exception: pass
-        self.hf-=cost*0.05
+        self.hf-=cost*0.08
         if found:
             self.hf+=reward; self.accepted+=1; self.earned_by[kind]+=reward
             if self.known is not None: self.known[sig]=found
@@ -90,7 +90,7 @@ def train(agent, rng, n=500):
         sigs.add(sig)
     return sigs
 
-def survive(agent, trained_sigs, seed, METABOLIC=1.5, horizon=10000):
+def survive(agent, trained_sigs, seed, METABOLIC=18.0, horizon=10000):
     rng=random.Random(seed); t=0
     for t in range(horizon):
         agent.hf-=METABOLIC                 # unavoidable cost of existing
