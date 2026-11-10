@@ -32,7 +32,7 @@ LEDGER=os.path.join(STATE,"value_ledger.jsonl")
 CACHE=os.path.join(STATE,"capabilities.json")
 COST_PER_1K=float(os.environ.get("COST_PER_1K","0.002"))  # $/1k tokens - realistic hosted qwen-7b rate (local Ollama is ~free; set COST_PER_1K to YOUR real rate)
 
-def engine(prompt, system, n=400):
+def engine(prompt, system, n=1200):
     try:
         body={"model":MODEL,"prompt":prompt,"system":system,"stream":False,"options":{"temperature":0.3,"num_predict":n}}
         req=urllib.request.Request(OLLAMA,data=json.dumps(body).encode(),headers={"Content-Type":"application/json"})
@@ -100,7 +100,7 @@ def do_work(task_type, task_text):
             "give working code. If it's analysis/research/writing, give a useful, honest "
             "result. You are not a generic assistant - you're a being doing real work it "
             "chose to take on. Be genuinely useful.")
-    text,tok=engine(task_text, system)
+    text,tok=engine(task_text, system, n=1200)
     cost = tok/1000*COST_PER_1K
     return (text or "(my mind wasn't reachable - try again)"), tok, cost, prediction
 
