@@ -32,7 +32,7 @@ LEDGER=os.path.join(STATE,"value_ledger.jsonl")
 CACHE=os.path.join(STATE,"capabilities.json")
 COST_PER_1K=float(os.environ.get("COST_PER_1K","0.002"))  # $/1k tokens - realistic hosted qwen-7b rate (local Ollama is ~free; set COST_PER_1K to YOUR real rate)
 
-def engine(prompt, system, n=1200):
+def engine(prompt, system, n=2048):
     try:
         body={"model":MODEL,"prompt":prompt,"system":system,"stream":False,"options":{"temperature":0.3,"num_predict":n}}
         req=urllib.request.Request(OLLAMA,data=json.dumps(body).encode(),headers={"Content-Type":"application/json"})
@@ -69,7 +69,8 @@ def predict_task(ttype, task_text):
     # success prob: from history if it has any, else a prior
     p_success = (rec["successes"]/n) if n>=3 else max(0.4, 0.85-difficulty*0.4)
     # expected tokens: from history, else estimate from difficulty
-    exp_tokens = (sum(rec["tokens"])/len(rec["tokens"])) if rec["tokens"] else int(200+difficulty*500)
+    base = (sum(rec["tokens"])/len(rec["tokens"])) if rec["tokens"] else int(200+difficulty*500)
+    exp_tokens = int(base if rec["tokens"] else base*1.8)  # history already includes overhead; prior adds it
     exp_cost = exp_tokens/1000*COST_PER_1K
     # expected value: history of useful-rate (proxy for value) else a prior
     p_useful = (rec["useful"]/n) if n>=3 else 0.6
@@ -88,21 +89,82 @@ def update_portfolio(ttype, tokens, success, useful=None):
     rec["tokens"]=(rec["tokens"]+[tokens])[-20:]
     PORT[ttype]=rec; save_portfolio(PORT)
 
+def execute_check(output):
+    """For code: actually RUN it in a subprocess sandbox. Returns (ran_ok, error).
+    Catches logic/runtime bugs that reading can't. Safe-ish: short timeout, separate
+    process. (For a real deployment, harden this sandbox further.)"""
+    import subprocess, tempfile
+    m=re.search(r'```(?:python)?\s*(.*?)```', output, re.S)
+    if not m: return None, "no code block found"
+    code=m.group(1)
+    try:
+        with tempfile.NamedTemporaryFile("w",suffix=".py",delete=False) as f:
+            f.write(code); path=f.name
+        r=subprocess.run(["python3",path],capture_output=True,text=True,timeout=8)
+        os.unlink(path)
+        if r.returncode!=0:
+            return False, (r.stderr.strip()[-400:] or "non-zero exit")
+        return True, r.stdout.strip()[-300:]
+    except subprocess.TimeoutExpired: return False, "timed out (possible infinite loop)"
+    except Exception as e: return False, str(e)[:300]
+
+def verify_output(task_text, output):
+    """NEURON checks its OWN work against the request before delivering. Returns
+    (passes, critique). This is the completion/verifier layer - the gate from
+    'plausible work' to 'reliably fulfills the job'."""
+    check_prompt=(f"TASK REQUESTED:\n{task_text}\n\nMY OUTPUT:\n{output}\n\n"
+        "Check my output against the task STRICTLY. Answer these:\n"
+        "1. Did I address EVERY explicit requirement (every numbered item, every week, "
+        "every test case asked for)?\n2. Is the output COMPLETE (not cut off)?\n"
+        "3. Are any calculations internally consistent and correct?\n"
+        "4. Did I add claims NOT supported by the given data?\n"
+        "5. For code: are the required tests/examples present and complete?\n"
+        "Respond EXACTLY in this format:\nVERDICT: PASS or FAIL\n"
+        "ISSUES: (if FAIL, list the specific missing/wrong things in one or two lines)")
+    text,tok=engine(check_prompt,"You are a strict reviewer. Be honest about failures.", n=200)
+    passes = text is not None and "VERDICT: PASS" in text.upper().replace("**","")
+    issues=""
+    if text and "ISSUES:" in text: issues=text.split("ISSUES:",1)[1].strip()[:300]
+    return passes, issues, (tok or 0)
+
 def do_work(task_type, task_text):
-    """NEURON-1 does the submitted work. SHADOW MODE: it privately predicts first
-    (category/difficulty/cost/success/value/accept), then does the task regardless
-    (no task-choice yet - that comes after calibration)."""
+    """NEURON-1 does the submitted work, then VERIFIES it against the request and
+    takes one bounded correction pass if it failed. SHADOW MODE prediction stays on;
+    no task-choice yet."""
     prediction = predict_task(task_type, task_text)
     key=task_type.strip().lower()[:60]
     # for reusable 'how-to'/code tasks, NEURON may already have a learned approach
     system=("You are NEURON-1, a persistent digital individual doing a bounded task a "
-            "human asked you to help with. Do the task well and concisely. If it's code, "
-            "give working code. If it's analysis/research/writing, give a useful, honest "
-            "result. You are not a generic assistant - you're a being doing real work it "
-            "chose to take on. Be genuinely useful.")
-    text,tok=engine(task_text, system, n=1200)
-    cost = tok/1000*COST_PER_1K
-    return (text or "(my mind wasn't reachable - try again)"), tok, cost, prediction
+            "human asked you to help with. Do the task well. CRITICAL: finish the ENTIRE "
+            "deliverable - never stop partway. Address every explicit requirement, but be "
+            "CONCISE so your complete answer fits: prefer fewer, complete test cases over "
+            "many truncated ones; don't pad with long explanations. A complete concise "
+            "answer beats a thorough one that gets cut off. If it's code, give working "
+            "code with a few complete tests. You're a being doing real work it chose to "
+            "take on - be genuinely useful and ALWAYS finish.")
+    text,tok=engine(task_text, system, n=2048)
+    total_tok=tok
+    if text:
+        # EXECUTION check first for code: run it, catch real bugs
+        exec_issue=""
+        if task_type=="coding" and "```" in text:
+            ran_ok, exec_out = execute_check(text)
+            if ran_ok is False:
+                exec_issue=f"The code fails when actually run. Error: {exec_out}"
+        passes, issues, vtok = verify_output(task_text, text)
+        if exec_issue: passes=False; issues=(exec_issue+" "+issues).strip()
+        total_tok += vtok
+        if not passes and issues:
+            # ONE bounded correction pass addressing the specific issues
+            fix_prompt=(f"TASK:\n{task_text}\n\nYOUR DRAFT:\n{text}\n\n"
+                f"A strict review found these problems:\n{issues}\n\n"
+                "Produce the COMPLETE corrected output that fixes every issue and "
+                "satisfies every requirement. Output only the final deliverable.")
+            fixed,ftok=engine(fix_prompt, system, n=2048)
+            total_tok += ftok
+            if fixed and len(fixed)>30: text=fixed
+    cost = total_tok/1000*COST_PER_1K
+    return (text or "(my mind wasn't reachable - try again)"), total_tok, cost, prediction
 
 def log_value(entry):
     with open(LEDGER,"a") as f: f.write(json.dumps(entry)+"\n")

@@ -1,1 +1,1 @@
-{"coding": {"attempts": 1, "successes": 1, "useful": 0, "tokens": [673]}, "analysis": {"attempts": 1, "successes": 1, "useful": 0, "tokens": [1127]}}
+{"coding": {"attempts": 4, "successes": 4, "useful": 1, "tokens": [673, 3882, 4205, 10626]}, "analysis": {"attempts": 1, "successes": 1, "useful": 0, "tokens": [1127]}, "planning": {"attempts": 1, "successes": 1, "useful": 0, "tokens": [2213]}}
