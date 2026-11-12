@@ -69,8 +69,14 @@ def predict_task(ttype, task_text):
     # success prob: from history if it has any, else a prior
     p_success = (rec["successes"]/n) if n>=3 else max(0.4, 0.85-difficulty*0.4)
     # expected tokens: from history, else estimate from difficulty
-    base = (sum(rec["tokens"])/len(rec["tokens"])) if rec["tokens"] else int(200+difficulty*500)
-    exp_tokens = int(base if rec["tokens"] else base*1.8)  # history already includes overhead; prior adds it
+    # history already includes real gate overhead -> use it directly once we have data.
+    # cold-start prior bakes in the gate multiplier per task type (coding/analysis get
+    # execution+correction overhead; planning gets freeze+verify; other is light).
+    gate_mult = {"coding":3.2,"analysis":3.0,"planning":3.5,"research":1.5,"other":1.6}.get(ttype,2.0)
+    if rec["tokens"] and len(rec["tokens"])>=2:
+        exp_tokens = int(sum(rec["tokens"])/len(rec["tokens"]))   # learned from real post-gate history
+    else:
+        exp_tokens = int((200+difficulty*500)*gate_mult)          # gate-aware cold-start prior
     exp_cost = exp_tokens/1000*COST_PER_1K
     # expected value: history of useful-rate (proxy for value) else a prior
     p_useful = (rec["useful"]/n) if n>=3 else 0.6
@@ -345,6 +351,34 @@ def ledger_summary():
 
 PENDING={}  # task_id -> entry awaiting rating
 
+def calibration_report():
+    """Step 4: predicted vs actual, for CURRENT-VERSION (post-gate) tasks only."""
+    by_id={}
+    if os.path.exists(LEDGER):
+        for ln in open(LEDGER):
+            try: r=json.loads(ln); by_id[r["id"]]=r
+            except Exception: pass
+    rows=[r for r in by_id.values() if r.get("version")=="v2-gated" and r.get("prediction")]
+    if not rows: return {"n":0}
+    rated=[r for r in rows if r.get("rated")]
+    # token calibration
+    tok=[(r["prediction"]["exp_tokens"], r["tokens"]) for r in rows]
+    tok_err=sum(abs(p-a) for p,a in tok)/len(tok)
+    tok_mean_actual=sum(a for _,a in tok)/len(tok)
+    # success calibration (predicted p_success vs actual produced)
+    suc=[(r["prediction"]["p_success"], 1 if r.get("produced") else 0) for r in rows]
+    suc_err=sum(abs(p-a) for p,a in suc)/len(suc)
+    # usefulness calibration (predicted p_useful vs actual useful)
+    use=[(r["prediction"]["p_useful"], 1 if r.get("useful") else 0) for r in rated]
+    use_err=(sum(abs(p-a) for p,a in use)/len(use)) if use else None
+    # value calibration (predicted exp_value vs actual wtp)
+    val=[(r["prediction"]["exp_value"], r.get("wtp",0)) for r in rated]
+    val_err=(sum(abs(p-a) for p,a in val)/len(val)) if val else None
+    return {"n":len(rows),"rated":len(rated),
+            "token_error":round(tok_err,0),"token_error_pct":round(tok_err/tok_mean_actual*100,0) if tok_mean_actual else None,
+            "success_error":round(suc_err,2),"usefulness_error":round(use_err,2) if use_err is not None else None,
+            "value_error":round(val_err,2) if val_err is not None else None}
+
 def audit_report():
     """Compute the friend's after-50 summary from the ledger."""
     by_id={}
@@ -401,7 +435,7 @@ pre{white-space:pre-wrap;word-wrap:break-word;background:#0d0d12;padding:10px;bo
 <textarea id=task rows=3 placeholder="e.g. write a python function that checks if a string is a palindrome"></textarea>
 <button onclick="submit()">give it to NEURON-1</button></div>
 <div id=result></div>
-<div class=card><div class=k>its value ledger so far</div><div id=ledger class=stat>loading...</div><div style="margin-top:8px"><a href="/audit" target="_blank" style="color:#9a7b1f;font-size:13px">open full audit report &rarr;</a></div></div>
+<div class=card><div class=k>its value ledger so far</div><div id=ledger class=stat>loading...</div><div style="margin-top:8px"><a href="/audit" target="_blank" style="color:#9a7b1f;font-size:13px">audit report &rarr;</a> &nbsp; <a href="/calibration" target="_blank" style="color:#9a7b1f;font-size:13px">calibration (step 4) &rarr;</a></div></div>
 <script>
 let lastId=null;
 async function submit(){
@@ -445,6 +479,22 @@ class H(BaseHTTPRequestHandler):
         try: return json.loads(s.rfile.read(l) or b"{}")
         except Exception: return {}
     def do_GET(s):
+        if s.path=="/calibration":
+            c=calibration_report()
+            if c.get("n",0)==0:
+                html="<pre>No current-version (post-gate) tasks yet. Run some tasks on this version.</pre>"
+            else:
+                html=(f"<pre style='font-family:ui-monospace,monospace;color:#e8e8ea;background:#0a0a0d;padding:20px;font-size:14px;line-height:1.7'>"
+                    f"=== STEP 4: RESOURCE-AWARENESS CALIBRATION ===\n"
+                    f"(current gated version only - {c['n']} tasks, {c['rated']} rated)\n\n"
+                    f"TOKEN prediction error:   +/-{c['token_error']} tokens ({c['token_error_pct']}% of actual)\n"
+                    f"SUCCESS prediction error: {c['success_error']} (0=perfect, 1=worst)\n"
+                    + (f"USEFULNESS pred error:    {c['usefulness_error']}\n" if c['usefulness_error'] is not None else "")
+                    + (f"VALUE prediction error:   $#{c['value_error']}\n" if c['value_error'] is not None else "")
+                    + f"\ntarget: token error under ~25%, success/usefulness error under ~0.2\n"
+                    f"as more current-version tasks accrue, predictions self-correct from real history.\n"
+                    f"</pre>")
+            s.send_response(200);s.send_header("Content-Type","text/html");s.end_headers();s.wfile.write(html.encode());return
         if s.path=="/audit":
             a=audit_report()
             if a.get("rated",0)==0:
@@ -484,7 +534,7 @@ class H(BaseHTTPRequestHandler):
             tid="t_"+str(int(time.time()*1000))
             entry={"id":tid,"t":datetime.now(timezone.utc).isoformat(),"ttype":d.get("ttype"),
                    "task":d.get("task","")[:300],"tokens":tok,"cost":cost,"rated":False,
-                   "prediction":prediction,"produced":produced}
+                   "prediction":prediction,"produced":produced,"version":"v2-gated"}
             PENDING[tid]=entry
             log_value(entry)   # log immediately so 'tasks' counts submitted work right away
             s.send_response(200);s.send_header("Content-Type","application/json");s.end_headers()
