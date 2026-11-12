@@ -132,6 +132,24 @@ def verify_output(task_text, output):
     return passes, issues, (tok or 0)
 
 
+def spec_coverage_check(task_text, output, system):
+    """Extract the task's explicit requirements and verify the output addresses EACH.
+    Returns (covered, missing_list, extra_tokens)."""
+    ask=(f"ORIGINAL TASK:\n{task_text}\n\nList every explicit requirement the task states, "
+         "as a numbered list of short checkable items (include every function, every field, "
+         "every behavior, every output asked for). Output ONLY the numbered list.")
+    reqs,t1=engine(ask,"Extract requirements precisely. Do not add or drop any.",n=400)
+    if not reqs: return True, [], t1
+    chk=(f"REQUIREMENTS:\n{reqs}\n\nDELIVERED OUTPUT:\n{output[:2500]}\n\nFor EACH numbered "
+         "requirement, state its number then COVERED or MISSING, based only on the delivered "
+         "output. Be strict. Output one line per requirement.")
+    verdict,t2=engine(chk,"You are a strict checker. MISSING if not clearly satisfied.",n=400)
+    missing=[]
+    if verdict:
+        for line in verdict.splitlines():
+            if "MISSING" in line.upper(): missing.append(line.strip()[:120])
+    return (len(missing)==0), missing, (t1+t2)
+
 def run_python(code, timeout=8):
     import subprocess, tempfile
     try:
@@ -171,6 +189,20 @@ def code_gate(task_text, text, system):
         nc=extract_code(fixed)
         if not nc: break
         code=nc; ok,out,err=run_python(code)
+    # SPEC COVERAGE: even if it runs, did it cover every requirement?
+    if ok:
+        covered, missing, ctok = spec_coverage_check(task_text, "```python\n"+code+"\n```\n"+(out or ""), system)
+        extra+=ctok
+        if not covered and missing:
+            fix=(f"TASK:\n{task_text}\n\nYOUR CODE:\n```python\n{code}\n```\n\n"
+                 f"It runs, but these required things are MISSING:\n" + "\n".join(missing) +
+                 "\n\nRewrite the code to cover EVERY missing requirement, keep the asserts, "
+                 "and make them all pass. Output ONLY one complete python code block.")
+            fixed,ftok=engine(fix, system, n=2048); extra+=ftok
+            nc=extract_code(fixed)
+            if nc:
+                ok2,out2,err2=run_python(nc)
+                if ok2: code=nc; out=out2; ok=ok2
     header = "All tests passed when executed." if ok else "NOTE: this code still fails when executed - use with caution."
     body = (f"```python\n{code}\n```\n\n**Executed result ({'PASS' if ok else 'FAIL'}):**\n"
             f"```\n{(out if out else err)[:900]}\n```\n\n{header}")
@@ -214,17 +246,24 @@ def math_gate(task_text, text, system):
     return deliverable, extra, True
 
 def planning_gate(task_text, text, system):
-    """Planning/optimization can't be fully auto-verified for arbitrary constraints, so we
-    DON'T let NEURON assert validity it can't back up. We force an explicit constraint
-    checklist and, if NEURON can express the check as runnable code, we execute it. The
-    deliverable is honest about verification status."""
+    """Planning: NEURON tends to REWRITE constraints then verify its rewrite. Fix: FREEZE
+    the original constraints first, and force verification code to check against THOSE
+    exact frozen constraints - not NEURON's restatement."""
     extra=0
-    ask=(f"TASK:\n{task_text}\n\nProduce your plan, then WRITE PYTHON that mechanically "
-         "verifies it: encode the plan as data, check every constraint the task states "
-         "(e.g. required roles each slot filled, nobody double-booked, nobody outside "
-         "availability), compute the real total cost, and assert each constraint. Print "
-         "'ALL CONSTRAINTS PASS' and the total if valid, else print which failed. Output: "
-         "the plan, then one python code block that does this verification.")
+    # STEP 1: freeze the original constraints (extracted once from the ORIGINAL task)
+    cask=(f"TASK:\n{task_text}\n\nExtract EVERY hard constraint and every given value from "
+          "this task EXACTLY as stated (people, rates, availability windows, required roles "
+          "per time slot, rules like 'no one does two roles at once', the objective like "
+          "'cheapest'). Output a precise bulleted list, changing nothing and inventing nothing.")
+    frozen,ctok=engine(cask,"Extract exactly. Do not alter or drop any constraint.",n=500); extra+=ctok
+    frozen=frozen or task_text
+    ask=(f"TASK:\n{task_text}\n\nTHESE ARE THE FROZEN ORIGINAL CONSTRAINTS - you may NOT "
+         f"change, relax, or reinterpret any of them:\n{frozen}\n\nProduce a plan that "
+         "satisfies these EXACT constraints, then WRITE PYTHON that encodes the plan as data "
+         "and checks it against THESE frozen constraints (required roles filled each slot, "
+         "nobody double-booked, nobody outside availability, compute the real total cost), "
+         "asserting each. Print 'ALL CONSTRAINTS PASS' and the total if valid, else print "
+         "which failed. Do NOT rewrite the constraints. Output the plan, then one python block.")
     draft,tok=engine(ask, system, n=2048); extra+=tok
     code=extract_code(draft)
     plan_text = draft.split("```")[0].strip() if draft else text
@@ -234,12 +273,12 @@ def planning_gate(task_text, text, system):
     while (not ok or "PASS" not in out.upper()) and tries<4:
         tries+=1
         prob = ('the verification code errored: '+err[-250:]) if not ok else ('a constraint FAILED: '+out[-250:])
-        fix=(f"TASK:\n{task_text}\n\nYour plan FAILED its own check - {prob}\n\nThis is "
-             f"attempt {tries+1}. Produce a CORRECTED plan that genuinely satisfies EVERY "
-             "constraint (fill required roles each slot, never double-book, respect "
-             "availability), then verification code that encodes the plan and asserts every "
-             "constraint and prints 'ALL CONSTRAINTS PASS' plus the real total. Fix the "
-             "actual violation. Output the plan, then one python block.")
+        fix=(f"TASK:\n{task_text}\n\nFROZEN ORIGINAL CONSTRAINTS (do not change these):\n{frozen}\n\n"
+             f"Your plan FAILED its check - {prob}\n\nAttempt {tries+1}. Produce a CORRECTED "
+             "plan that genuinely satisfies EVERY frozen constraint, then verification code "
+             "checking against THOSE exact constraints, printing 'ALL CONSTRAINTS PASS' plus "
+             "the real total. Do not rewrite the constraints to make them pass. Output the "
+             "plan, then one python block.")
         f2,ftok=engine(fix, system, n=2048); extra+=ftok
         nc=extract_code(f2)
         if not nc: break
