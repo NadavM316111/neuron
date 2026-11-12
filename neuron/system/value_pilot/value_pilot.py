@@ -91,8 +91,9 @@ def update_portfolio(ttype, tokens, success, useful=None):
 
 def execute_check(output):
     """For code: actually RUN it in a subprocess sandbox. Returns (ran_ok, error).
-    Catches logic/runtime bugs that reading can't. Safe-ish: short timeout, separate
-    process. (For a real deployment, harden this sandbox further.)"""
+    Catches runtime AND logic bugs: if the code includes assert-based tests and an
+    assertion fails, that's a correctness bug (not just a crash). Safe-ish: short
+    timeout, separate process. (Harden further for real deployment.)"""
     import subprocess, tempfile
     m=re.search(r'```(?:python)?\s*(.*?)```', output, re.S)
     if not m: return None, "no code block found"
@@ -103,7 +104,10 @@ def execute_check(output):
         r=subprocess.run(["python3",path],capture_output=True,text=True,timeout=8)
         os.unlink(path)
         if r.returncode!=0:
-            return False, (r.stderr.strip()[-400:] or "non-zero exit")
+            err=r.stderr.strip()
+            if "AssertionError" in err:
+                return False, "a correctness test FAILED (assertion): "+err[-300:]
+            return False, (err[-400:] or "non-zero exit")
         return True, r.stdout.strip()[-300:]
     except subprocess.TimeoutExpired: return False, "timed out (possible infinite loop)"
     except Exception as e: return False, str(e)[:300]
@@ -127,44 +131,150 @@ def verify_output(task_text, output):
     if text and "ISSUES:" in text: issues=text.split("ISSUES:",1)[1].strip()[:300]
     return passes, issues, (tok or 0)
 
+
+def run_python(code, timeout=8):
+    import subprocess, tempfile
+    try:
+        with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
+            f.write(code); path=f.name
+        r=subprocess.run(["python3",path], capture_output=True, text=True, timeout=timeout)
+        os.unlink(path)
+        return (r.returncode==0), r.stdout.strip(), r.stderr.strip()
+    except subprocess.TimeoutExpired:
+        return False, "", "timed out (possible infinite loop)"
+    except Exception as e:
+        return False, "", str(e)[:400]
+
+def extract_code(text):
+    if not text: return None
+    m=re.search(r'```(?:python)?\s*(.*?)```', text, re.S)
+    return m.group(1) if m else None
+
+def code_gate(task_text, text, system):
+    """Execute the code. Correct up to 2x on crash/failed-assert using the REAL error.
+    Deliver the (corrected) code + the ACTUAL executed output. Never NEURON's typed output."""
+    extra=0
+    code=extract_code(text)
+    if not code:
+        return text, 0, False
+    ok,out,err=run_python(code)
+    tries=0
+    while not ok and tries<4:
+        tries+=1
+        why = ("an assert test FAILED (the logic is wrong): "+err[-400:]) if "AssertionError" in err else ("it crashed: "+err[-400:])
+        fix=(f"TASK:\n{task_text}\n\nYour code was EXECUTED and {why}\n\nCURRENT CODE:\n"
+             f"```python\n{code}\n```\n\nThis is attempt {tries+1}. Think about the SPECIFIC "
+             "cause of this exact failure and fix it. Return ONE complete python code block "
+             "that runs cleanly and passes ALL assert tests. Trace through the failing case "
+             "mentally first, then write code that handles it. Output ONLY the code block.")
+        fixed,ftok=engine(fix, system, n=2048); extra+=ftok
+        nc=extract_code(fixed)
+        if not nc: break
+        code=nc; ok,out,err=run_python(code)
+    header = "All tests passed when executed." if ok else "NOTE: this code still fails when executed - use with caution."
+    body = (f"```python\n{code}\n```\n\n**Executed result ({'PASS' if ok else 'FAIL'}):**\n"
+            f"```\n{(out if out else err)[:900]}\n```\n\n{header}")
+    return body, extra, ok
+
+def math_gate(task_text, text, system):
+    """Analysis must be grounded in executed calculation. Force NEURON to express ALL
+    numbers as a python script that prints them; execute it; and present the EXECUTED
+    numbers as the answer. NEURON's prose is not trusted for numbers."""
+    extra=0
+    # ask for a clean compute script + a short written conclusion that uses ONLY those numbers
+    ask=(f"TASK:\n{task_text}\n\nWrite a single self-contained python script that computes "
+         "EVERY number this task asks for and prints each with a clear label. Then, after the "
+         "code block, write 2-4 sentences of conclusion that use ONLY the printed numbers. "
+         "Do not state any number you did not compute in the code. Output the code block first, "
+         "then the conclusion.")
+    draft,tok=engine(ask, system, n=2048); extra+=tok
+    code=extract_code(draft)
+    if not code:
+        return text, extra, False  # fall back to original if it wrote no code
+    ok,out,err=run_python(code); tries=0
+    while not ok and tries<4:
+        tries+=1
+        fix=(f"This calculation script was executed and failed: {err[-350:]}\n\nCODE:\n"
+             f"```python\n{code}\n```\n\nFix it so it runs and prints every required number "
+             f"with a clear label. TASK:\n{task_text}\nOutput only the corrected code block.")
+        f2,ftok=engine(fix, system, n=1500); extra+=ftok
+        nc=extract_code(f2)
+        if not nc: break
+        code=nc; ok,out,err=run_python(code)
+    if not ok:
+        return (text + "\n\nNOTE: calculation could not be verified by execution."), extra, False
+    # write the conclusion grounded ONLY in the executed numbers (no trusting prior prose)
+    concl_ask=(f"TASK:\n{task_text}\n\nThese are the ACTUAL computed results:\n{out[:600]}\n\n"
+        "Write 2-4 sentences answering the task using ONLY these exact numbers. Do not "
+        "introduce any number not shown above. Be precise and honest.")
+    conclusion,ctok=engine(concl_ask, system, n=400); extra+=ctok
+    if not conclusion: conclusion=""
+    deliverable=(f"**Computed results (executed, authoritative):**\n```\n{out[:700]}\n```\n\n"
+                 f"{conclusion}")
+    return deliverable, extra, True
+
+def planning_gate(task_text, text, system):
+    """Planning/optimization can't be fully auto-verified for arbitrary constraints, so we
+    DON'T let NEURON assert validity it can't back up. We force an explicit constraint
+    checklist and, if NEURON can express the check as runnable code, we execute it. The
+    deliverable is honest about verification status."""
+    extra=0
+    ask=(f"TASK:\n{task_text}\n\nProduce your plan, then WRITE PYTHON that mechanically "
+         "verifies it: encode the plan as data, check every constraint the task states "
+         "(e.g. required roles each slot filled, nobody double-booked, nobody outside "
+         "availability), compute the real total cost, and assert each constraint. Print "
+         "'ALL CONSTRAINTS PASS' and the total if valid, else print which failed. Output: "
+         "the plan, then one python code block that does this verification.")
+    draft,tok=engine(ask, system, n=2048); extra+=tok
+    code=extract_code(draft)
+    plan_text = draft.split("```")[0].strip() if draft else text
+    if not code:
+        return (plan_text + "\n\nNOTE: this plan was NOT mechanically verified - please check it yourself."), extra, False
+    ok,out,err=run_python(code); tries=0
+    while (not ok or "PASS" not in out.upper()) and tries<4:
+        tries+=1
+        prob = ('the verification code errored: '+err[-250:]) if not ok else ('a constraint FAILED: '+out[-250:])
+        fix=(f"TASK:\n{task_text}\n\nYour plan FAILED its own check - {prob}\n\nThis is "
+             f"attempt {tries+1}. Produce a CORRECTED plan that genuinely satisfies EVERY "
+             "constraint (fill required roles each slot, never double-book, respect "
+             "availability), then verification code that encodes the plan and asserts every "
+             "constraint and prints 'ALL CONSTRAINTS PASS' plus the real total. Fix the "
+             "actual violation. Output the plan, then one python block.")
+        f2,ftok=engine(fix, system, n=2048); extra+=ftok
+        nc=extract_code(f2)
+        if not nc: break
+        code=nc; plan_text=f2.split("```")[0].strip(); ok,out,err=run_python(code)
+    verified = ok and "PASS" in out.upper()
+    status = ("**Verified: all constraints pass when checked by code.**\n"+("```\n"+out[:400]+"\n```")) if verified else "NOTE: this plan could NOT be mechanically verified - check it yourself before using."
+    return (plan_text + "\n\n" + status), extra, verified
+
 def do_work(task_type, task_text):
-    """NEURON-1 does the submitted work, then VERIFIES it against the request and
-    takes one bounded correction pass if it failed. SHADOW MODE prediction stays on;
-    no task-choice yet."""
+    """NEURON does the work, then HARD GATES execute code/math and check plans. NEURON is
+    never trusted to type what the system can compute. Shadow prediction on; no choice yet."""
     prediction = predict_task(task_type, task_text)
-    key=task_type.strip().lower()[:60]
-    # for reusable 'how-to'/code tasks, NEURON may already have a learned approach
-    system=("You are NEURON-1, a persistent digital individual doing a bounded task a "
-            "human asked you to help with. Do the task well. CRITICAL: finish the ENTIRE "
-            "deliverable - never stop partway. Address every explicit requirement, but be "
-            "CONCISE so your complete answer fits: prefer fewer, complete test cases over "
-            "many truncated ones; don't pad with long explanations. A complete concise "
-            "answer beats a thorough one that gets cut off. If it's code, give working "
-            "code with a few complete tests. You're a being doing real work it chose to "
-            "take on - be genuinely useful and ALWAYS finish.")
+    system=("You are NEURON-1, a persistent digital individual doing a bounded task for a "
+            "human. Do it correctly and finish completely. Never state a number you did not "
+            "actually compute. Never invent facts, data, probabilities, or results not given "
+            "to you - say what you don't know. For code, include assert tests with real "
+            "expected values and handle edge cases. Satisfy every explicit constraint.")
     text,tok=engine(task_text, system, n=2048)
     total_tok=tok
     if text:
-        # EXECUTION check first for code: run it, catch real bugs
-        exec_issue=""
-        if task_type=="coding" and "```" in text:
-            ran_ok, exec_out = execute_check(text)
-            if ran_ok is False:
-                exec_issue=f"The code fails when actually run. Error: {exec_out}"
-        passes, issues, vtok = verify_output(task_text, text)
-        if exec_issue: passes=False; issues=(exec_issue+" "+issues).strip()
-        total_tok += vtok
-        if not passes and issues:
-            # ONE bounded correction pass addressing the specific issues
-            fix_prompt=(f"TASK:\n{task_text}\n\nYOUR DRAFT:\n{text}\n\n"
-                f"A strict review found these problems:\n{issues}\n\n"
-                "Produce the COMPLETE corrected output that fixes every issue and "
-                "satisfies every requirement. Output only the final deliverable.")
-            fixed,ftok=engine(fix_prompt, system, n=2048)
-            total_tok += ftok
-            if fixed and len(fixed)>30: text=fixed
+        if task_type=="coding":
+            text, ex, _ = code_gate(task_text, text, system); total_tok+=ex
+        elif task_type=="analysis":
+            text, ex, _ = math_gate(task_text, text, system); total_tok+=ex
+        elif task_type=="planning":
+            text, ex, _ = planning_gate(task_text, text, system); total_tok+=ex
+        else:
+            if len(task_text.split())>12:
+                passes, issues, vtok = verify_output(task_text, text); total_tok+=vtok
+                if not passes and issues:
+                    fixed,ftok=engine(f"TASK:\n{task_text}\n\nDRAFT:\n{text}\n\nFix: {issues}\nOutput only the corrected deliverable.", system, n=2048)
+                    total_tok+=ftok
+                    if fixed and len(fixed)>30: text=fixed
     cost = total_tok/1000*COST_PER_1K
-    return (text or "(my mind wasn't reachable - try again)"), total_tok, cost, prediction
+    return (text or "(my mind wasn\'t reachable - try again)"), total_tok, cost, prediction
 
 def log_value(entry):
     with open(LEDGER,"a") as f: f.write(json.dumps(entry)+"\n")
@@ -196,6 +306,43 @@ def ledger_summary():
 
 PENDING={}  # task_id -> entry awaiting rating
 
+def audit_report():
+    """Compute the friend's after-50 summary from the ledger."""
+    by_id={}
+    if os.path.exists(LEDGER):
+        for ln in open(LEDGER):
+            try: r=json.loads(ln); by_id[r["id"]]=r
+            except Exception: pass
+    rows=list(by_id.values()); rated=[r for r in rows if r.get("rated")]
+    if not rated: return {"rated":0,"tasks":len(rows)}
+    n=len(rated)
+    useful=sum(1 for r in rated if r.get("useful"))
+    total_cost=sum(r["cost"] for r in rated)
+    total_value=sum(r.get("wtp",0) for r in rated)
+    corrections=sum(1 for r in rated if r.get("prediction") and r["tokens"]>r["prediction"].get("exp_tokens",0)*1.5)
+    reuse=sum(1 for r in rated if r.get("would_reuse"))
+    # per-category
+    cats={}
+    for r in rated:
+        c=r.get("ttype","other"); cats.setdefault(c,{"n":0,"useful":0,"value":0,"cost":0})
+        cats[c]["n"]+=1; cats[c]["useful"]+=1 if r.get("useful") else 0
+        cats[c]["value"]+=r.get("wtp",0); cats[c]["cost"]+=r["cost"]
+    cat_useful={c:(v["useful"]/v["n"]) for c,v in cats.items() if v["n"]>0}
+    strongest=max(cat_useful,key=cat_useful.get) if cat_useful else None
+    weakest=min(cat_useful,key=cat_useful.get) if cat_useful else None
+    # shadow calibration
+    pt=[(r["prediction"]["exp_tokens"],r["tokens"]) for r in rows if r.get("prediction")]
+    tok_err=round(sum(abs(p-a) for p,a in pt)/len(pt),0) if pt else None
+    return {"tasks":len(rows),"rated":n,"useful":useful,"useful_rate":round(useful/n,2),
+            "avg_cost":round(total_cost/n,4),"total_value":round(total_value,2),
+            "total_cost":round(total_cost,4),"value_minus_cost":round(total_value-total_cost,2),
+            "value_over_cost":round(total_value/total_cost,1) if total_cost>0 else None,
+            "reuse_rate":round(reuse/n,2),"correction_rate":round(corrections/n,2),
+            "strongest":strongest,"weakest":weakest,
+            "by_category":{c:{"n":v["n"],"useful_rate":round(v["useful"]/v["n"],2),
+                "value":round(v["value"],2),"cost":round(v["cost"],4)} for c,v in cats.items()},
+            "token_prediction_error":tok_err}
+
 PAGE="""<!doctype html><html><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width, initial-scale=1"><title>NEURON-1 - real work</title>
 <style>:root{color-scheme:dark}body{font-family:-apple-system,system-ui,sans-serif;background:#0a0a0d;color:#e8e8ea;max-width:720px;margin:0 auto;padding:22px 18px}
@@ -211,11 +358,11 @@ pre{white-space:pre-wrap;word-wrap:break-word;background:#0d0d12;padding:10px;bo
 <h1>NEURON-1</h1><div class=sub>a persistent individual doing real work</div>
 <div class=disc>Give NEURON-1 a small, harmless task (a bit of code, some analysis, a plan, a question). It will do it, and you tell it honestly how useful it was. This helps measure whether its work is worth more than the compute it costs. You're interacting with AI; no payment is taken; your rating is a research signal.</div>
 <div class=card><div class=k>submit a task</div>
-<select id=ttype><option>coding</option><option>analysis</option><option>research</option><option>planning</option><option>other</option></select>
+<select id=ttype><option>coding</option><option>analysis</option><option>planning</option><option>other</option></select>
 <textarea id=task rows=3 placeholder="e.g. write a python function that checks if a string is a palindrome"></textarea>
 <button onclick="submit()">give it to NEURON-1</button></div>
 <div id=result></div>
-<div class=card><div class=k>its value ledger so far</div><div id=ledger class=stat>loading...</div></div>
+<div class=card><div class=k>its value ledger so far</div><div id=ledger class=stat>loading...</div><div style="margin-top:8px"><a href="/audit" target="_blank" style="color:#9a7b1f;font-size:13px">open full audit report &rarr;</a></div></div>
 <script>
 let lastId=null;
 async function submit(){
@@ -259,6 +406,31 @@ class H(BaseHTTPRequestHandler):
         try: return json.loads(s.rfile.read(l) or b"{}")
         except Exception: return {}
     def do_GET(s):
+        if s.path=="/audit":
+            a=audit_report()
+            if a.get("rated",0)==0:
+                html="<pre>No rated tasks yet. Rate some tasks first.</pre>"
+            else:
+                cats="\n".join(f"  {c:<12} {v['n']:>2} tasks, {int(v['useful_rate']*100):>3}% useful, "
+                    f"${v['value']:.2f} value / ${v['cost']:.4f} cost" for c,v in a["by_category"].items())
+                html=(f"<pre style='font-family:ui-monospace,monospace;color:#e8e8ea;background:#0a0a0d;padding:20px;font-size:14px;line-height:1.6'>"
+                    f"=== NEURON-1 VALUE AUDIT ===\n\n"
+                    f"tasks run:        {a['tasks']}\n"
+                    f"tasks rated:      {a['rated']}\n"
+                    f"useful rate:      {a['useful']}/{a['rated']}  ({int(a['useful_rate']*100)}%)\n"
+                    f"would-reuse rate: {int(a['reuse_rate']*100)}%\n"
+                    f"correction rate:  {int(a['correction_rate']*100)}%\n\n"
+                    f"avg compute/task: ${a['avg_cost']}\n"
+                    f"total value:      ${a['total_value']}\n"
+                    f"total compute:    ${a['total_cost']}\n"
+                    f"VALUE - COST:     ${a['value_minus_cost']}\n"
+                    f"value / cost:     {a['value_over_cost']}x\n\n"
+                    f"strongest area:   {a['strongest']}\n"
+                    f"weakest area:     {a['weakest']}\n\n"
+                    f"by category:\n{cats}\n\n"
+                    f"shadow prediction error: +/-{a['token_prediction_error']} tokens\n"
+                    f"</pre>")
+            s.send_response(200);s.send_header("Content-Type","text/html");s.end_headers();s.wfile.write(html.encode());return
         if s.path=="/ledger":
             b=json.dumps(ledger_summary()).encode()
             s.send_response(200);s.send_header("Content-Type","application/json");s.end_headers();s.wfile.write(b);return
