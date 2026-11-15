@@ -30,7 +30,9 @@ STATE=os.environ.get("VALUE_DIR","value_state")
 os.makedirs(STATE,exist_ok=True)
 LEDGER=os.path.join(STATE,"value_ledger.jsonl")
 CACHE=os.path.join(STATE,"capabilities.json")
-COST_PER_1K=float(os.environ.get("COST_PER_1K","0.002"))  # $/1k tokens - realistic hosted qwen-7b rate (local Ollama is ~free; set COST_PER_1K to YOUR real rate)
+COST_PER_1K=float(os.environ.get("COST_PER_1K","0.002"))  # $/1k tokens model cost
+INFRA_PER_TASK=float(os.environ.get("INFRA_PER_TASK","0.003"))  # allocated hosting/infra per task
+TOOL_PER_TASK=float(os.environ.get("TOOL_PER_TASK","0.000"))    # paid tool/API cost per task (0 for now)
 
 def engine(prompt, system, n=2048):
     try:
@@ -358,6 +360,34 @@ def ledger_summary():
 
 PENDING={}  # task_id -> entry awaiting rating
 
+def economics_report():
+    """Step 6: ACTUAL payment vs TRUE cost (model+infra+tools). WTP shown separately
+    as signal-only - the economic bridge is REAL paid > real cost."""
+    by_id={}
+    if os.path.exists(LEDGER):
+        for ln in open(LEDGER):
+            try: r=json.loads(ln); by_id[r["id"]]=r
+            except Exception: pass
+    rows=[r for r in by_id.values() if r.get("rated")]
+    if not rows: return {"n":0}
+    # signal: WTP vs true cost
+    tot_wtp=sum(r.get("wtp",0) for r in rows)
+    tot_true=sum(r.get("true_cost", r.get("cost",0)) for r in rows)
+    # the REAL bridge: actual payments
+    paid_rows=[r for r in rows if r.get("paid",0)>0]
+    tot_paid=sum(r.get("paid",0) for r in paid_rows)
+    paid_cost=sum(r.get("true_cost",r.get("cost",0)) for r in paid_rows)
+    profitable=sum(1 for r in paid_rows if r.get("paid",0) > r.get("true_cost",r.get("cost",0)))
+    users=len(set(r.get("user","self") for r in paid_rows))
+    return {"n":len(rows),
+            "wtp_total":round(tot_wtp,2),"true_cost_total":round(tot_true,4),
+            "wtp_over_cost":round(tot_wtp/tot_true,1) if tot_true else None,
+            "paid_tasks":len(paid_rows),"paid_users":users,
+            "revenue":round(tot_paid,2),"paid_cost":round(paid_cost,4),
+            "net":round(tot_paid-paid_cost,2),
+            "margin_pct":round((tot_paid-paid_cost)/tot_paid*100,0) if tot_paid else None,
+            "profitable_tasks":profitable}
+
 def calibration_report():
     """Step 4: predicted vs actual, for CURRENT-VERSION (post-gate) tasks only."""
     by_id={}
@@ -442,7 +472,7 @@ pre{white-space:pre-wrap;word-wrap:break-word;background:#0d0d12;padding:10px;bo
 <textarea id=task rows=3 placeholder="e.g. write a python function that checks if a string is a palindrome"></textarea>
 <button onclick="submit()">give it to NEURON-1</button></div>
 <div id=result></div>
-<div class=card><div class=k>its value ledger so far</div><div id=ledger class=stat>loading...</div><div style="margin-top:8px"><a href="/audit" target="_blank" style="color:#9a7b1f;font-size:13px">audit report &rarr;</a> &nbsp; <a href="/calibration" target="_blank" style="color:#9a7b1f;font-size:13px">calibration (step 4) &rarr;</a></div></div>
+<div class=card><div class=k>its value ledger so far</div><div id=ledger class=stat>loading...</div><div style="margin-top:8px"><a href="/audit" target="_blank" style="color:#9a7b1f;font-size:13px">audit report &rarr;</a> &nbsp; <a href="/calibration" target="_blank" style="color:#9a7b1f;font-size:13px">calibration &rarr;</a> &nbsp; <a href="/economics" target="_blank" style="color:#9a7b1f;font-size:13px">economics (step 6) &rarr;</a></div></div>
 <script>
 let lastId=null;
 async function submit(){
@@ -486,6 +516,25 @@ class H(BaseHTTPRequestHandler):
         try: return json.loads(s.rfile.read(l) or b"{}")
         except Exception: return {}
     def do_GET(s):
+        if s.path=="/economics":
+            e=economics_report()
+            if e.get("n",0)==0:
+                html="<pre>No rated tasks yet.</pre>"
+            else:
+                bridge = (f"REAL PAID revenue: ${e['revenue']} across {e['paid_tasks']} paid tasks / {e['paid_users']} users\n"
+                          f"cost of those paid tasks: ${e['paid_cost']}\n"
+                          f"NET (revenue - cost): ${e['net']}  margin {e['margin_pct']}%\n"
+                          f"individually profitable: {e['profitable_tasks']}/{e['paid_tasks']}\n") if e['paid_tasks']>0 else "REAL PAID: none yet - the economic bridge hasn't happened (WTP below is signal ONLY, not Step 6 proof).\n"
+                html=(f"<pre style='font-family:ui-monospace,monospace;color:#e8e8ea;background:#0a0a0d;padding:20px;font-size:14px;line-height:1.7'>"
+                    f"=== STEP 6: REAL UNIT ECONOMICS ===\n\n"
+                    f"--- SIGNAL ONLY (willingness-to-pay, nobody actually paid) ---\n"
+                    f"total WTP: ${e['wtp_total']}  vs true cost: ${e['true_cost_total']}  ({e['wtp_over_cost']}x)\n"
+                    f"(true cost = model + infra + tools, not just tokens)\n\n"
+                    f"--- THE REAL BRIDGE (actual voluntary payments) ---\n{bridge}\n"
+                    f"Step 6 PASS rule: real revenue consistently > real cost across 10+ paid\n"
+                    f"tasks / several users, profitable overall and on most tasks.\n"
+                    f"</pre>")
+            s.send_response(200);s.send_header("Content-Type","text/html");s.end_headers();s.wfile.write(html.encode());return
         if s.path=="/calibration":
             c=calibration_report()
             if c.get("n",0)==0:
@@ -539,9 +588,12 @@ class H(BaseHTTPRequestHandler):
             produced = bool(result and len(result)>30 and "wasn't reachable" not in result)
             update_portfolio(d.get("ttype",""), tok, produced)
             tid="t_"+str(int(time.time()*1000))
+            model_cost=cost
+            true_cost=round(model_cost+INFRA_PER_TASK+TOOL_PER_TASK,4)  # FULL cost, not just tokens
             entry={"id":tid,"t":datetime.now(timezone.utc).isoformat(),"ttype":d.get("ttype"),
-                   "task":d.get("task","")[:300],"tokens":tok,"cost":cost,"rated":False,
-                   "prediction":prediction,"produced":produced,"version":"v3-cal"}
+                   "task":d.get("task","")[:300],"tokens":tok,"cost":cost,"model_cost":model_cost,
+                   "true_cost":true_cost,"rated":False,"prediction":prediction,"produced":produced,
+                   "version":"v3-cal","paid":0.0,"user":d.get("user","self")}
             PENDING[tid]=entry
             log_value(entry)   # log immediately so 'tasks' counts submitted work right away
             s.send_response(200);s.send_header("Content-Type","application/json");s.end_headers()
@@ -550,7 +602,8 @@ class H(BaseHTTPRequestHandler):
             tid=d.get("id"); e=PENDING.get(tid)
             if e:
                 e.update({"rated":True,"useful":d.get("useful",True),"wtp":d.get("wtp",0),
-                          "would_reuse":d.get("would_reuse",True)})
+                          "would_reuse":d.get("would_reuse",True),"paid":d.get("paid",0.0),
+                          "user":d.get("user",e.get("user","self"))})
                 if d.get("useful"):  # retroactively credit usefulness to the portfolio
                     rec=PORT.get(e.get("ttype",""), {"attempts":0,"successes":0,"useful":0,"tokens":[]})
                     rec["useful"]+=1; PORT[e.get("ttype","")]=rec; save_portfolio(PORT)
