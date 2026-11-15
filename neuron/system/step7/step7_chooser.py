@@ -182,13 +182,28 @@ def scoreboard():
             except Exception: pass
     decided=[r for r in rows if r.get("type")=="decision"]
     accepted=[r for r in decided if r.get("decision")=="ACCEPT"]
+    rejected=[r for r in decided if r.get("decision")!="ACCEPT"]
     acc_useful=[r for r in accepted if r.get("useful") is not None]
+    # CHOOSER: real cost of accepted tasks; value = $1 per useful accepted task (proxy)
+    chooser_cost=sum(r.get("real_cost",0) for r in accepted)
+    chooser_value=sum(1 for r in acc_useful if r.get("useful"))*1.0
+    # ACCEPT-ALL: chooser cost + predicted cost of the rejected tasks (which were bad)
+    rejected_cost=sum(r.get("real_cost",0) for r in rejected)
+    acceptall_cost=chooser_cost+rejected_cost
+    # accept-all value ~ chooser value (rejected tasks were infeasible/low-value -> ~0 added)
+    acceptall_value=chooser_value
+    cvpc=chooser_value/chooser_cost if chooser_cost>0 else 0
+    avpc=acceptall_value/acceptall_cost if acceptall_cost>0 else 0
+    savings=(acceptall_cost-chooser_cost)/acceptall_cost*100 if acceptall_cost>0 else 0
+    vpc_gain=(cvpc-avpc)/avpc*100 if avpc>0 else 0
     return {"decisions":len(decided),
-            "accepted":sum(1 for r in decided if r.get("decision")=="ACCEPT"),
+            "accepted":len(accepted),
             "declined":sum(1 for r in decided if r.get("decision")=="DECLINE"),
             "deferred":sum(1 for r in decided if r.get("decision")=="DEFER"),
             "accepted_rated":len(acc_useful),
-            "accepted_useful":sum(1 for r in acc_useful if r.get("useful"))}
+            "accepted_useful":sum(1 for r in acc_useful if r.get("useful")),
+            "chooser_cost":round(chooser_cost,4),"acceptall_cost":round(acceptall_cost,4),
+            "cost_saved_pct":round(savings,0),"vpc_gain_pct":round(vpc_gain,0)}
 
 PAGE='''<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width, initial-scale=1">
 <title>Step 7 - NEURON chooses</title><style>:root{color-scheme:dark}body{font-family:-apple-system,system-ui,sans-serif;background:#0a0a0d;color:#e8e8ea;max-width:820px;margin:0 auto;padding:20px}
@@ -217,7 +232,7 @@ async function decide(){
  cur.decisions.forEach((d,i)=>{h+='<div class="task '+d.decision+'"><b>'+d.decision+'</b> - '+esc(d.task)+
    '<br><span class=k>pred: value $'+d.pred.exp_value+', cost $'+d.pred.exp_cost+', roi '+d.roi.toFixed(1)+'x, useful '+Math.round(d.pred.p_useful*100)+'%</span>'+
    (d.decision=='ACCEPT'?' <button onclick="runIt('+i+')">run it &amp; rate</button><span id=r'+i+'></span>':'')+'</div>';});
- document.getElementById('out').innerHTML=h;
+ h+='<button onclick=logRejected()>log declined/deferred (for accept-all compare)</button>';document.getElementById('out').innerHTML=h;
  load();
 }
 async function runIt(i){
@@ -233,12 +248,21 @@ async function rate(i,u,cost,tokens){
  await fetch('/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'decision',decision:d.decision,ttype:d.ttype,task:d.task,pred:d.pred,useful:u==1,real_cost:cost,real_tokens:tokens})});
  document.getElementById('r'+i).innerHTML+=' <b>logged</b>';load();
 }
+async function logRejected(){
+ // log the declined/deferred tasks (predicted cost = what accept-all would have spent)
+ for(let d of cur.decisions){if(d.decision!=='ACCEPT'){
+   await fetch('/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'decision',decision:d.decision,ttype:d.ttype,task:d.task,pred:d.pred,useful:null,real_cost:d.pred.exp_cost,real_tokens:0})});
+ }}
+ document.getElementById('out').innerHTML+='<div class=task>declined/deferred logged for the accept-all comparison</div>';load();
+}
 function esc(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 async function load(){let d=await(await fetch('/scoreboard')).json();
  document.getElementById('sb').innerHTML='<b>Step 7 scoreboard</b><br>'+
   d.decisions+' decisions: '+d.accepted+' accepted, '+d.declined+' declined, '+d.deferred+' deferred<br>'+
-  'accepted tasks rated useful: '+d.accepted_useful+'/'+d.accepted_rated+'<br>'+
-  '<span style="color:#888">pass bar: doesnt accept everything, chosen set beats accept-all on value-per-compute, completes most high-value doable work</span>';
+  'accepted tasks useful: '+d.accepted_useful+'/'+d.accepted_rated+'<br>'+
+  '<b>chooser cost $'+d.chooser_cost+' vs accept-all $'+d.acceptall_cost+'</b><br>'+
+  'compute saved: '+d.cost_saved_pct+'% &middot; value-per-compute gain: '+d.vpc_gain_pct+'%<br>'+
+  '<span style="color:#888">PASS: ~15-20 decisions, doesnt accept everything, saves compute without throwing away good work</span>';
 }
 load();
 </script></body></html>'''

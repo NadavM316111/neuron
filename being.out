@@ -6161,3 +6161,22 @@ Python(41947) MallocStackLogging: can't turn off malloc stack logging because it
 Python(41978) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
 Python(42009) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
 Python(42041) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42087) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42122) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42156) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42187) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42220) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42251) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42282) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42314) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42346) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42377) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42408) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42440) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42472) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42503) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42533) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42564) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(42595) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+     0    199.7   75.0%   77.5%   -2.5    78%     214 1039.1h
+Python(42627) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
