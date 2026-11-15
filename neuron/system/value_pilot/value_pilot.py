@@ -58,30 +58,37 @@ def save_portfolio(p):
 PORT=load_portfolio()
 
 def predict_task(ttype, task_text):
-    """SHADOW MODE: NEURON privately predicts before doing the task. Grounded in its
-    emergent portfolio (how it's done on this category before). No choice yet - it
-    still does every task; we just log prediction vs reality to calibrate judgment."""
+    """SHADOW prediction (improved): token cost from category + complexity + recent
+    post-gate history; usefulness from real signals (category base rate, ambiguity,
+    verification-prone types), not a flat prior."""
     rec=PORT.get(ttype, {"attempts":0,"successes":0,"useful":0,"tokens":[]})
     n=rec["attempts"]
-    # difficulty heuristic from task length + whether it's code/analysis
     words=len(task_text.split())
-    difficulty = min(1.0, 0.3 + words/120 + (0.1 if ttype in ("research","analysis") else 0))
-    # success prob: from history if it has any, else a prior
-    p_success = (rec["successes"]/n) if n>=3 else max(0.4, 0.85-difficulty*0.4)
-    # expected tokens: from history, else estimate from difficulty
-    # history already includes real gate overhead -> use it directly once we have data.
-    # cold-start prior bakes in the gate multiplier per task type (coding/analysis get
-    # execution+correction overhead; planning gets freeze+verify; other is light).
-    gate_mult = {"coding":3.2,"analysis":3.0,"planning":3.5,"research":1.5,"other":1.6}.get(ttype,2.0)
-    if rec["tokens"] and len(rec["tokens"])>=2:
-        exp_tokens = int(sum(rec["tokens"])/len(rec["tokens"]))   # learned from real post-gate history
+    # complexity: longer + multi-requirement tasks cost more
+    reqs = task_text.count("\n") + task_text.lower().count("include") + task_text.count(".")
+    difficulty = min(1.0, 0.25 + words/140 + reqs*0.02 + (0.12 if ttype in ("planning","analysis") else 0))
+    # TOKEN prediction: recent post-gate history (weighted to recent) if available,
+    # else a gate-aware per-category + complexity prior
+    gate_mult = {"coding":3.2,"analysis":3.0,"planning":3.6,"other":1.6}.get(ttype,2.2)
+    if rec["tokens"]:
+        recent=rec["tokens"][-6:]                      # recent history dominates
+        hist=sum(recent)/len(recent)
+        # blend history with a complexity adjustment so harder-than-usual tasks scale up
+        exp_tokens=int(hist*(0.7+0.6*difficulty))
     else:
-        exp_tokens = int((200+difficulty*500)*gate_mult)          # gate-aware cold-start prior
-    exp_cost = exp_tokens/1000*COST_PER_1K
-    # expected value: history of useful-rate (proxy for value) else a prior
-    p_useful = (rec["useful"]/n) if n>=3 else 0.6
-    exp_value = p_useful * (2.0 if ttype in ("analysis","research","planning") else 1.0)  # rough $
-    would_accept = (exp_value > exp_cost*3) and (p_success>0.45)   # the judgment (shadowed)
+        exp_tokens=int((250+difficulty*650)*gate_mult)
+    exp_cost=exp_tokens/1000*COST_PER_1K
+    # SUCCESS prediction (already perfect): known type succeeds; new type high prior
+    p_success = (rec["successes"]/n) if n>=3 else 0.9
+    # USEFULNESS prediction from SIGNALS, not a flat 0.6:
+    #  - category base rate from history (what % of this type were actually useful)
+    #  - ambiguity penalty (very short/vague tasks less likely to satisfy)
+    #  - category prior: 'other'/'coding' tend useful; 'planning'/'analysis' riskier
+    cat_rate = (rec["useful"]/n) if n>=3 else {"other":0.85,"coding":0.6,"analysis":0.45,"planning":0.4}.get(ttype,0.6)
+    ambiguity_pen = 0.15 if words<8 else 0.0
+    p_useful = max(0.1, min(0.95, cat_rate - ambiguity_pen))
+    exp_value = p_useful * (2.0 if ttype in ("analysis","planning") else 1.2)
+    would_accept = (exp_value > exp_cost*3) and (p_success>0.45)
     return {"category":ttype,"difficulty":round(difficulty,2),"p_success":round(p_success,2),
             "exp_tokens":int(exp_tokens),"exp_cost":round(exp_cost,4),"p_useful":round(p_useful,2),
             "exp_value":round(exp_value,2),"would_accept":would_accept,
@@ -358,7 +365,7 @@ def calibration_report():
         for ln in open(LEDGER):
             try: r=json.loads(ln); by_id[r["id"]]=r
             except Exception: pass
-    rows=[r for r in by_id.values() if r.get("version")=="v2-gated" and r.get("prediction")]
+    rows=[r for r in by_id.values() if r.get("version") in ("v3-cal",) and r.get("prediction")]
     if not rows: return {"n":0}
     rated=[r for r in rows if r.get("rated")]
     # token calibration
@@ -486,7 +493,7 @@ class H(BaseHTTPRequestHandler):
             else:
                 html=(f"<pre style='font-family:ui-monospace,monospace;color:#e8e8ea;background:#0a0a0d;padding:20px;font-size:14px;line-height:1.7'>"
                     f"=== STEP 4: RESOURCE-AWARENESS CALIBRATION ===\n"
-                    f"(current gated version only - {c['n']} tasks, {c['rated']} rated)\n\n"
+                    f"(fresh calibration round v3 - {c['n']} tasks, {c['rated']} rated)\n\n"
                     f"TOKEN prediction error:   +/-{c['token_error']} tokens ({c['token_error_pct']}% of actual)\n"
                     f"SUCCESS prediction error: {c['success_error']} (0=perfect, 1=worst)\n"
                     + (f"USEFULNESS pred error:    {c['usefulness_error']}\n" if c['usefulness_error'] is not None else "")
@@ -534,7 +541,7 @@ class H(BaseHTTPRequestHandler):
             tid="t_"+str(int(time.time()*1000))
             entry={"id":tid,"t":datetime.now(timezone.utc).isoformat(),"ttype":d.get("ttype"),
                    "task":d.get("task","")[:300],"tokens":tok,"cost":cost,"rated":False,
-                   "prediction":prediction,"produced":produced,"version":"v2-gated"}
+                   "prediction":prediction,"produced":produced,"version":"v3-cal"}
             PENDING[tid]=entry
             log_value(entry)   # log immediately so 'tasks' counts submitted work right away
             s.send_response(200);s.send_header("Content-Type","application/json");s.end_headers()
