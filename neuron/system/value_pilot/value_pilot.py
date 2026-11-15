@@ -469,6 +469,7 @@ pre{white-space:pre-wrap;word-wrap:break-word;background:#0d0d12;padding:10px;bo
 <div class=disc>Give NEURON-1 a small, harmless task (a bit of code, some analysis, a plan, a question). It will do it, and you tell it honestly how useful it was. This helps measure whether its work is worth more than the compute it costs. You're interacting with AI; no payment is taken; your rating is a research signal.</div>
 <div class=card><div class=k>submit a task</div>
 <select id=ttype><option>coding</option><option>analysis</option><option>planning</option><option>other</option></select>
+<input id=forwho placeholder="who is this task for? (your name, or a person's name)" autocomplete=off style="width:100%;background:#15151b;border:1px solid #2a2a33;border-radius:10px;color:#e8e8ea;padding:11px;box-sizing:border-box;margin:5px 0;font-size:15px">
 <textarea id=task rows=3 placeholder="e.g. write a python function that checks if a string is a palindrome"></textarea>
 <button onclick="submit()">give it to NEURON-1</button></div>
 <div id=result></div>
@@ -479,7 +480,7 @@ async function submit(){
  const tt=document.getElementById('ttype').value, task=document.getElementById('task').value.trim();
  if(!task)return;
  document.getElementById('result').innerHTML='<div class=card>NEURON-1 is working...</div>';
- const r=await fetch('/work',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ttype:tt,task})});
+ const r=await fetch('/work',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ttype:tt,task,user:(document.getElementById('forwho').value.trim()||'self')})});
  const d=await r.json(); lastId=d.id;
  document.getElementById('result').innerHTML='<div class=card><div class=k>NEURON-1\\'s result ('+d.tokens+' tokens, $'+d.cost.toFixed(4)+' compute)</div>'
   +'<pre>'+esc(d.result)+'</pre>'
