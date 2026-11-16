@@ -1,0 +1,2 @@
+# NEURON HyperFlow 72h runner - standard library only, no external deps.
+# This file's presence tells Railway/Nixpacks to build a Python service.
