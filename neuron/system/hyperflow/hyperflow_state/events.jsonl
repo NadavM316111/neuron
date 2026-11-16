@@ -1,0 +1,11 @@
+{"event": "BIRTH", "neuron_id": "neuron-9d0421a67711", "t": "2026-11-16T00:22:22.478241+00:00"}
+{"event": "WAKE", "t": "2026-11-16T00:22:22.480067+00:00"}
+{"event": "LIFE_EVENT", "note": "first day of life - met the operator", "t": "2026-11-16T00:22:22.480131+00:00"}
+{"event": "PROJECT_NEW", "pid": "p1", "name": "understand my own economics", "t": "2026-11-16T00:22:22.480173+00:00"}
+{"event": "LEARN_CAPABILITY", "sig": "reverse_string", "solution": "def reverse(s): return s[::-1]", "t": "2026-11-16T00:22:22.480210+00:00"}
+{"event": "LEDGER", "value": 1.0, "cost": 0.01, "t": "2026-11-16T00:22:22.480252+00:00"}
+{"event": "RESTART", "t": "2026-11-16T00:22:22.480357+00:00"}
+{"event": "WAKE", "t": "2026-11-16T00:22:22.480402+00:00"}
+{"event": "RESTART", "t": "2026-11-16T00:22:22.480583+00:00"}
+{"event": "WAKE", "t": "2026-11-16T00:22:36.169473+00:00"}
+{"event": "WAKE", "t": "2026-11-16T00:22:36.224867+00:00"}
