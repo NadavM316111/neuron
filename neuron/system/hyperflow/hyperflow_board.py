@@ -44,6 +44,9 @@ def load():
     except Exception: return []
 def save(ts): _atomic(TASKS, json.dumps(ts))
 def esc(s): return html.escape(str(s or ""))
+def money(x):
+    try: return float(str(x).strip())
+    except Exception: return 0.0
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>{title}</title>
@@ -107,8 +110,8 @@ def board_page():
     def c(st): return sum(1 for t in ts if t["status"] == st)
     rated = [t for t in ts if t.get("useful") is not None]
     useful = sum(1 for t in rated if t["useful"] in ("yes", "partly"))
-    value = sum(float(t.get("paid") or 0) for t in ts if t.get("credited"))
-    cost = sum(float(t.get("cost") or 0) for t in ts)
+    value = sum(money(t.get("paid")) for t in ts if t.get("credited"))
+    cost = sum(money(t.get("cost")) for t in ts)
     rows = ""
     for t in list(reversed(ts))[:40]:
         rows += (f'<tr><td>{esc(t["status"])}</td><td>{esc(t["category"])}</td>'
