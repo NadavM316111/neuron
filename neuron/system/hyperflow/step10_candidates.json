@@ -1,0 +1,78 @@
+{
+  "neuron_id": "neuron-95e789ff42d8",
+  "self_knowledge": {
+    "category_facts": [
+      "- analysis: 6/6 accepted, 6 rated useful",
+      "- coding: 5/5 accepted, 4 rated useful",
+      "- explanation: 1/1 accepted, 1 rated useful",
+      "- numeric: 2/2 accepted, 2 rated useful",
+      "- other: 4/4 accepted, 4 rated useful",
+      "- planning: 0/7 accepted, 0 rated useful",
+      "- research: 0/1 accepted, 0 rated useful"
+    ],
+    "patterns": [
+      "I do coding reliably (4/5 useful) - a genuine strength.",
+      "I declined/deferred ALL 7 planning tasks - a real capability or feasibility gap.",
+      "I do other reliably (4/4 useful) - a genuine strength.",
+      "I do analysis reliably (6/6 useful) - a genuine strength."
+    ],
+    "reserve": 294.59,
+    "neuron_id": "neuron-95e789ff42d8",
+    "stored_projects": [
+      "p0",
+      "p15",
+      "p45",
+      "p120",
+      "p180"
+    ],
+    "capabilities": 0
+  },
+  "candidates": [
+    {
+      "title": "Enhance Planning Capabilities",
+      "goal": "Develop a systematic approach for planning tasks",
+      "why": "There is a clear gap in planning tasks (0/7 accepted, 0 rated useful)",
+      "origin": "planning",
+      "expected_benefit": "Improved ability to manage and prioritize tasks, leading to higher acceptance rates in future tasks",
+      "estimated_cost": 50,
+      "uncertainty": 0.8,
+      "success_criteria": [
+        "5/5 accepted planning tasks in the next 3 months",
+        "At least 3 rated useful planning tasks in the next 3 months"
+      ],
+      "first_action": "Review and document successful planning strategies from past tasks",
+      "_grounded": true
+    },
+    {
+      "title": "Expand Coding Efficiency",
+      "goal": "Optimize coding processes to increase efficiency and maintain high quality",
+      "why": "While coding is a strength, there is room for improvement to ensure all coding tasks are rated useful",
+      "origin": "coding",
+      "expected_benefit": "Higher quality and more efficient coding, potentially leading to more useful ratings",
+      "estimated_cost": 75,
+      "uncertainty": 0.9,
+      "success_criteria": [
+        "All coding tasks rated useful for the next 3 months",
+        "At least 60% reduction in coding time for future tasks"
+      ],
+      "first_action": "Analyze current coding practices and identify bottlenecks",
+      "_grounded": true
+    },
+    {
+      "title": "Develop Research Skills",
+      "goal": "Improve research skills to better support analysis tasks",
+      "why": "There is a significant gap in research capabilities (0/1 accepted, 0 rated useful)",
+      "origin": "research",
+      "expected_benefit": "Enhanced ability to gather and analyze data, improving the quality of analysis tasks",
+      "estimated_cost": 100,
+      "uncertainty": 0.7,
+      "success_criteria": [
+        "At least 2 research tasks accepted in the next 3 months",
+        "At least 1 rated useful research task in the next 3 months"
+      ],
+      "first_action": "Identify and review relevant research methodologies and tools",
+      "_grounded": true
+    }
+  ],
+  "grounded": 3
+}
