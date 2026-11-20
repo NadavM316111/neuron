@@ -151,6 +151,9 @@ class H(BaseHTTPRequestHandler):
         if p == "/api/ratings":
             if not s._auth(q): return s._json({"error": "unauthorized"}, 401)
             return s._json([t for t in load() if t.get("useful") is not None and not t.get("credited")])
+        if p == "/api/export":   # read-only full dump for offline audits (9N/9O); changes no NEURON behavior
+            if not s._auth(q): return s._json({"error": "unauthorized"}, 401)
+            return s._json({"exported_at": now(), "count": len(load()), "tasks": load()})
         return s._send("not found", 404)
 
     def do_POST(s):
