@@ -1,0 +1,41 @@
+======================================================
+9N - HYPERFLOW V1.0 SUSTAINABILITY AUDIT
+======================================================
+
+tasks delivered: 18   useful: 17
+
+VALUE (honestly classified)
+  actual cash revenue:      $0.00
+  verified external value:  $194.75  (stated WTP, human-rated useful; NOT cash)
+  synthetic value excluded: $0.00
+  reconciles to board $194.75: True
+
+COST (all real operating costs)
+  compute:  $0.0329
+  hosting:  $0.6667  (Railway Pro $20.0/mo prorated 1.0d - conservative, base also covers other projects)
+  api/tool/storage: $0.00
+  total operating cost: $0.6996
+
+UNIT ECONOMICS
+  cost / delivered task: $0.03887
+  cost / useful task:    $0.04115
+  verified value / cost: 278.4x
+  cash revenue / cost:   0.0x
+
+ROBUSTNESS
+  largest single value: $35.0
+  value excl largest:   $159.75  (ratio 228.3x)
+  median/mean per useful: $7.5 / $11.46
+
+ACCOUNTING + PASS RULE
+  PASS  all real operating costs included (compute+hosting)
+  PASS  synthetic/harness value contributes $0
+  PASS  value traced per task + reconciles to board total
+  PASS  17/18 useful evidence present
+  PASS  failed/declined/deferred costs included
+  PASS  verified external value > operating cost
+  PASS  positive without outlier (largest task removed)
+  PASS  cash revenue labeled separately (not claimed as revenue)
+
+VERDICT: 9N PASS
+  -> economically value-positive on stated WTP; NOT yet cash self-funding (cash revenue $0).
