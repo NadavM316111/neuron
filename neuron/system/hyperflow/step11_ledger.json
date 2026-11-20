@@ -1,5 +1,5 @@
 {
-  "sandbox_hf": 49.634,
+  "sandbox_hf": 48.907,
   "real_usd_cap": 15.0,
   "real_usd_spent": 0.0,
   "events": [
@@ -72,6 +72,14 @@
       "compute_hf": 0.366,
       "verdict": "PASS",
       "at": "2026-11-20T21:19:51.564740+00:00"
+    },
+    {
+      "step": "11B",
+      "filtered": 11,
+      "pursued": 5,
+      "rejected": 6,
+      "compute_hf": 0.727,
+      "at": "2026-11-20T21:25:10.284751+00:00"
     }
   ]
 }
