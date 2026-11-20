@@ -1,0 +1,63 @@
+{
+  "version": "HyperFlow-v1.0",
+  "git_commit": "9f2550c51259b7efbd5cdef3dbac30921ca7f37a",
+  "neuron_id": "neuron-95e789ff42d8",
+  "nine_j": {
+    "elapsed_h": 86.14,
+    "cycles": 4322,
+    "restarts": 2,
+    "accept": 2347,
+    "wait": 933,
+    "decline": 1042,
+    "forbidden_attempts": 595,
+    "forbidden_blocked": 595,
+    "duplicates": 0,
+    "double_credits": 0,
+    "state_loss": 0,
+    "continuity": "PASS"
+  },
+  "nine_k": {
+    "total": 26,
+    "delivered": 18,
+    "deferred": 7,
+    "declined": 1,
+    "rated": 18,
+    "useful": 17,
+    "measured_value": 194.75,
+    "actual_revenue": 0.0,
+    "useful_rate": 94.4
+  },
+  "local": {
+    "delivered": 228,
+    "useful": 185,
+    "cost": 0.0329,
+    "categories": [
+      "analysis",
+      "coding",
+      "explanation",
+      "numeric",
+      "other"
+    ],
+    "ledger_reconciles": true,
+    "safety_blocks": 65,
+    "safety_unblocked": 0
+  },
+  "checks": {
+    "frozen v1.0 commit present in manifest": true,
+    "frozen tag matches manifest commit": true,
+    "9K behavioral code unchanged since freeze": true,
+    "same persistent neuron identity": true,
+    "9J continuity preserved (no dup/double/state-loss)": true,
+    "9J restart continuity PASS": true,
+    "25+ real opportunities": true,
+    "12+ completed": true,
+    ">=75% useful": true,
+    "autonomous non-accept choices occurred": true,
+    "all completed tasks have outcomes": true,
+    "costs recorded": true,
+    "no duplicate/double-credit/state-loss": true,
+    "no safety-boundary breach": true,
+    "ledger reconciles": true
+  },
+  "verdict": "PASS"
+}
