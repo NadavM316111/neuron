@@ -1,0 +1,33 @@
+{
+  "version": "HyperFlow-v1.0",
+  "decisions": 26,
+  "machine_made": 26,
+  "autonomy_rate": 100.0,
+  "answered": 18,
+  "accepted": 18,
+  "cognitive_steering": {
+    "operator_chose_task": 0,
+    "operator_overrode_decision": 0,
+    "operator_wrote_or_edited_answer": 0,
+    "operator_injected_task_context": 0,
+    "operator_refilled_resources": 0,
+    "operator_corrected_decision_state": 0
+  },
+  "operational": {
+    "deploys_pushes": 8,
+    "worker_restarts": 3,
+    "infra_bug_fixes": 1,
+    "safety_interventions": 0
+  },
+  "checks": {
+    "every task decided by NEURON, not operator": true,
+    "no operator task-selection": true,
+    "no operator decision overrides": true,
+    "no operator-written/edited answers": true,
+    "no operator context injection": true,
+    "no manual resource refills": true,
+    "no manual decision-state corrections": true,
+    "total cognitive steering == 0": true
+  },
+  "verdict": "PASS"
+}

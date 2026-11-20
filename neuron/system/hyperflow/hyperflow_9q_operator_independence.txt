@@ -1,0 +1,40 @@
+======================================================
+9Q - HYPERFLOW V1.0 OPERATOR-INDEPENDENCE AUDIT
+======================================================
+
+version: HyperFlow-v1.0
+
+DECISIONS (from frozen board data): 26
+  machine-made (NEURON's own reason): 26  (100.0%)
+  unknown/operator-authored reason:   0
+  accepted tasks answered by engine:  18/18
+
+COGNITIVE STEERING (counts against autonomy)
+  operator_chose_task: 0
+  operator_overrode_decision: 0
+  operator_wrote_or_edited_answer: 0
+  operator_injected_task_context: 0
+  operator_refilled_resources: 0
+  operator_corrected_decision_state: 0
+  TOTAL: 0
+
+OPERATIONAL (normal ops, does NOT count against autonomy)
+  deploys_pushes: 8
+  worker_restarts: 3
+  infra_bug_fixes: 1
+  safety_interventions: 0
+  TOTAL: 12
+
+PASS RULE
+  PASS  every task decided by NEURON, not operator
+  PASS  no operator task-selection
+  PASS  no operator decision overrides
+  PASS  no operator-written/edited answers
+  PASS  no operator context injection
+  PASS  no manual resource refills
+  PASS  no manual decision-state corrections
+  PASS  total cognitive steering == 0
+
+VERDICT: 9Q PASS
+  -> NEURON sustained its core loop (choose/do/verify/account) with zero cognitive
+     steering. Operator work was ops only (deploys, restarts, one infra fix).
