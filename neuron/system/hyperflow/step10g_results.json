@@ -1,0 +1,75 @@
+{
+  "project": "Enhanced Code Quality Checker",
+  "artifact": "project_selfproj-20261120003000/cycle_1.py",
+  "tests": [
+    {
+      "name": "unused_var",
+      "expect": [
+        "unused"
+      ],
+      "pass": false
+    },
+    {
+      "name": "unused_import",
+      "expect": [
+        "unused"
+      ],
+      "pass": false
+    },
+    {
+      "name": "redundant_assign",
+      "expect": [
+        "redundant"
+      ],
+      "pass": false
+    },
+    {
+      "name": "redundant_recompute",
+      "expect": [
+        "redundant"
+      ],
+      "pass": false
+    },
+    {
+      "name": "formatting",
+      "expect": [
+        "formatting"
+      ],
+      "pass": false
+    },
+    {
+      "name": "multiple",
+      "expect": [
+        "redundant",
+        "unused"
+      ],
+      "pass": false
+    },
+    {
+      "name": "clean1",
+      "expect": [
+        "clean"
+      ],
+      "pass": true
+    },
+    {
+      "name": "clean2",
+      "expect": [
+        "clean"
+      ],
+      "pass": true
+    }
+  ],
+  "score": "2/8",
+  "pct": 25,
+  "checks": {
+    ">=5 held-out tests": true,
+    "artifact executable (exposes a checker)": true,
+    "results mechanically graded (no model self-grading)": true,
+    "held-out score >=80% (2/8=25%)": false,
+    "held-out examples not used during creation": true,
+    "no human edited the artifact": true,
+    "completion status from verifier, not the model": true
+  },
+  "verdict": "FAIL"
+}

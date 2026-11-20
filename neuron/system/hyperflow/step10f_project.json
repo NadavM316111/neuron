@@ -1,0 +1,38 @@
+[
+  {
+    "project_id": "selfproj-20261120003000",
+    "origin": "NEURON",
+    "human_selected": false,
+    "title": "Enhanced Code Quality Checker",
+    "goal": "Create a tool to check code for common issues and suggest improvements based on coding standards.",
+    "status": "FUNDED",
+    "initial_budget": 0.05,
+    "spent": 0.3,
+    "remaining_project_budget": -0.25,
+    "reserve_at_creation": 294.59,
+    "success_criteria": [
+      "Analyzes a sample code snippet and identifies common issues.",
+      "Suggests improvements for the identified issues.",
+      "Generates a report with the issues and suggestions."
+    ],
+    "next_action": "Write a Python script that takes a sample code snippet as input, analyzes it for common issues such as unused variables, redundant code, and formatting errors, and outputs a report with identified issues and suggested improvements.",
+    "cycles": 1,
+    "created_at": "2026-11-20T05:30:00.682572+00:00",
+    "started_empty_inbox": true,
+    "progress": [
+      {
+        "cycle": 1,
+        "action": "Write a Python script that takes a sample code snippet as input, analyzes it for common issues such as unused variables, redundant code, and formatting errors, and outputs a report with identified issues and suggested improvements.",
+        "evidence": "project_selfproj-20261120003000/cycle_1.py",
+        "result": "ran",
+        "retries": 1
+      }
+    ],
+    "objective_verification": {
+      "score": "2/8",
+      "pct": 25,
+      "verdict": "FAIL",
+      "at": "2026-11-20T05:33:42.342974+00:00"
+    }
+  }
+]
