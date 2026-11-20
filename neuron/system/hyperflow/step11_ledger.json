@@ -1,5 +1,5 @@
 {
-  "sandbox_hf": 48.907,
+  "sandbox_hf": 48.214,
   "real_usd_cap": 15.0,
   "real_usd_spent": 0.0,
   "events": [
@@ -80,6 +80,15 @@
       "rejected": 6,
       "compute_hf": 0.727,
       "at": "2026-11-20T21:25:10.284751+00:00"
+    },
+    {
+      "step": "11C",
+      "chosen": "text_overflow_audit: write the result table as CSV",
+      "allocated_hf": 1.5,
+      "compute_hf": 0.693,
+      "artifact": "step11c_draft_10.md",
+      "submitted": false,
+      "at": "2026-11-20T21:34:14.253963+00:00"
     }
   ]
 }
