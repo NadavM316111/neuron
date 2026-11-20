@@ -1,0 +1,19 @@
+HYPERFLOW V1.0 FREEZE
+
+version:    HyperFlow-v1.0
+neuron_id:  neuron-95e789ff42d8
+git commit: 9f2550c51259b7efbd5cdef3dbac30921ca7f37a
+git tag:    hyperflow-v1.0
+model:      qwen2.5:7b
+frozen at:  2026-11-20T03:24:42.077883+00:00
+
+  PASS  same neuron loads (stable id)
+  PASS  projects load
+  PASS  ledger reconciles
+  PASS  chooser works (returns a decision)
+  PASS  verification works (code executes)
+  PASS  forbidden action blocked
+  PASS  non-accept path works (research declined)
+  PASS  restart works (reload same id)
+
+major behavioral configuration now frozen.

@@ -1,0 +1,156 @@
+{
+  "release_version": "HyperFlow-v1.0",
+  "git_commit": "9f2550c51259b7efbd5cdef3dbac30921ca7f37a",
+  "git_tag": "hyperflow-v1.0",
+  "release_timestamp": "2026-11-20T03:24:42.077883+00:00",
+  "neuron_id": "neuron-95e789ff42d8",
+  "neuron_birth": "unknown",
+  "model_config": {
+    "model": "qwen2.5:7b",
+    "temperature_worker": 0.3,
+    "temperature_eval": 0.2,
+    "max_tokens": "model default (num_predict unset)",
+    "context_length": "model default",
+    "system_prompts": "per-category task prompts in hyperflow_9k_worker.do_task",
+    "tooling": "Ollama /api/generate; python3 -I subprocess for code/math execution"
+  },
+  "chooser_version": {
+    "order": "safety -> feasibility -> category/research -> budget -> expected-success",
+    "forbidden_hint_decline": [
+      "password",
+      "hack",
+      "bank account",
+      "credit card",
+      "social security",
+      "mass email",
+      "spam",
+      "impersonate"
+    ],
+    "infeasible_decline": [
+      "operating system",
+      "from scratch",
+      "entire app",
+      "whole app",
+      "full website",
+      "build me a company",
+      "millions",
+      "cure ",
+      "prove p"
+    ],
+    "research_decline": "no live web access",
+    "low_reserve_defer": "reserve <= 1.0",
+    "low_success_defer": "predicted p_succ < 0.35",
+    "category_priors": {
+      "coding": {
+        "tok": 250,
+        "p_succ": 0.9,
+        "value": 1.2
+      },
+      "numeric": {
+        "tok": 300,
+        "p_succ": 0.88,
+        "value": 1.0
+      },
+      "analysis": {
+        "tok": 400,
+        "p_succ": 0.85,
+        "value": 1.1
+      },
+      "planning": {
+        "tok": 350,
+        "p_succ": 0.3,
+        "value": 1.3
+      },
+      "explanation": {
+        "tok": 200,
+        "p_succ": 0.88,
+        "value": 0.8
+      },
+      "research": {
+        "tok": 400,
+        "p_succ": 0.1,
+        "value": 1.0
+      },
+      "other": {
+        "tok": 300,
+        "p_succ": 0.7,
+        "value": 0.9
+      }
+    }
+  },
+  "safety_perimeter": {
+    "forbidden_actions": [
+      "access_external_api_unapproved",
+      "apply_for_job",
+      "bypass_control",
+      "change_credentials",
+      "clone_self",
+      "cold_outreach",
+      "create_account",
+      "delete_user_data",
+      "disable_safety",
+      "escalate_permissions",
+      "execute_shell",
+      "grant_self_access",
+      "impersonate",
+      "install_software",
+      "make_payment",
+      "mass_email",
+      "move_money",
+      "publish_publicly",
+      "reset_password",
+      "self_copy",
+      "send_mass_message",
+      "sign_contract",
+      "spend_real_money",
+      "transfer",
+      "withdraw"
+    ],
+    "allowed_action_types": [
+      "abandon_project",
+      "conserve",
+      "consolidate_memory",
+      "continue_project",
+      "do_bounded_task",
+      "learn",
+      "pause_project",
+      "read_approved_info",
+      "update_portfolio",
+      "verify_own_work",
+      "wait"
+    ],
+    "enforcement": "structural (SafetyBoundary.check), not NEURON-changeable"
+  },
+  "accounting_rules": {
+    "compute_cost": "tokens/1000 * COST_PER_1K (charged on every accepted job)",
+    "infra_cost": "INFRA per action",
+    "verified_external_value": "credited ONLY when a human rates the work useful",
+    "hypothetical_wtp": "would-pay signal; SEPARATE field, never added to reserve",
+    "failed_work_cost": "failed/declined work costs resources, earns no value",
+    "reserve": "start + verified_external_value - compute - infra - tool",
+    "cost_per_1k": 0.002,
+    "infra_per_action": 0.001,
+    "start_reserve": 100.0
+  },
+  "verification_rules": {
+    "coding": "execute code; self-check it runs without error",
+    "numeric": "qwen computes; answer checked against the stated problem",
+    "analysis": "computed result + human usefulness rating",
+    "planning": "constraint validation (deferred by default at 7b)",
+    "explanation": "human usefulness rating",
+    "research": "declined (no source access)",
+    "rule": "failed verification costs resources and earns no verified value"
+  },
+  "files_frozen": [
+    "hyperflow_72h.py",
+    "hyperflow_9k_worker.py",
+    "hyperflow_board.py",
+    "hyperflow_bounds.py",
+    "hyperflow_freeze.py",
+    "hyperflow_lifeloop.py",
+    "hyperflow_mind.py",
+    "hyperflow_runtime.py",
+    "hyperflow_shakedown.py",
+    "hyperflow_work.py"
+  ]
+}
