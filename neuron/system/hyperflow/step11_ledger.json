@@ -1,0 +1,77 @@
+{
+  "sandbox_hf": 49.634,
+  "real_usd_cap": 15.0,
+  "real_usd_spent": 0.0,
+  "events": [
+    {
+      "step": "11A",
+      "action": "opportunity discovery",
+      "strategies": [
+        {
+          "query": "label:\"good first issue\" state:open created:>2025-01-01",
+          "kind": "bugfix",
+          "why": "This search will find simple, unassigned issues that are labeled as 'good first issue' and were created after January 1, 2025, making them suitable for quick fixes."
+        },
+        {
+          "query": "label:\"help wanted\" in:body -no:assignee comments:<5",
+          "kind": "tool",
+          "why": "This search will find issues that are labeled as 'help wanted' with a body that includes the phrase 'help wanted', have no assignee, and have fewer than 5 comments, making them ideal for proposing a tool or small utility."
+        },
+        {
+          "query": "label:\"good first issue\" state:open",
+          "kind": "docs",
+          "why": "This broad search will find issues labeled as 'good first issue' that are open, providing a wide range of opportunities to contribute documentation or minor improvements."
+        }
+      ],
+      "issues_seen": 11,
+      "opportunities": [
+        {
+          "title": "Replace placeholder logo",
+          "repo": "LykaiosNZ/templing",
+          "url": "https://github.com/LykaiosNZ/templing/issues/1",
+          "labels": [
+            "enhancement",
+            "help wanted",
+            "good first issue"
+          ],
+          "comments": 0,
+          "body": "The current logo is something I had Claude whip up. I would prefer to have it created by a human. The generated logo is \"a metronome with a sapling for the arm\". Thas was what it came up with based on the name Templing being a portmanteau of \"tempo\" and \"sapling\".\n\nI'm open to riffs on that theme. Something that invokes music and growth. Perhaps flipping it so it's a sapling sprouting some sort of",
+          "opportunity": "Design and implement a new logo",
+          "fit": 1,
+          "why": "Small, well-scoped, within ability to write/test code"
+        },
+        {
+          "title": "Docs: translate docs/plugins.md and docs/github-actions.md to English",
+          "repo": "chmenegatti/zeno",
+          "url": "https://github.com/chmenegatti/zeno/issues/131",
+          "labels": [
+            "documentation",
+            "good first issue"
+          ],
+          "comments": 0,
+          "body": "The README is now English-first (Portuguese in `README.pt-BR.md`), but `docs/plugins.md` and `docs/github-actions.md` are still Portuguese only.\n\nSuggested layout: English in the current files and the Portuguese versions as `docs/plugins.pt-BR.md` / `docs/github-actions.pt-BR.md`, with a language link at the top of each and the README links updated (English README \u2192 English docs, `README.pt-BR.md`",
+          "opportunity": "Translate documentation to English",
+          "fit": 1,
+          "why": "Small, well-scoped, within ability to write/test code"
+        },
+        {
+          "title": "Interface in English (i18n)",
+          "repo": "chmenegatti/zeno",
+          "url": "https://github.com/chmenegatti/zeno/issues/132",
+          "labels": [
+            "enhancement",
+            "help wanted"
+          ],
+          "comments": 0,
+          "body": "The app UI is Portuguese only. An English UI (and a way to add more languages) would open Zeno to many more users.\n\nIdeas:\n- a small dictionary per language in `src/renderer/src/i18n/` and a `t('key')` helper; language from the OS with an override in *Preferences*\n- start with the most visible screens (sidebar, request/response panes, workspace screen, import) and migrate the rest gradually\n- Go-s",
+          "opportunity": "Implement multilingual interface",
+          "fit": 1,
+          "why": "Small, well-scoped, within ability to write/test code"
+        }
+      ],
+      "compute_hf": 0.366,
+      "verdict": "PASS",
+      "at": "2026-11-20T21:19:51.564740+00:00"
+    }
+  ]
+}

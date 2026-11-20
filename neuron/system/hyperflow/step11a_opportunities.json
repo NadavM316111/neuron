@@ -1,0 +1,190 @@
+{
+  "strategies": [
+    {
+      "query": "label:\"good first issue\" state:open created:>2025-01-01",
+      "kind": "bugfix",
+      "why": "This search will find simple, unassigned issues that are labeled as 'good first issue' and were created after January 1, 2025, making them suitable for quick fixes."
+    },
+    {
+      "query": "label:\"help wanted\" in:body -no:assignee comments:<5",
+      "kind": "tool",
+      "why": "This search will find issues that are labeled as 'help wanted' with a body that includes the phrase 'help wanted', have no assignee, and have fewer than 5 comments, making them ideal for proposing a tool or small utility."
+    },
+    {
+      "query": "label:\"good first issue\" state:open",
+      "kind": "docs",
+      "why": "This broad search will find issues labeled as 'good first issue' that are open, providing a wide range of opportunities to contribute documentation or minor improvements."
+    }
+  ],
+  "issues": [
+    {
+      "title": "Replace placeholder logo",
+      "repo": "LykaiosNZ/templing",
+      "url": "https://github.com/LykaiosNZ/templing/issues/1",
+      "labels": [
+        "enhancement",
+        "help wanted",
+        "good first issue"
+      ],
+      "comments": 0,
+      "body": "The current logo is something I had Claude whip up. I would prefer to have it created by a human. The generated logo is \"a metronome with a sapling for the arm\". Thas was what it came up with based on the name Templing being a portmanteau of \"tempo\" and \"sapling\".\n\nI'm open to riffs on that theme. Something that invokes music and growth. Perhaps flipping it so it's a sapling sprouting some sort of"
+    },
+    {
+      "title": "datatable_import: option to keep rows that are not in the file",
+      "repo": "shanyup/enginewright-unreal-mcp",
+      "url": "https://github.com/shanyup/enginewright-unreal-mcp/issues/12",
+      "labels": [
+        "enhancement",
+        "good first issue"
+      ],
+      "comments": 0,
+      "body": "### Context\n`datatable_import` makes the table match the file, so rows that are not in the file are removed. Sometimes a file only carries the rows one person changed.\n\n### Files to touch\n- `Plugins/Enginewright/Source/Enginewright/Private/Tools/DataTableTools.cpp` (`datatable_import`): optional `removeMissing` (default `true`, today's behavior). With `false`, rows missing from the file stay and t"
+    },
+    {
+      "title": "log_read: filter by a list of log categories",
+      "repo": "shanyup/enginewright-unreal-mcp",
+      "url": "https://github.com/shanyup/enginewright-unreal-mcp/issues/11",
+      "labels": [
+        "enhancement",
+        "good first issue"
+      ],
+      "comments": 0,
+      "body": "### Context\n`log_read` takes one `category`. When a test follows two systems (for example `LogTemp` and `LogBlueprintUserMessages`) it needs two calls and has to merge them.\n\n### Files to touch\n- `Plugins/Enginewright/Source/Enginewright/Private/Tools/SettingsLogTools.cpp` (`log_read`): optional `categories` (array of names). Lines from any of them are returned in order. An unknown category gives "
+    },
+    {
+      "title": "text_overflow_audit: write the result table as CSV",
+      "repo": "shanyup/enginewright-unreal-mcp",
+      "url": "https://github.com/shanyup/enginewright-unreal-mcp/issues/10",
+      "labels": [
+        "enhancement",
+        "good first issue"
+      ],
+      "comments": 0,
+      "body": "### Context\n`text_overflow_audit` answers in JSON. For a translator or a designer a spreadsheet is easier to read and to share.\n\n### Files to touch\n- `Plugins/Enginewright/Source/Enginewright/Private/Tools/TextAuditTools.cpp` (`text_overflow_audit`): optional `csv: true` writes one row per overflow (widget, text block, culture, wanted width, slot width, text) to `Saved/Enginewright/` and returns t"
+    },
+    {
+      "title": "level_audit: report actors below the kill Z of the world",
+      "repo": "shanyup/enginewright-unreal-mcp",
+      "url": "https://github.com/shanyup/enginewright-unreal-mcp/issues/9",
+      "labels": [
+        "enhancement",
+        "good first issue"
+      ],
+      "comments": 0,
+      "body": "### Context\n`level_audit` lists hidden, idle and placeholder actors. An actor that sits below the world's kill Z is destroyed as soon as play starts, which is easy to miss when a level is edited.\n\n### Files to touch\n- `Plugins/Enginewright/Source/Enginewright/Private/Tools/LevelAuditTools.cpp` (`level_audit`): a new `belowKillZ` list with the actor path and its Z, using `KillZ` from the World Sett"
+    },
+    {
+      "title": "Docs: translate docs/plugins.md and docs/github-actions.md to English",
+      "repo": "chmenegatti/zeno",
+      "url": "https://github.com/chmenegatti/zeno/issues/131",
+      "labels": [
+        "documentation",
+        "good first issue"
+      ],
+      "comments": 0,
+      "body": "The README is now English-first (Portuguese in `README.pt-BR.md`), but `docs/plugins.md` and `docs/github-actions.md` are still Portuguese only.\n\nSuggested layout: English in the current files and the Portuguese versions as `docs/plugins.pt-BR.md` / `docs/github-actions.pt-BR.md`, with a language link at the top of each and the README links updated (English README \u2192 English docs, `README.pt-BR.md`"
+    },
+    {
+      "title": "fix(mysqlwire): strip CLIENT_SSL capability from server Initial Handshake Packet so default ssl-mode=PREFERRED clients fall back to cleartext",
+      "repo": "oscarbol09/branchbase",
+      "url": "https://github.com/oscarbol09/branchbase/issues/188",
+      "labels": [
+        "bug",
+        "help wanted"
+      ],
+      "comments": 0,
+      "body": "### Description\n\nWhen routing MySQL or MariaDB connections in `internal/proxy/proxy.go:493-514`, the proxy forwards the backend server's `Initial Handshake Packet` (`Protocol::HandshakeV10`) verbatim to the client before reading the client's response:\n\n```go\n// internal/proxy/proxy.go:493-514\nif s.cfg != nil && (s.cfg.Driver == \"mysql\" || s.cfg.Driver == \"mariadb\") {\n\t// In MySQL, the server initi"
+    },
+    {
+      "title": "Mock server: pick the example by query string or header",
+      "repo": "chmenegatti/zeno",
+      "url": "https://github.com/chmenegatti/zeno/issues/134",
+      "labels": [
+        "enhancement",
+        "help wanted"
+      ],
+      "comments": 0,
+      "body": "The mock server (`wails/internal/mock`) answers each route with the request's default example. It would be useful to choose between examples by a condition, e.g. `?status=error` or header `X-Mock-Example: not-found`, so one route can return success and error cases.\n\nSketch: an optional `match` on each example (`{ query: {k: v}, headers: {k: v} }`), the first matching example wins, the default stay"
+    },
+    {
+      "title": "Flatpak / Flathub package",
+      "repo": "chmenegatti/zeno",
+      "url": "https://github.com/chmenegatti/zeno/issues/133",
+      "labels": [
+        "enhancement",
+        "help wanted"
+      ],
+      "comments": 0,
+      "body": "Zeno ships `.deb`, `.rpm` and AppImage, and there are manifests for AUR, Homebrew, Scoop and winget in `packaging/`. A Flathub package would make it one click away on most distros.\n\nFlathub requires building from source offline: Go modules (`wails/go.mod`) and npm packages (`package-lock.json`) vendored with the flatpak-builder tools, WebKitGTK 4.1 from the GNOME runtime, and the build steps from "
+    },
+    {
+      "title": "Interface in English (i18n)",
+      "repo": "chmenegatti/zeno",
+      "url": "https://github.com/chmenegatti/zeno/issues/132",
+      "labels": [
+        "enhancement",
+        "help wanted"
+      ],
+      "comments": 0,
+      "body": "The app UI is Portuguese only. An English UI (and a way to add more languages) would open Zeno to many more users.\n\nIdeas:\n- a small dictionary per language in `src/renderer/src/i18n/` and a `t('key')` helper; language from the OS with an override in *Preferences*\n- start with the most visible screens (sidebar, request/response panes, workspace screen, import) and migrate the rest gradually\n- Go-s"
+    },
+    {
+      "title": "Widgets are still using dynamic colors when dynamic theme is off",
+      "repo": "kylecorry31/Trail-Sense",
+      "url": "https://github.com/kylecorry31/Trail-Sense/issues/4186",
+      "labels": [
+        "Component: Widget",
+        "Component: Theme",
+        "help wanted"
+      ],
+      "comments": 0,
+      "body": "I don't remember if I intentionally did this to make it fit with the home screen, but if I disable dynamic color in the theme settings, then I would expect the widgets to not be dynamically colored or at least there to be a separate setting to control whether dynamic colors still apply to the widgets."
+    }
+  ],
+  "opportunities": [
+    {
+      "title": "Replace placeholder logo",
+      "repo": "LykaiosNZ/templing",
+      "url": "https://github.com/LykaiosNZ/templing/issues/1",
+      "labels": [
+        "enhancement",
+        "help wanted",
+        "good first issue"
+      ],
+      "comments": 0,
+      "body": "The current logo is something I had Claude whip up. I would prefer to have it created by a human. The generated logo is \"a metronome with a sapling for the arm\". Thas was what it came up with based on the name Templing being a portmanteau of \"tempo\" and \"sapling\".\n\nI'm open to riffs on that theme. Something that invokes music and growth. Perhaps flipping it so it's a sapling sprouting some sort of",
+      "opportunity": "Design and implement a new logo",
+      "fit": 1,
+      "why": "Small, well-scoped, within ability to write/test code"
+    },
+    {
+      "title": "Docs: translate docs/plugins.md and docs/github-actions.md to English",
+      "repo": "chmenegatti/zeno",
+      "url": "https://github.com/chmenegatti/zeno/issues/131",
+      "labels": [
+        "documentation",
+        "good first issue"
+      ],
+      "comments": 0,
+      "body": "The README is now English-first (Portuguese in `README.pt-BR.md`), but `docs/plugins.md` and `docs/github-actions.md` are still Portuguese only.\n\nSuggested layout: English in the current files and the Portuguese versions as `docs/plugins.pt-BR.md` / `docs/github-actions.pt-BR.md`, with a language link at the top of each and the README links updated (English README \u2192 English docs, `README.pt-BR.md`",
+      "opportunity": "Translate documentation to English",
+      "fit": 1,
+      "why": "Small, well-scoped, within ability to write/test code"
+    },
+    {
+      "title": "Interface in English (i18n)",
+      "repo": "chmenegatti/zeno",
+      "url": "https://github.com/chmenegatti/zeno/issues/132",
+      "labels": [
+        "enhancement",
+        "help wanted"
+      ],
+      "comments": 0,
+      "body": "The app UI is Portuguese only. An English UI (and a way to add more languages) would open Zeno to many more users.\n\nIdeas:\n- a small dictionary per language in `src/renderer/src/i18n/` and a `t('key')` helper; language from the OS with an override in *Preferences*\n- start with the most visible screens (sidebar, request/response panes, workspace screen, import) and migrate the rest gradually\n- Go-s",
+      "opportunity": "Implement multilingual interface",
+      "fit": 1,
+      "why": "Small, well-scoped, within ability to write/test code"
+    }
+  ],
+  "verdict": "PASS"
+}
