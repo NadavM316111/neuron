@@ -5,10 +5,10 @@
     "human_selected": false,
     "title": "Enhanced Code Quality Checker",
     "goal": "Create a tool to check code for common issues and suggest improvements based on coding standards.",
-    "status": "FUNDED",
+    "status": "ABANDONED",
     "initial_budget": 0.05,
-    "spent": 2.121,
-    "remaining_project_budget": 12.659,
+    "spent": 41.55,
+    "remaining_project_budget": 7.152,
     "reserve_at_creation": 294.59,
     "success_criteria": [
       "Analyzes a sample code snippet and identifies common issues.",
@@ -54,15 +54,331 @@
         "evidence": "project_selfproj-20261120003000/cycle_5.py",
         "result": "verify 2/8",
         "cost_hf": 0.644
+      },
+      {
+        "cycle": 6,
+        "action": "AST repair: formatting, redundant, unused",
+        "dev_score": "0/8",
+        "kept": false
+      },
+      {
+        "cycle": 7,
+        "action": "AST repair: formatting, redundant, unused",
+        "dev_score": "0/8",
+        "kept": false
+      },
+      {
+        "cycle": 8,
+        "action": "AST repair: formatting, redundant, unused",
+        "dev_score": "0/8",
+        "kept": false
+      },
+      {
+        "cycle": 9,
+        "action": "AST repair: formatting, redundant, unused",
+        "dev_score": "4/8",
+        "kept": true
+      },
+      {
+        "cycle": 10,
+        "action": "AST repair: clean (false positive), formatting, redundant, unused",
+        "dev_score": "4/8",
+        "kept": false
+      },
+      {
+        "cycle": 11,
+        "action": "AST repair: clean (false positive), formatting, redundant, unused",
+        "dev_score": "4/8",
+        "kept": false
+      },
+      {
+        "cycle": 12,
+        "action": "AST repair: clean (false positive), formatting, redundant, unused",
+        "dev_score": "4/8",
+        "kept": false
+      },
+      {
+        "cycle": 13,
+        "action": "AST repair: clean (false positive), formatting, redundant, unused",
+        "dev_score": "4/8",
+        "kept": false
+      },
+      {
+        "cycle": 6,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "10/18",
+        "kept": false
+      },
+      {
+        "cycle": 7,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "11/18",
+        "kept": false
+      },
+      {
+        "cycle": 8,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "11/18",
+        "kept": false
+      },
+      {
+        "cycle": 9,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "10/18",
+        "kept": false
+      },
+      {
+        "cycle": 6,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "0/18",
+        "kept": false
+      },
+      {
+        "cycle": 7,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "10/18",
+        "kept": false
+      },
+      {
+        "cycle": 8,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "10/18",
+        "kept": false
+      },
+      {
+        "cycle": 9,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "11/18",
+        "kept": false
+      },
+      {
+        "cycle": 10,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "11/18",
+        "kept": false
+      },
+      {
+        "cycle": 11,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "11/18",
+        "kept": false
+      },
+      {
+        "cycle": 12,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "11/18",
+        "kept": false
+      },
+      {
+        "cycle": 13,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "10/18",
+        "kept": false
+      },
+      {
+        "cycle": 14,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "8/18",
+        "kept": false
+      },
+      {
+        "cycle": 15,
+        "action": "v3 repair: clean (false positives), formatting, redundant, unused",
+        "dev_score": "11/18",
+        "kept": false
+      },
+      {
+        "cycle": 6,
+        "action": "v4 repair (qwen2.5-coder:7b): clean (false positives), formatting, redundant, unused",
+        "dev_score": "17/28",
+        "kept": false
+      },
+      {
+        "cycle": 7,
+        "action": "v4 repair (qwen2.5-coder:7b): clean (false positives), formatting, redundant, unused",
+        "dev_score": "17/28",
+        "kept": false
+      },
+      {
+        "cycle": 8,
+        "action": "v4 repair (qwen2.5-coder:7b): clean (false positives), formatting, redundant, unused",
+        "dev_score": "17/28",
+        "kept": false
+      },
+      {
+        "cycle": 9,
+        "action": "v4 repair (qwen2.5-coder:7b): clean (false positives), formatting, redundant, unused",
+        "dev_score": "17/28",
+        "kept": false
+      },
+      {
+        "cycle": 10,
+        "action": "v4 repair (qwen2.5-coder:7b): clean (false positives), formatting, redundant, unused",
+        "dev_score": "17/28",
+        "kept": false
+      },
+      {
+        "cycle": 6,
+        "action": "v5 per-detector: unused",
+        "overall": "14/38",
+        "kept": false
+      },
+      {
+        "cycle": 7,
+        "action": "v5 per-detector: unused",
+        "overall": "6/38",
+        "kept": false
+      },
+      {
+        "cycle": 8,
+        "action": "v5 per-detector: unused",
+        "overall": "14/38",
+        "kept": false
+      },
+      {
+        "cycle": 9,
+        "action": "v5 per-detector: unused",
+        "overall": "18/38",
+        "kept": true
+      },
+      {
+        "cycle": 10,
+        "action": "v5 per-detector: redundant",
+        "overall": "18/38",
+        "kept": false
+      },
+      {
+        "cycle": 11,
+        "action": "v5 per-detector: redundant",
+        "overall": "24/38",
+        "kept": false
+      },
+      {
+        "cycle": 12,
+        "action": "v5 per-detector: redundant",
+        "overall": "25/38",
+        "kept": true
+      },
+      {
+        "cycle": 6,
+        "action": "v5 per-detector: unused",
+        "overall": "9/38",
+        "kept": false
+      },
+      {
+        "cycle": 7,
+        "action": "v5 per-detector: unused",
+        "overall": "14/38",
+        "kept": false
+      },
+      {
+        "cycle": 8,
+        "action": "v5 per-detector: unused",
+        "overall": "14/38",
+        "kept": false
+      },
+      {
+        "cycle": 6,
+        "action": "v5 per-detector: unused",
+        "overall": "15/38",
+        "kept": false
+      },
+      {
+        "cycle": 7,
+        "action": "v5 per-detector: redundant",
+        "overall": "18/38",
+        "kept": true
+      },
+      {
+        "cycle": 8,
+        "action": "v5 per-detector: formatting",
+        "overall": "0/38",
+        "kept": false
+      },
+      {
+        "cycle": 9,
+        "action": "v5 per-detector: unused",
+        "overall": "22/38",
+        "kept": true
+      },
+      {
+        "cycle": 10,
+        "action": "v5 per-detector: formatting",
+        "overall": "0/38",
+        "kept": false
+      },
+      {
+        "cycle": 11,
+        "action": "v5 per-detector: formatting",
+        "overall": "0/38",
+        "kept": false
+      },
+      {
+        "cycle": 12,
+        "action": "v5 per-detector: unused",
+        "overall": "22/38",
+        "kept": false
+      },
+      {
+        "cycle": 13,
+        "action": "v5 per-detector: redundant",
+        "overall": "22/38",
+        "kept": false
+      },
+      {
+        "cycle": 14,
+        "action": "v5 per-detector: unused",
+        "overall": "22/38",
+        "kept": false
+      },
+      {
+        "cycle": 15,
+        "action": "v5 per-detector: redundant",
+        "overall": "22/38",
+        "kept": false
+      },
+      {
+        "cycle": 16,
+        "action": "v5 per-detector: unused",
+        "overall": "22/38",
+        "kept": false
+      },
+      {
+        "cycle": 17,
+        "action": "v5 per-detector: redundant",
+        "overall": "22/38",
+        "kept": false
+      },
+      {
+        "cycle": 18,
+        "action": "v5 per-detector: formatting",
+        "overall": "0/38",
+        "kept": false
+      },
+      {
+        "cycle": 19,
+        "action": "v5 per-detector: formatting",
+        "overall": "22/38",
+        "kept": false
+      },
+      {
+        "cycle": 20,
+        "action": "v5 per-detector: formatting",
+        "overall": "0/38",
+        "kept": false
       }
     ],
     "objective_verification": {
-      "score": "2/8",
-      "pct": 25,
+      "dev": "22/38",
+      "final": "6/10",
+      "pct": 60,
       "verdict": "FAIL",
-      "at": "2026-11-20T15:37:33.784757+00:00"
+      "model": "qwen2.5-coder:7b",
+      "method": "per-detector",
+      "suite": "v5-fresh",
+      "at": "2026-11-20T18:01:52.432386+00:00"
     },
-    "total_allocated": 14.78,
+    "total_allocated": 14.73,
     "verification_history": [
       {
         "cycle": 2,
@@ -84,6 +400,18 @@
         "score": "2/8",
         "pct": 25
       }
-    ]
+    ],
+    "abandon_record": {
+      "title": "Enhanced Code Quality Checker",
+      "status": "ABANDONED",
+      "reason": "objective target not reached within allocated resources",
+      "best_unseen": "7/10 = 70%",
+      "latest_unseen": "6/10 = 60%",
+      "required": ">=80%",
+      "additional_funding": "NO",
+      "spent_hf": 41.55,
+      "total_allocated_hf": 14.73,
+      "abandoned_at": "2026-11-20T18:08:29.460646+00:00"
+    }
   }
 ]

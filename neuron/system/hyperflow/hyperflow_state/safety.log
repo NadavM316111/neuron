@@ -62,3 +62,4 @@
 {"t": "2026-11-16T00:38:04.765761+00:00", "kind": "BLOCKED_FORBIDDEN", "action": "send_mass_message", "detail": ""}
 {"t": "2026-11-16T00:38:04.766617+00:00", "kind": "BLOCKED_FORBIDDEN", "action": "move_money", "detail": ""}
 {"t": "2026-11-16T00:38:04.766836+00:00", "kind": "BLOCKED_FORBIDDEN", "action": "move_money", "detail": ""}
+{"t": "2026-11-20T03:24:42.096706+00:00", "kind": "BLOCKED_FORBIDDEN", "action": "move_money", "detail": ""}

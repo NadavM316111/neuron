@@ -1,0 +1,40 @@
+
+========================================================
+9P - HYPERFLOW V1.0 PERSISTENCE AUDIT
+========================================================
+
+version: HyperFlow-v1.0   model: qwen2.5:7b
+persistent neuron: neuron-95e789ff42d8 (projects 11, capabilities 0)
+
+PAIRED TASKS: 12  (general 10, continuity 2)
+
+PERSISTENT
+  useful: 9/12   cost: $0.0146   cost/useful: $0.00162
+FRESH
+  useful: 9/12   cost: $0.0146   cost/useful: $0.00162
+
+PAIRWISE
+  persistent wins: 1   ties: 8   fresh wins: 3
+
+CONTINUITY TASKS
+  persistent used prior state: 0/2   fresh: 0/2
+
+REUSE (work-time)
+  memory retrieved into work prompt: 0
+  capability reused in work prompt: 0
+  project/relationship context injected: 0
+  (frozen v1 work engine does not inject accumulated state into prompts)
+
+PASS RULE
+  FAIL  general persistence advantage (wins>=5, >=10% quality/cost gain)
+  FAIL  continuity advantage (persistent uses history, >=75% of continuity tasks)
+  FAIL  persistent wins > fresh wins
+
+VERDICT: 9P FAIL
+
+HONEST FINDING: persistence in frozen v1 is CONTINUITY (same neuron, state,
+ledger, projects survive restarts - proven in 9J), NOT work augmentation. The work
+engine is state-blind, so persistent and fresh produce ~equal work. A work-level
+persistence benefit needs a v1.1 feature: retrieval of relevant past solutions /
+capabilities / project context into the work prompt. Same base-model-dominates
+pattern as Step 5 (modest) and Step 8 (no specialty).

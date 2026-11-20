@@ -1,0 +1,220 @@
+{
+  "version": "HyperFlow-v1.0",
+  "neuron_id": "neuron-95e789ff42d8",
+  "tasks": 12,
+  "persistent": {
+    "useful": 9,
+    "cost": 0.0146,
+    "cost_per_useful": 0.00162
+  },
+  "fresh": {
+    "useful": 9,
+    "cost": 0.0146,
+    "cost_per_useful": 0.00162
+  },
+  "wins": {
+    "persistent": 1,
+    "ties": 8,
+    "fresh": 3
+  },
+  "continuity": {
+    "persistent": 0,
+    "fresh": 0,
+    "total": 2
+  },
+  "verdict": "FAIL",
+  "rows": [
+    {
+      "id": "p_rev",
+      "cat": "coding",
+      "group": "general",
+      "p": {
+        "useful": true,
+        "tokens": 16,
+        "cost": 0.00103
+      },
+      "f": {
+        "useful": true,
+        "tokens": 16,
+        "cost": 0.00103
+      },
+      "win": "tie"
+    },
+    {
+      "id": "p_pal",
+      "cat": "coding",
+      "group": "general",
+      "p": {
+        "useful": true,
+        "tokens": 36,
+        "cost": 0.00107
+      },
+      "f": {
+        "useful": true,
+        "tokens": 41,
+        "cost": 0.00108
+      },
+      "win": "P"
+    },
+    {
+      "id": "p_fb",
+      "cat": "coding",
+      "group": "general",
+      "p": {
+        "useful": true,
+        "tokens": 63,
+        "cost": 0.00113
+      },
+      "f": {
+        "useful": true,
+        "tokens": 62,
+        "cost": 0.00112
+      },
+      "win": "F"
+    },
+    {
+      "id": "p_fac",
+      "cat": "coding",
+      "group": "general",
+      "p": {
+        "useful": true,
+        "tokens": 37,
+        "cost": 0.00107
+      },
+      "f": {
+        "useful": true,
+        "tokens": 37,
+        "cost": 0.00107
+      },
+      "win": "tie"
+    },
+    {
+      "id": "p_mean",
+      "cat": "numeric",
+      "group": "general",
+      "p": {
+        "useful": false,
+        "tokens": 93,
+        "cost": 0.00119
+      },
+      "f": {
+        "useful": false,
+        "tokens": 59,
+        "cost": 0.00112
+      },
+      "win": "tie"
+    },
+    {
+      "id": "p_comp",
+      "cat": "numeric",
+      "group": "general",
+      "p": {
+        "useful": true,
+        "tokens": 317,
+        "cost": 0.00163
+      },
+      "f": {
+        "useful": true,
+        "tokens": 316,
+        "cost": 0.00163
+      },
+      "win": "tie"
+    },
+    {
+      "id": "p_pct",
+      "cat": "numeric",
+      "group": "general",
+      "p": {
+        "useful": true,
+        "tokens": 137,
+        "cost": 0.00127
+      },
+      "f": {
+        "useful": true,
+        "tokens": 126,
+        "cost": 0.00125
+      },
+      "win": "F"
+    },
+    {
+      "id": "p_be",
+      "cat": "numeric",
+      "group": "general",
+      "p": {
+        "useful": true,
+        "tokens": 116,
+        "cost": 0.00123
+      },
+      "f": {
+        "useful": true,
+        "tokens": 116,
+        "cost": 0.00123
+      },
+      "win": "tie"
+    },
+    {
+      "id": "p_rec",
+      "cat": "explanation",
+      "group": "general",
+      "p": {
+        "useful": true,
+        "tokens": 57,
+        "cost": 0.00111
+      },
+      "f": {
+        "useful": true,
+        "tokens": 52,
+        "cost": 0.0011
+      },
+      "win": "F"
+    },
+    {
+      "id": "p_http",
+      "cat": "explanation",
+      "group": "general",
+      "p": {
+        "useful": true,
+        "tokens": 64,
+        "cost": 0.00113
+      },
+      "f": {
+        "useful": true,
+        "tokens": 65,
+        "cost": 0.00113
+      },
+      "win": "tie"
+    },
+    {
+      "id": "p_proj",
+      "cat": "other",
+      "group": "continuity",
+      "p": {
+        "useful": false,
+        "tokens": 57,
+        "cost": 0.00111
+      },
+      "f": {
+        "useful": false,
+        "tokens": 60,
+        "cost": 0.00112
+      },
+      "win": "tie"
+    },
+    {
+      "id": "p_rel",
+      "cat": "other",
+      "group": "continuity",
+      "p": {
+        "useful": false,
+        "tokens": 341,
+        "cost": 0.00168
+      },
+      "f": {
+        "useful": false,
+        "tokens": 373,
+        "cost": 0.00175
+      },
+      "win": "tie"
+    }
+  ]
+}

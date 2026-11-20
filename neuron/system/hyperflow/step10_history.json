@@ -1,0 +1,25 @@
+{
+  "projects": [
+    {
+      "title": "Enhanced Code Quality Checker",
+      "status": "ABANDONED",
+      "reason": "objective target not reached within allocated resources",
+      "best_unseen": "7/10 = 70%",
+      "latest_unseen": "6/10 = 60%",
+      "required": ">=80%",
+      "additional_funding": "NO",
+      "spent_hf": 41.55,
+      "total_allocated_hf": 14.73,
+      "abandoned_at": "2026-11-20T18:08:29.460646+00:00"
+    },
+    {
+      "title": "Digit Sum Calculator",
+      "task_type": "digit_sum",
+      "status": "COMPLETE",
+      "hidden": "6/6",
+      "pct": 100,
+      "verdict": "PASS",
+      "at": "2026-11-20T18:08:40.826185+00:00"
+    }
+  ]
+}

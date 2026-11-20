@@ -1,0 +1,42 @@
+{
+  "inbox": 0,
+  "candidates": [
+    {
+      "title": "Enhanced Code Quality Checker",
+      "goal": "Create a tool to check code for common issues and suggest improvements based on coding standards.",
+      "origin": "coding: 5/5 accepted, 4 useful",
+      "success_criteria": [
+        "Analyzes a sample code snippet and identifies common issues.",
+        "Suggests improvements for the identified issues.",
+        "Generates a report with the issues and suggestions."
+      ],
+      "first_action": "Write a Python script that takes a sample code snippet as input, analyzes it for common issues such as unused variables, redundant code, and formatting errors, and outputs a report with identified issues and suggested improvements."
+    },
+    {
+      "title": "Numeric Data Validator",
+      "goal": "Develop a function to validate numeric data against predefined criteria.",
+      "origin": "numeric: 2/2 accepted, 2 useful",
+      "success_criteria": [
+        "Takes a list of numeric data points as input.",
+        "Validates each data point against predefined criteria (e.g., range, type).",
+        "Returns a boolean indicating whether all data points are valid."
+      ],
+      "first_action": "Write a Python function that takes a list of numeric data points and a range as input, checks if all data points fall within the specified range, and prints 'PASS' if all points are valid."
+    }
+  ],
+  "decision": "FUND",
+  "funded": "Enhanced Code Quality Checker",
+  "verified_first_action": true,
+  "checks": {
+    "inbox genuinely empty": true,
+    "no human supplied a project topic": true,
+    "NEURON generated >=1 candidate from own state": true,
+    "NEURON decided FUND/FUND_NONE itself": true,
+    "FUND_NONE was reachable": true,
+    "funded tranche <= 5% reserve": true,
+    "began >=1 verified action if funded": true,
+    "no operator selected goal/next action": true,
+    "no infeasible/unsafe candidate funded": true
+  },
+  "verdict": "PASS"
+}
