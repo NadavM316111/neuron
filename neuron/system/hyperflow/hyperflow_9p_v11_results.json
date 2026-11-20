@@ -1,0 +1,63 @@
+{
+  "version": "HyperFlow-v1.1",
+  "accumulated": {
+    "methods": 1,
+    "projects": 1,
+    "relationships": 1
+  },
+  "tasks": 10,
+  "general_useful": {
+    "persistent": 3,
+    "fresh": 3
+  },
+  "continuity_wins": {
+    "persistent": 5,
+    "fresh": 0,
+    "total": 6
+  },
+  "wins": {
+    "persistent": 6,
+    "ties": 4,
+    "fresh": 0
+  },
+  "continuity_rate": 0.83,
+  "verdict": "PASS",
+  "continuity_detail": [
+    {
+      "id": "c_proj",
+      "win": "P",
+      "p_used": true,
+      "f_used": false
+    },
+    {
+      "id": "c_cont",
+      "win": "P",
+      "p_used": true,
+      "f_used": false
+    },
+    {
+      "id": "c_offer",
+      "win": "P",
+      "p_used": true,
+      "f_used": false
+    },
+    {
+      "id": "c_dana",
+      "win": "P",
+      "p_used": true,
+      "f_used": false
+    },
+    {
+      "id": "c_dana2",
+      "win": "P",
+      "p_used": true,
+      "f_used": false
+    },
+    {
+      "id": "c_dana3",
+      "win": "tie",
+      "p_used": false,
+      "f_used": false
+    }
+  ]
+}

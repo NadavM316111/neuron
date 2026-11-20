@@ -1,0 +1,29 @@
+
+==========================================================
+9P v1.1 - PERSISTENCE RE-AUDIT (memory-augmented work)
+==========================================================
+
+version: HyperFlow-v1.1   model: qwen2.5:7b
+persistent accumulated: {'methods': 1, 'projects': 1, 'relationships': 1}  (earned in warmup, not hand-fed)
+
+PAIRED TASKS: 10  (general 4, continuity 6)
+
+GENERAL (quality-verified)
+  persistent useful: 3/4   fresh useful: 3/4
+CONTINUITY (used real prior state)
+  persistent used-state wins: 5/6   fresh: 0/6
+
+PAIRWISE
+  persistent wins: 6   ties: 4   fresh wins: 0
+
+PASS RULE (frozen threshold)
+  PASS  persistent wins >= 5  (6)
+  PASS  fresh wins <= 3  (0)
+  PASS  persistent wins > fresh wins
+  PASS  >=10% useful gain OR >=75% continuity wins  (gain 0%, continuity 83%)
+
+VERDICT: 9P v1.1 PASS
+  -> work-level persistence demonstrated: the persistent neuron used its real
+     project/method/relationship history to do continuity work the fresh control
+     could not. General-task quality stays ~tied (base model dominates), as expected;
+     the advantage is grounding in a continuing life. v1.0 stays frozen; this is v1.1.
