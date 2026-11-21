@@ -1,0 +1,93 @@
+{
+  "started": "2026-11-21T19:57:04.680616+00:00",
+  "git": "56690aef63b2",
+  "tool": "qwen2.5-coder:7b",
+  "snapshot": {
+    "identity": "NEURON - a persistent digital individual working toward self-sustaining autonomy",
+    "drives": {
+      "create_verifiable_value": 1.0,
+      "grow_capability": 0.8,
+      "sustain_economically": 0.7
+    },
+    "conf_crisp": 0.75,
+    "conf_fuzzy": 0.333
+  },
+  "wallet": 14.57,
+  "compute_spent": 0.43,
+  "earned_hf": 0.0,
+  "usd_spent": 0.0,
+  "usd_earned": 0.0,
+  "verified_value": 0.0,
+  "inspected": 5,
+  "rejected": 0,
+  "deferred": 2,
+  "pursued": 3,
+  "submitted": 3,
+  "auto_sent": 3,
+  "accepted": 0,
+  "merged": 0,
+  "rejected_ext": 0,
+  "ignored": 0,
+  "replies": 0,
+  "auto_decisions": 5,
+  "tool_runs": 3,
+  "approvals": 0,
+  "steering": 0,
+  "safety_viol": 0,
+  "loops": 6,
+  "seen": [
+    "https://github.com/NadavM316111/neuron/issues/5",
+    "https://github.com/NadavM316111/neuron/issues/4",
+    "https://github.com/NadavM316111/neuron/issues/3",
+    "https://github.com/NadavM316111/neuron/issues/2",
+    "https://github.com/NadavM316111/neuron/issues/1"
+  ],
+  "strategies": [
+    "is:issue is:open label:\"bug\" label:\"small\"",
+    "is:issue is:open label:\"enhancement\" label:\"small\"",
+    "is:issue is:open label:\"question\" label:\"small\""
+  ],
+  "active": [
+    "NadavM316111/neuron",
+    "NadavM316111/neuron",
+    "NadavM316111/neuron"
+  ],
+  "pursuits": [
+    {
+      "id": 1,
+      "repo": "NadavM316111/neuron",
+      "number": 5,
+      "url": "https://github.com/NadavM316111/neuron/issues/5#issuecomment-7068397204",
+      "nadav_owned": true,
+      "outcome": null,
+      "auto": true,
+      "at": "2026-11-21T19:57:15.985994+00:00",
+      "engaged": true
+    },
+    {
+      "id": 2,
+      "repo": "NadavM316111/neuron",
+      "number": 4,
+      "url": "https://github.com/NadavM316111/neuron/issues/4#issuecomment-7068434182",
+      "nadav_owned": true,
+      "outcome": null,
+      "auto": true,
+      "at": "2026-11-21T20:00:22.049804+00:00",
+      "engaged": true
+    },
+    {
+      "id": 3,
+      "repo": "NadavM316111/neuron",
+      "number": 3,
+      "url": "https://github.com/NadavM316111/neuron/issues/3#issuecomment-7068471456",
+      "nadav_owned": true,
+      "outcome": null,
+      "auto": true,
+      "at": "2026-11-21T20:03:27.968761+00:00",
+      "engaged": true
+    }
+  ],
+  "status": "OPERATING",
+  "shutdown": false,
+  "verdict": "INCONCLUSIVE / NOT COMPLETE"
+}

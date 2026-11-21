@@ -154,6 +154,48 @@
       "self_verify": "FAIL",
       "detail": "runs, no example to assert",
       "at": "2026-11-21T01:39:14.691247+00:00"
+    },
+    {
+      "step": "11E_v2",
+      "repo": "NadavM316111/neuron",
+      "verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-21T19:48:01.903609+00:00"
+    },
+    {
+      "step": "11E_v2",
+      "repo": "NadavM316111/neuron",
+      "verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-21T19:50:22.604211+00:00"
+    },
+    {
+      "step": "11E_v2",
+      "repo": "NadavM316111/neuron",
+      "verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-21T19:50:36.622444+00:00"
+    },
+    {
+      "step": "11E_v2",
+      "repo": "NadavM316111/neuron",
+      "verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-21T19:50:57.306652+00:00"
+    },
+    {
+      "step": "11E_v2",
+      "repo": "NadavM316111/neuron",
+      "verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-21T19:52:11.389776+00:00"
+    },
+    {
+      "step": "11E_v2",
+      "repo": "NadavM316111/neuron",
+      "verify": "FAIL",
+      "detail": "failed example(s)",
+      "at": "2026-11-21T19:55:04.850563+00:00"
     }
   ]
 }
