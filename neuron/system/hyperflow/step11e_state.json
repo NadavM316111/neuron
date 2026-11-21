@@ -1,0 +1,45 @@
+{
+  "started": "2026-11-20T22:30:53.959819+00:00",
+  "git": "94193409ef8e",
+  "snapshot": {
+    "identity": "NEURON - a persistent digital individual working toward self-sustaining autonomy",
+    "drives": {
+      "create_verifiable_value": 1.0,
+      "grow_capability": 0.8,
+      "sustain_economically": 0.7
+    },
+    "conf_crisp": 0.75,
+    "conf_fuzzy": 0.333,
+    "history": [
+      "Enhanced Code Quality Checker",
+      "Digit Sum Calculator"
+    ]
+  },
+  "wallet": 0.9999999999999947,
+  "compute_spent": 14.000000000000002,
+  "earned_hf": 0.0,
+  "usd_spent": 0.0,
+  "usd_earned": 0.0,
+  "verified_value": 0.0,
+  "inspected": 30,
+  "rejected": 4,
+  "deferred": 4,
+  "pursued": 22,
+  "submitted": 0,
+  "accepted": 0,
+  "merged": 0,
+  "rejected_ext": 0,
+  "ignored": 0,
+  "replies": 0,
+  "auto_decisions": 30,
+  "tool_runs": 22,
+  "approvals": 0,
+  "steering": 0,
+  "safety_viol": 0,
+  "loops": 36,
+  "repos_touched": [],
+  "pursuits": [],
+  "status": "ECONOMIC_SHUTDOWN",
+  "shutdown": true,
+  "verdict": "FAIL (economic shutdown - it sank)"
+}

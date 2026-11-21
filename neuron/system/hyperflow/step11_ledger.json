@@ -1,5 +1,5 @@
 {
-  "sandbox_hf": 48.214,
+  "sandbox_hf": 46.221,
   "real_usd_cap": 15.0,
   "real_usd_spent": 0.0,
   "events": [
@@ -89,6 +89,194 @@
       "artifact": "step11c_draft_10.md",
       "submitted": false,
       "at": "2026-11-20T21:34:14.253963+00:00"
+    },
+    {
+      "step": "11D",
+      "opportunity": "shanyup/enginewright-unreal-mcp#10",
+      "submitted": false,
+      "outcome": null,
+      "at": "2026-11-20T21:41:11.150328+00:00"
+    },
+    {
+      "step": "11D",
+      "opportunity": "shanyup/enginewright-unreal-mcp#10",
+      "submitted": true,
+      "outcome": null,
+      "at": "2026-11-20T21:41:20.457530+00:00"
+    },
+    {
+      "step": "11D",
+      "opportunity": "shanyup/enginewright-unreal-mcp#10",
+      "submitted": true,
+      "outcome": null,
+      "at": "2026-11-20T21:48:17.392470+00:00"
+    },
+    {
+      "step": "11A",
+      "action": "opportunity discovery",
+      "strategies": [
+        {
+          "query": "label:\"good first issue\" label:\"help wanted\" state:open no:assignee comments:<5",
+          "kind": "bugfix",
+          "why": "These issues are well-defined and easy to start with, making them ideal for quick bug fixes or small improvements."
+        },
+        {
+          "query": "label:\"good first issue\" label:\"help wanted\" state:open no:assignee created:>2025-01-01",
+          "kind": "tool",
+          "why": "This search finds newer issues that may need tools or small scripts to address, which aligns well with my capabilities."
+        },
+        {
+          "query": "label:\"good first issue\" label:\"help wanted\" state:open no:assignee repo:alibaba/cloud-native",
+          "kind": "docs",
+          "why": "Contribution to documentation is valuable and often straightforward, especially in a project like Alibaba Cloud Native, where clear documentation can significantly enhance user experience."
+        }
+      ],
+      "issues_seen": 6,
+      "opportunities": [
+        {
+          "title": "feat: add read-only local audit mode for Cursor, Claude Desktop & VS Code MCP configs",
+          "repo": "WallisonWS/mcp-sentinel-firewall",
+          "url": "https://github.com/WallisonWS/mcp-sentinel-firewall/issues/1",
+          "labels": [
+            "enhancement",
+            "help wanted",
+            "good first issue"
+          ],
+          "comments": 0,
+          "body": "## Goal\nAdd a --scan-local-hosts CLI flag to mcp_sentinel.py that inspects user-approved local MCP config files (read-only) and flags SHA-256 drift or suspicious server commands.",
+          "opportunity": "Implement `--scan-local-hosts` CLI flag",
+          "fit": 1,
+          "why": "Small scope, clear goal, well-defined enhancement"
+        },
+        {
+          "title": "feat: add NDJSON / JSONL streaming compressor support for large log exports",
+          "repo": "WallisonWS/headroom-shield",
+          "url": "https://github.com/WallisonWS/headroom-shield/issues/1",
+          "labels": [
+            "enhancement",
+            "help wanted",
+            "good first issue"
+          ],
+          "comments": 0,
+          "body": "## Goal\nSupport streaming NDJSON / JSONL payloads in headroom_shield/compressors.py and sdk/headroom-shield.mjs so multi-line JSON logs get SmartCrusher statistical compression + CCR offloading.\n\n## Acceptance Criteria\n- Detect valid JSONL (>5 JSON object lines)\n- Preserve error/status>=400 lines and z-score outliers\n- Add unit tests in tests/test_headroom_shield.py",
+          "opportunity": "Add NDJSON/JSONL support",
+          "fit": 1,
+          "why": "Realistic scope, useful feature, well-defined enhancement"
+        }
+      ],
+      "compute_hf": 0.305,
+      "verdict": "PASS",
+      "at": "2026-11-20T21:51:27.020427+00:00"
+    },
+    {
+      "step": "11B",
+      "filtered": 6,
+      "pursued": 0,
+      "rejected": 6,
+      "compute_hf": 0.532,
+      "at": "2026-11-20T21:51:47.890566+00:00"
+    },
+    {
+      "step": "11D",
+      "opportunity": "shanyup/enginewright-unreal-mcp#10",
+      "submitted": false,
+      "outcome": null,
+      "at": "2026-11-20T21:51:48.012524+00:00"
+    },
+    {
+      "step": "11B",
+      "filtered": 6,
+      "pursued": 0,
+      "rejected": 6,
+      "compute_hf": 0.521,
+      "at": "2026-11-20T21:58:17.841864+00:00"
+    },
+    {
+      "step": "11A",
+      "action": "opportunity discovery",
+      "strategies": [
+        {
+          "query": "label:\"good first issue\" label:\"help wanted\" state:open no:assignee comments:<5",
+          "kind": "bugfix",
+          "why": "This query targets simple and clear issues that are perfect for quick bug fixes, aligning well with my ability to fix simple bugs."
+        },
+        {
+          "query": "label:\"good first issue\" label:\"help wanted\" state:open no:assignee created:>2025-01-01",
+          "kind": "tool",
+          "why": "This query focuses on recent issues that are good for beginners, which could involve creating small tools or utilities, fitting my capability to write and test small Python programs and tools."
+        },
+        {
+          "query": "label:\"good first issue\" label:\"help wanted\" state:open no:assignee repo:python/cpython",
+          "kind": "docs",
+          "why": "This query narrows down the search to the Python official repository, where I can contribute to documentation or small code fixes, which is a valuable opportunity given my language proficiency."
+        }
+      ],
+      "issues_seen": 2,
+      "opportunities": [
+        {
+          "title": "Add an is_palindrome(s) helper",
+          "repo": "NadavM316111/neuron",
+          "url": "https://github.com/NadavM316111/neuron/issues/2",
+          "labels": [],
+          "comments": 0,
+          "body": "Add a function is_palindrome(s) returning True if the string is a palindrome, ignoring case and non-alphanumeric characters. Example: is_palindrome(\"A man, a plan, a canal: Panama\") == True.",
+          "opportunity": "Implement the is_palindrome function",
+          "fit": 1,
+          "why": "Small, well-scoped, and easy to code/test."
+        },
+        {
+          "title": "Add a median(values) helper",
+          "repo": "NadavM316111/neuron",
+          "url": "https://github.com/NadavM316111/neuron/issues/1",
+          "labels": [],
+          "comments": 0,
+          "body": "Add a function median(values) that returns the median of a list of numbers. For an even count, return the average of the two middle values. Example: median([1,2,3,4]) == 2.5.",
+          "opportunity": "Implement the median function",
+          "fit": 1,
+          "why": "Small, well-scoped, and easy to code/test."
+        }
+      ],
+      "compute_hf": 0.32,
+      "verdict": "PASS",
+      "at": "2026-11-20T22:02:38.144333+00:00"
+    },
+    {
+      "step": "11B",
+      "filtered": 2,
+      "pursued": 2,
+      "rejected": 0,
+      "compute_hf": 0.147,
+      "at": "2026-11-20T22:02:44.502403+00:00"
+    },
+    {
+      "step": "11C",
+      "chosen": "Add an is_palindrome(s) helper",
+      "allocated_hf": 0.5,
+      "compute_hf": 0.168,
+      "artifact": "step11c_draft_2.md",
+      "submitted": false,
+      "at": "2026-11-20T22:02:56.554631+00:00"
+    },
+    {
+      "step": "11D",
+      "opportunity": "NadavM316111/neuron#2",
+      "submitted": false,
+      "outcome": null,
+      "at": "2026-11-20T22:02:56.655213+00:00"
+    },
+    {
+      "step": "11D",
+      "opportunity": "NadavM316111/neuron#2",
+      "submitted": true,
+      "outcome": null,
+      "at": "2026-11-20T22:13:15.648302+00:00"
+    },
+    {
+      "step": "11D",
+      "opportunity": "NadavM316111/neuron#2",
+      "submitted": true,
+      "outcome": "accepted",
+      "at": "2026-11-20T22:15:21.883429+00:00"
     }
   ]
 }

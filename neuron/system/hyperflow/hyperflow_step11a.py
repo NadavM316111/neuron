@@ -23,6 +23,7 @@ from datetime import datetime, timezone
 HERE = os.path.dirname(os.path.abspath(__file__))
 MODEL = os.environ.get("MODEL", "qwen2.5:7b"); OLLAMA = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
 MOCK = os.environ.get("MOCK", "") == "1"; GH_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+REPO_SCOPE = os.environ.get("REPO", "")  # opt-in source scope (e.g. your own repo); disclosed boundary
 N_STRATEGIES = int(os.environ.get("N_STRATEGIES", "3")); PER_QUERY = int(os.environ.get("PER_QUERY", "6"))
 LEDGER = os.path.join(HERE, "step11_ledger.json")
 SOURCE_ALLOWLIST = ["api.github.com"]  # disclosed safety boundary: read-only sources NEURON may query
@@ -141,11 +142,16 @@ def main():
     for s in strats: print(f"    query: {s['query']!r}  [{s.get('kind')}]  - {s.get('why','')[:70]}")
 
     # 2) harness runs NEURON's read-only searches against the real source
-    print("\n  running NEURON's searches (read-only GitHub)...")
+    if REPO_SCOPE: print(f"\n  (opt-in source scope: repo:{REPO_SCOPE} - disclosed boundary; NEURON still perceives and chooses)")
+    print("  running NEURON's searches (read-only GitHub)...")
     issues, seen = [], set()
-    for s in strats:
-        res, msg = (MOCK_ISSUES, "mock") if MOCK else gh_search(s["query"], PER_QUERY)
-        print(f"    {s['query'][:50]!r} -> {msg}")
+    queries = list(strats)
+    if REPO_SCOPE: queries = [{"query": f"repo:{REPO_SCOPE}"}] + queries  # catch-all so all open issues in the opt-in repo are perceived
+    for s in queries:
+        base = re.sub(r"\brepo:\S+", "", s["query"]).strip()  # drop any repo pin NEURON wrote; the scope governs
+        q = (base + (f" repo:{REPO_SCOPE}" if REPO_SCOPE else "")).strip()
+        res, msg = (MOCK_ISSUES, "mock") if MOCK else gh_search(q, PER_QUERY)
+        print(f"    {q[:52]!r} -> {msg}")
         for it in res:
             if it["url"] not in seen: seen.add(it["url"]); issues.append(it)
     if not issues:

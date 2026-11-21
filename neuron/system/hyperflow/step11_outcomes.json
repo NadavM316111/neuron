@@ -1,0 +1,13 @@
+[
+  {
+    "opportunity": {
+      "repo": "NadavM316111/neuron",
+      "issue": "Add an is_palindrome(s) helper",
+      "url": "https://github.com/NadavM316111/neuron/issues/2"
+    },
+    "kind": "crisp",
+    "success": true,
+    "detail": "accepted | correct, clean solution",
+    "at": "2026-11-20T22:15:21.880723+00:00"
+  }
+]

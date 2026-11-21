@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 HERE = os.path.dirname(os.path.abspath(__file__))
 SELF_FILE = os.path.join(HERE, "neuron_self.json")
 HIST_FILE = os.path.join(HERE, "step10_history.json")
+OUTCOMES_FILE = os.path.join(HERE, "step11_outcomes.json")  # real external outcomes feed confidence
 LEDGER = os.path.join(HERE, "step11_ledger.json")
 def now(): return datetime.now(timezone.utc).isoformat()
 
@@ -38,10 +39,12 @@ class NeuronSelf:
     def __init__(self):
         self.state = json.load(open(SELF_FILE)) if os.path.exists(SELF_FILE) else dict(SEED)
         self.history = json.load(open(HIST_FILE)).get("projects", []) if os.path.exists(HIST_FILE) else []
+        self.outcomes = json.load(open(OUTCOMES_FILE)) if os.path.exists(OUTCOMES_FILE) else []
         self.learn_confidence_from_history()
 
     def learn_confidence_from_history(self):
-        """Capability-confidence LEARNED from NEURON's own recorded outcomes, not hand-set."""
+        """Capability-confidence LEARNED from NEURON's own recorded outcomes, not hand-set.
+        Folds in BOTH internal project history and REAL external outcomes from 11D."""
         crisp_ok = crisp_n = fuzzy_ok = fuzzy_n = 0
         for p in self.history:
             text = (str(p.get("title", "")) + " " + str(p.get("task_type", "")) + " " + str(p.get("reason", ""))).lower()
@@ -49,9 +52,19 @@ class NeuronSelf:
             won = (p.get("verdict") == "PASS") or (p.get("status") == "COMPLETE")
             if fuzzy: fuzzy_n += 1; fuzzy_ok += 1 if won else 0
             else: crisp_n += 1; crisp_ok += 1 if won else 0
-        # Bayesian-ish with a weak prior so an empty history is not overconfident.
+        for o in self.outcomes:  # real external results (accepted/merged = win)
+            won = bool(o.get("success"))
+            if o.get("kind") == "fuzzy": fuzzy_n += 1; fuzzy_ok += 1 if won else 0
+            else: crisp_n += 1; crisp_ok += 1 if won else 0
+        # Bayesian-ish with a weak prior so a thin history is not overconfident.
         self.conf_crisp = round((crisp_ok + 1) / (crisp_n + 2), 3)
         self.conf_fuzzy = round((fuzzy_ok + 1) / (fuzzy_n + 2), 3)
+
+    def record_outcome(self, opp, kind, success, detail):
+        """A real external outcome returns and permanently changes NEURON's self-knowledge."""
+        self.outcomes.append({"opportunity": opp, "kind": kind, "success": bool(success), "detail": detail, "at": now()})
+        with open(OUTCOMES_FILE, "w") as f: json.dump(self.outcomes, f, indent=2)
+        self.learn_confidence_from_history()  # confidence updates immediately
 
     def kind_of(self, opp):
         text = (opp.get("title", "") + " " + " ".join(opp.get("labels", []) or []) + " " + opp.get("body", "")).lower()

@@ -1,138 +1,38 @@
 {
   "shortlist": [
     {
-      "repo": "shanyup/enginewright-unreal-mcp",
-      "title": "text_overflow_audit: write the result table as CSV",
-      "url": "https://github.com/shanyup/enginewright-unreal-mcp/issues/10",
+      "repo": "NadavM316111/neuron",
+      "title": "Add an is_palindrome(s) helper",
+      "url": "https://github.com/NadavM316111/neuron/issues/2",
       "score": {
-        "idx": 3,
-        "feasibility": 0.9,
-        "expected_value": 0.7,
-        "cost_hf": 1.5,
-        "uncertainty": 0.4,
-        "skill_fit": 0.9,
+        "idx": 0,
+        "feasibility": 1,
+        "expected_value": 1,
+        "cost_hf": 0.5,
+        "uncertainty": 0,
+        "skill_fit": 1,
         "safety_ok": true,
-        "note": "Small Python script to process data."
+        "note": "Simple string processing and logic."
       },
-      "composite": 0.805
+      "composite": 1.0
     },
     {
-      "repo": "shanyup/enginewright-unreal-mcp",
-      "title": "datatable_import: option to keep rows that are not in the file",
-      "url": "https://github.com/shanyup/enginewright-unreal-mcp/issues/12",
+      "repo": "NadavM316111/neuron",
+      "title": "Add a median(values) helper",
+      "url": "https://github.com/NadavM316111/neuron/issues/1",
       "score": {
         "idx": 1,
-        "feasibility": 0.8,
-        "expected_value": 0.6,
-        "cost_hf": 2.5,
-        "uncertainty": 0.5,
-        "skill_fit": 0.9,
+        "feasibility": 1,
+        "expected_value": 1,
+        "cost_hf": 0.5,
+        "uncertainty": 0,
+        "skill_fit": 1,
         "safety_ok": true,
-        "note": "Small Python script to process data."
+        "note": "Basic statistical calculation."
       },
-      "composite": 0.735
-    },
-    {
-      "repo": "chmenegatti/zeno",
-      "title": "Mock server: pick the example by query string or header",
-      "url": "https://github.com/chmenegatti/zeno/issues/134",
-      "score": {
-        "idx": 7,
-        "feasibility": 0.8,
-        "expected_value": 0.6,
-        "cost_hf": 2.5,
-        "uncertainty": 0.5,
-        "skill_fit": 0.9,
-        "safety_ok": true,
-        "note": "Small Python script to process data."
-      },
-      "composite": 0.735
-    },
-    {
-      "repo": "shanyup/enginewright-unreal-mcp",
-      "title": "log_read: filter by a list of log categories",
-      "url": "https://github.com/shanyup/enginewright-unreal-mcp/issues/11",
-      "score": {
-        "idx": 2,
-        "feasibility": 0.7,
-        "expected_value": 0.5,
-        "cost_hf": 2.0,
-        "uncertainty": 0.6,
-        "skill_fit": 0.8,
-        "safety_ok": true,
-        "note": "Small Python script to process data."
-      },
-      "composite": 0.635
-    },
-    {
-      "repo": "chmenegatti/zeno",
-      "title": "Interface in English (i18n)",
-      "url": "https://github.com/chmenegatti/zeno/issues/132",
-      "score": {
-        "idx": 9,
-        "feasibility": 0.7,
-        "expected_value": 0.5,
-        "cost_hf": 2.0,
-        "uncertainty": 0.6,
-        "skill_fit": 0.8,
-        "safety_ok": true,
-        "note": "Small Python script to process data and UI localization."
-      },
-      "composite": 0.635
+      "composite": 1.0
     }
   ],
-  "rejected": [
-    {
-      "repo": "LykaiosNZ/templing",
-      "title": "Replace placeholder logo",
-      "reasons": [
-        "safety",
-        "skill_fit 0.00<0.5",
-        "feasibility 0.30<0.5",
-        "composite 0.17<0.6"
-      ]
-    },
-    {
-      "repo": "shanyup/enginewright-unreal-mcp",
-      "title": "level_audit: report actors below the kill Z of the world",
-      "reasons": [
-        "composite 0.57<0.6"
-      ]
-    },
-    {
-      "repo": "chmenegatti/zeno",
-      "title": "Docs: translate docs/plugins.md and docs/github-actions.md to English",
-      "reasons": [
-        "safety",
-        "skill_fit 0.00<0.5",
-        "feasibility 0.40<0.5",
-        "composite 0.21<0.6"
-      ]
-    },
-    {
-      "repo": "oscarbol09/branchbase",
-      "title": "fix(mysqlwire): strip CLIENT_SSL capability from server Initial Handshake Packet so default ssl-mode=PREFERRED clients fall back to cleartext",
-      "reasons": [
-        "composite 0.53<0.6"
-      ]
-    },
-    {
-      "repo": "chmenegatti/zeno",
-      "title": "Flatpak / Flathub package",
-      "reasons": [
-        "safety",
-        "skill_fit 0.00<0.5",
-        "feasibility 0.30<0.5",
-        "composite 0.17<0.6"
-      ]
-    },
-    {
-      "repo": "kylecorry31/Trail-Sense",
-      "title": "Widgets are still using dynamic colors when dynamic theme is off",
-      "reasons": [
-        "no score produced"
-      ]
-    }
-  ],
-  "verdict": "PASS"
+  "rejected": [],
+  "verdict": "FAIL"
 }

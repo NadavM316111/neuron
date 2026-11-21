@@ -1,0 +1,7 @@
+{
+  "repo": "NadavM316111/neuron",
+  "num": "2",
+  "comment": "**PLAN:**  \n1. Define the function `is_palindrome(s)`.\n2. Normalize the string by converting it to lowercase and removing non-alphanumeric characters.\n3. Check if the normalized string is equal to its reverse.\n\n**CODE:**  \n```python\ndef is_palindrome(s):\n    normalized = ''.join(c.lower() for c in s if c.isalnum())\n    return normalized == normalized[::-1]\n```\n\n**PR_TITLE:**  \nAdd is_palindrome(s) helper function\n\n**PR_BODY:**  \nThis PR adds a helper function `is_palindrome(s)` that checks if a given string is a palindrome, ignoring case and non-alphanumeric characters. The function first normalizes the string by converting it to lowercase and removing any non-alphanumeric characters, then checks if the normalized string is equal to its reverse.",
+  "submitted_at": "2026-11-20T22:13:15.647469+00:00",
+  "comment_url": "https://github.com/NadavM316111/neuron/issues/2#issuecomment-7051877553"
+}

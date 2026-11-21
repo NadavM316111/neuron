@@ -29,6 +29,131 @@
       "artifact": "step11c_draft_10.md",
       "outcome": "contribution prepared; awaiting gated submission",
       "at": "2026-11-20T21:34:14.252064+00:00"
+    },
+    {
+      "step": "11C",
+      "decision": "pursue_none",
+      "top_value": null,
+      "at": "2026-11-20T21:51:47.968981+00:00"
+    },
+    {
+      "step": "11C",
+      "decision": "pursue_none",
+      "top_value": null,
+      "at": "2026-11-20T21:58:17.931451+00:00"
+    },
+    {
+      "step": "11C",
+      "decision": "pursued",
+      "opportunity": {
+        "repo": "NadavM316111/neuron",
+        "title": "Add an is_palindrome(s) helper",
+        "url": "https://github.com/NadavM316111/neuron/issues/2"
+      },
+      "tool_hired": "qwen2.5-coder:7b",
+      "allocated_hf": 0.5,
+      "artifact": "step11c_draft_2.md",
+      "outcome": "contribution prepared; awaiting gated submission",
+      "at": "2026-11-20T22:02:56.553351+00:00"
+    },
+    {
+      "step": "11D",
+      "opportunity": "NadavM316111/neuron#2",
+      "outcome": "accepted",
+      "success": true,
+      "note": "correct, clean solution",
+      "at": "2026-11-20T22:15:21.881173+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "VonHoltenCodes/SlowBooks-Pro-2026",
+      "self_verify": "FAIL",
+      "detail": "runs, no example to assert",
+      "at": "2026-11-20T22:37:07.897414+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "Savitura/Savitools",
+      "self_verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-20T22:42:31.438104+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "eyadstein/leaklens",
+      "self_verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-20T22:48:07.576374+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "MahdiHGZ/my-home-assistant",
+      "self_verify": "FAIL",
+      "detail": "runs, no example to assert",
+      "at": "2026-11-20T23:09:03.665024+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "robstoll/atrium",
+      "self_verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-20T23:29:52.633816+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "OneUptime/oneuptime",
+      "self_verify": "FAIL",
+      "detail": "runs, no example to assert",
+      "at": "2026-11-20T23:40:33.718442+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "simshanith/lit-ui-router",
+      "self_verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-20T23:45:57.275455+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "eshu-hq/eshu",
+      "self_verify": "FAIL",
+      "detail": "runs, no example to assert",
+      "at": "2026-11-21T00:40:06.919606+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "ignatov/intellij-erlang",
+      "self_verify": "FAIL",
+      "detail": "error: Command '['python3', '-I', '-c', 'import subprocess\\nimport signal\\nimport time\\n\\ndef run_build_command(command):\\n    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\\n    return process\\n\\ndef terminate_process(process):\\n    try:\\n        process.terminate()\\n        process.wait(5)  # Wait for 5 seconds for the process to terminate gracefully\\n    except subprocess.TimeoutExpired:\\n        process.kill()\\n\\ndef main():\\n    build_command = \"rebar3 compile\"  # or \"erlc\"\\n    process = run_build_command(build_command)\\n\\n    # Simulate user pressing the Stop button after 10 seconds\\n    time.sleep(10)\\n    terminate_process(process)\\n\\nif __name__ == \"__main__\":\\n    main()\\nprint(\\'ran\\')']' timed out after 10 seconds",
+      "at": "2026-11-21T00:51:17.919425+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "matiaszanolli/ByroRedux",
+      "self_verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-21T00:56:51.053902+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "happy-everyday-everyweek/coda",
+      "self_verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-21T01:02:14.766770+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "dmae97/omk",
+      "self_verify": "FAIL",
+      "detail": "no runnable function",
+      "at": "2026-11-21T01:07:49.472263+00:00"
+    },
+    {
+      "step": "11E",
+      "repo": "yrn-dev/Operator",
+      "self_verify": "FAIL",
+      "detail": "runs, no example to assert",
+      "at": "2026-11-21T01:39:14.691247+00:00"
     }
   ]
 }

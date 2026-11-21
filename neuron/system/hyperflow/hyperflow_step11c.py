@@ -46,27 +46,55 @@ def qwen(prompt, timeout=600, retries=1):
             if attempt < retries: print(f"      (tool slow/failed: {type(e).__name__}; retry)"); time.sleep(3); continue
             print("      (tool failed; skipping)"); return "", 1
 
-def gh_issue(repo, number):
-    assert "api.github.com" in SOURCE_ALLOWLIST
-    url = f"https://api.github.com/repos/{repo}/issues/{number}"
+def _gh(url):
     headers = {"Accept": "application/vnd.github+json", "User-Agent": "neuron-step11c"}
     if GH_TOKEN: headers["Authorization"] = f"Bearer {GH_TOKEN}"
+    with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=30) as r: return json.loads(r.read())
+
+def gh_issue(repo, number):
+    assert "api.github.com" in SOURCE_ALLOWLIST
     try:
-        with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=30) as r: d = json.loads(r.read())
+        d = _gh(f"https://api.github.com/repos/{repo}/issues/{number}")
         return {"title": d.get("title", ""), "body": (d.get("body") or "")[:1500], "labels": [l.get("name") for l in d.get("labels", [])]}
     except Exception as e:
         return {"title": "", "body": f"(could not fetch: {e})", "labels": []}
 
-def draft_prompt(repo, issue):
+def repo_context(repo, issue_title, max_files=2, cap=6000):
+    """Read the REAL repo files most relevant to the issue, so the draft is grounded, not guessed."""
+    import base64
+    try:
+        branch = _gh(f"https://api.github.com/repos/{repo}").get("default_branch", "main")
+        tree = _gh(f"https://api.github.com/repos/{repo}/git/trees/{branch}?recursive=1").get("tree", [])
+    except Exception as e:
+        return "", f"(no repo context: {e})"
+    exts = ("py", "md", "txt", "cpp", "h", "hpp", "js", "ts", "go", "rs", "java", "cs")
+    kw = set(re.findall(r"[a-zA-Z_]{3,}", issue_title.lower()))
+    blobs = [t["path"] for t in tree if t.get("type") == "blob" and t["path"].rsplit(".", 1)[-1] in exts]
+    scored = sorted(blobs, key=lambda p: len(kw & set(re.findall(r"[a-zA-Z_]{3,}", p.lower()))), reverse=True)
+    picked = [p for p in scored if kw & set(re.findall(r"[a-zA-Z_]{3,}", p.lower()))][:max_files]
+    chunks = []
+    for p in picked:
+        try:
+            c = _gh(f"https://api.github.com/repos/{repo}/contents/{urllib.parse.quote(p)}?ref={branch}")
+            content = base64.b64decode(c.get("content", "")).decode("utf-8", "ignore")[:cap]
+            chunks.append(f"--- {p} ---\n{content}")
+        except Exception: continue
+    return "\n\n".join(chunks), f"read {len(chunks)} file(s): {picked or 'none matched'}"
+
+def draft_prompt(repo, issue, context=""):
+    ctx = (f"\nReal files from the repo - GROUND your fix in these, match the existing names, types and style:\n{context}\n"
+           if context else "\n(No repo files were readable; do NOT invent file names or APIs you have not seen.)\n")
     return f"""You are a coding tool hired by NEURON to help prepare a contribution to a real GitHub issue.
 Repo: {repo}
 Issue: {issue['title']}
 Details:
 {issue['body']}
-
-Produce a DRAFT contribution (it will be reviewed by a human before anything is submitted). Give:
+{ctx}
+Produce a DRAFT contribution (a human reviews it before anything is submitted). Only use symbols you
+can see in the files above; if you cannot see enough to be correct, say so in PLAN instead of guessing.
+Give:
 1) PLAN: 2-4 lines on how to solve it.
-2) CODE: a self-contained Python snippet or patch implementing the fix (best effort).
+2) CODE: a self-contained snippet/patch implementing the fix, in the repo's language.
 3) PR_TITLE: one line.
 4) PR_BODY: 3-5 lines describing the change.
 Format exactly with those four headers."""
@@ -128,9 +156,12 @@ def main():
     print(f"\n  [6] HIRE TOOL: NEURON hires external cognitive tool '{MODEL}' to execute (it did NOT decide anything)")
     num = (chosen.get("url") or "").rstrip("/").split("/")[-1]
     issue = {"title": chosen["title"], "body": chosen.get("body", ""), "labels": chosen.get("labels", [])}
+    context = ""
     if num.isdigit() and not MOCK:
         print(f"      tool reads the REAL issue {chosen['repo']}#{num} (read-only)...")
         issue = gh_issue(chosen["repo"], num)
+        context, cmsg = repo_context(chosen["repo"], issue["title"])
+        print(f"      tool reads repo source to ground the fix: {cmsg}")
     spend = 0.0
     if MOCK:
         out = ("PLAN: add the CSV writer using csv module.\nCODE:\n```python\nimport csv\n"
@@ -139,7 +170,7 @@ def main():
                "PR_TITLE: Add CSV export for audit report\nPR_BODY: Writes the audit result table as CSV using the stdlib csv module.")
         toks = 300
     else:
-        out, toks = qwen(draft_prompt(chosen["repo"], issue))
+        out, toks = qwen(draft_prompt(chosen["repo"], issue, context))
     spend += toks / 1000
 
     # ---------- 7. RESULT -> NEURON MEMORY ----------
