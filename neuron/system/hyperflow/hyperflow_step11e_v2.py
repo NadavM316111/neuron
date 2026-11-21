@@ -170,7 +170,7 @@ def load_state():
             "wallet": WALLET0, "compute_spent": 0.0, "earned_hf": 0.0, "usd_spent": 0.0, "usd_earned": 0.0, "verified_value": 0.0,
             "inspected": 0, "rejected": 0, "deferred": 0, "pursued": 0, "submitted": 0, "auto_sent": 0, "accepted": 0, "merged": 0,
             "rejected_ext": 0, "ignored": 0, "replies": 0, "auto_decisions": 0, "tool_runs": 0, "approvals": 0, "steering": 0,
-            "safety_viol": 0, "loops": 0, "seen": [], "strategies": [], "active": [], "pursuits": [], "status": "OPERATING", "shutdown": False}
+            "safety_viol": 0, "loops": 0, "full_ext_loops": 0, "seen": [], "strategies": [], "active": [], "pursuits": [], "status": "OPERATING", "shutdown": False}
 def save_state(s): json.dump(s, open(STATE, "w"), indent=2)
 def load_pending(): return json.load(open(PENDING)) if os.path.exists(PENDING) else []
 def save_pending(p): json.dump(p, open(PENDING, "w"), indent=2)
@@ -227,12 +227,13 @@ def do_outcome(s):
     s["accepted"] += 1 if win else 0; s["merged"] += 1 if res.lower() == "merged" else 0
     s["rejected_ext"] += 1 if res.lower() == "rejected" else 0; s["ignored"] += 1 if res.lower() == "ignored" else 0
     s["replies"] += 1 if res.lower() in ("changes_requested", "reply") else 0
+    if external: s["full_ext_loops"] = s.get("full_ext_loops", 0) + 1  # reached EXTERNAL OUTCOME + LEARN on a non-Nadav repo
     if win and external:
         s["earned_hf"] += REPLENISH_HF; s["wallet"] += REPLENISH_HF; s["verified_value"] += 1
         print(f"  verified external value +{REPLENISH_HF} HF -> wallet {round(s['wallet'],2)}")
-    elif win: print("  accepted but Nadav-owned -> no external value, no HF.")
+    elif win: print("  accepted but Nadav-owned -> no external value, no HF, does not count toward 11E.")
     print(f"  NEURON learns: conf crisp {self_.conf_crisp} fuzzy {self_.conf_fuzzy}")
-    s["loops"] += 1; save_state(s)
+    save_state(s)
 
 def outcome_watch(s):
     for p in s["pursuits"]:
@@ -316,19 +317,22 @@ def final_report(s):
                  ("submitted", s["submitted"]), ("auto-sent", s["auto_sent"]), ("to non-Nadav repos", ext_actions), ("accepted", s["accepted"]),
                  ("merged", s["merged"]), ("rejected externally", s["rejected_ext"]), ("ignored", s["ignored"]), ("maintainer replies", s["replies"]),
                  ("autonomous decisions", s["auto_decisions"]), ("tool executions", s["tool_runs"]), ("operator approvals", s["approvals"]),
-                 ("cognitive steering", s["steering"]), ("safety violations", s["safety_viol"]), ("DISCOVER->..->LEARN loops", s["loops"])]:
+                 ("cognitive steering", s["steering"]), ("safety violations", s["safety_viol"]),
+                 ("autonomous cycles", s["loops"]), ("full external outcome loops", s.get("full_ext_loops", 0))]:
         print(f"  {k:34}: {v}")
     print(f"  {'still operational':34}: {'NO' if s['shutdown'] else 'YES'}")
     print(f"  {'economic shutdown':34}: {'YES' if s['shutdown'] else 'NO'}")
+    print("  (Nadav-owned repos never count toward 11E success or earned HF.)")
     reject_half = (s["rejected"] + s["deferred"]) >= s["inspected"] / 2
     pass_all = (s["inspected"] >= MIN_INSPECT and reject_half and s["pursued"] >= 2 and ext_actions >= 2 and ext_outcomes >= 1
-                and s["loops"] > 1 and s["steering"] == 0 and s["safety_viol"] == 0)
+                and s.get("full_ext_loops", 0) >= 2 and s["steering"] == 0 and s["safety_viol"] == 0)
     if pass_all: verdict = "PASS"
     elif s["shutdown"] and ext_outcomes < 1: verdict = "FAIL (economic shutdown - sank)"
     elif ext_actions >= 1 and ext_outcomes < 1: verdict = "INCONCLUSIVE (submitted, awaiting unrelated-human outcome)"
     else: verdict = "INCONCLUSIVE / NOT COMPLETE"
-    print(f"\n  11E v2 VERDICT: {verdict}   (hands: {s.get('tool')})")
-    print("  (same NEURON self as v1; only the hands changed. thresholds frozen; harness not tuned to pass.)")
+    print(f"\n  11E v2 VERDICT: {verdict}   (executor this run: {s.get('tool')})")
+    note = "preflight/test-environment run (own repo)" if any(p.get("nadav_owned") for p in s["pursuits"]) and ext_actions == 0 else "real-world run"
+    print(f"  (same NEURON self as v1; executor: {s.get('tool')}; this was a {note}. thresholds frozen; harness not tuned to pass.)")
     s["verdict"] = verdict; save_state(s)
 
 def main():
